@@ -1,21 +1,25 @@
-# Mobilità urbana accessibile
+# Aegis
 
-Documenti di analisi dei requisiti (RAD) e di progettazione (SDD) per una web app di pianificazione della mobilità urbana accessibile.
+Monorepo per la piattaforma di mobilità urbana accessibile.
 
-## Documenti
+## Struttura
 
-- `docs/RAD.md`: requisiti e analisi.
-- `docs/SDD.md`: architettura e progettazione.
-- `docs/template.docx`: modello usato come riferimento grafico per l'esportazione.
+| Percorso | Contenuto |
+|---|---|
+| `docs/` | Documentazione Markdown: RAD, SDD e trascrizione del template. |
+| `templates/` | File sorgente usati come modelli. |
+| `assets/` | Immagini e parti estratte dal template. |
+| `src/` | Codice e dati del progetto. |
+| `.github/workflows/` | Automazioni CI. |
 
-## Esportare in DOCX
+In `docs/` si mantengono solo file Markdown. I DOCX esportati non sono versionati: il target `make docs` li genera in `build/docs/`. La GitHub Action esegue la stessa conversione e pubblica i due DOCX come artifact.
 
-Installare [Pandoc](https://pandoc.org/installing.html), poi eseguire:
+## Esportazione DOCX
+
+Installare Pandoc e lanciare:
 
 ```sh
 make docs
 ```
 
-I file vengono creati in `build/docs/rad-is.docx` e `build/docs/sdd-is.docx`. GitHub Actions esegue la stessa conversione quando cambiano i Markdown o il template e pubblica i DOCX come artifact scaricabile dalla run.
-
-MarkItDown è pensato per convertire documenti sorgente in Markdown. Per convertire Markdown in DOCX il progetto usa Pandoc.
+L'esportazione usa `templates/template.docx` come riferimento di stile. Pandoc converte Markdown in DOCX; MarkItDown svolge la direzione opposta, da documenti sorgente a Markdown.

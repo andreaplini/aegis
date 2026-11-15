@@ -5,12 +5,12 @@ on:
     branches: [main]
     paths:
       - 'docs/*.md'
-      - 'docs/template.docx'
+      - 'templates/template.docx'
       - '.github/workflows/build-docx.yml'
   pull_request:
     paths:
       - 'docs/*.md'
-      - 'docs/template.docx'
+      - 'templates/template.docx'
       - '.github/workflows/build-docx.yml'
   workflow_dispatch:
 
@@ -31,8 +31,8 @@ jobs:
       - name: Genera i DOCX
         run: |
           mkdir -p build/docs
-          pandoc --from=gfm --to=docx --standalone --reference-doc=docs/template.docx docs/RAD.md --output=build/docs/rad-is.docx
-          pandoc --from=gfm --to=docx --standalone --reference-doc=docs/template.docx docs/SDD.md --output=build/docs/sdd-is.docx
+          pandoc --from=gfm --to=docx --standalone --reference-doc=templates/template.docx docs/RAD.md --output=build/docs/rad-is.docx
+          pandoc --from=gfm --to=docx --standalone --reference-doc=templates/template.docx docs/SDD.md --output=build/docs/sdd-is.docx
 
       - name: Pubblica i DOCX come artifact
         uses: actions/upload-artifact@v7.0.2

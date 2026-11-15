@@ -1,8 +1,8 @@
 # System Design Description — SDD
 
-> Bozza starter v0.2 — 13 novembre 2026  
+> Bozza starter v0.2 — 15 novembre 2026
 > Stato: architettura iniziale, da affinare dopo la scelta di fonti e area pilota.  
-> Struttura derivata da [template.docx](template.docx); conversione: [template.md](template.md).
+> Struttura derivata dal [template convertito in Markdown](template.md); file sorgente e risorse sono in `templates/` e `assets/`.
 
 ## 1. Introduzione
 

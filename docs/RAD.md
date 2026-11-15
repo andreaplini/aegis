@@ -1,8 +1,8 @@
 # Documento di Analisi dei Requisiti — RAD
 
-> Bozza starter v0.2 — 13 novembre 2026  
+> Bozza starter v0.2 — 15 novembre 2026
 > Stato: da validare con utenti, enti di trasporto e responsabili dei dati.  
-> Struttura derivata da [template.docx](template.docx); conversione del template: [template.md](template.md).
+> Struttura derivata dal [template convertito in Markdown](template.md); file sorgente e risorse sono in `templates/` e `assets/`.
 
 ## 1. Introduzione
 
@@ -186,13 +186,11 @@ sequenceDiagram
 
 Le transizioni ammesse di moderazione e gli stati completi del report sono da definire nel modello di dominio.
 
-### 3.9 Interfaccia utente
+## 4. Interfaccia utente
 
 Le viste iniziali sono: ricerca e preferenze di viaggio; risultati e alternative; mappa affiancata da elenco; dettaglio luogo; form segnalazione; pagina tracking; coda e dettaglio moderazione. Ogni informazione cartografica deve avere alternativa testuale e le interazioni devono supportare tastiera e screen reader. Wireframe e prototipo sono da realizzare e validare.
 
-## 4. Prototipo e valutazione di usabilità
-
-### 4.1 Descrizione del prototipo
+### 4.1 Descrizione del prototipo realizzato
 
 **Stato:** non ancora realizzato. Da documentare al completamento.
 
@@ -219,8 +217,8 @@ Da eseguire sul prototipo. Valutare i principi di usabilità concordati, documen
 
 ## 5. Allegati
 
-- [Template DOCX originale](template.docx), convertito in [Markdown](template.md).
-- Immagini e altri file estratti: cartella [template_assets](template_assets/ASSETS.md).
+- [Template DOCX originale](../templates/template.docx), convertito in [Markdown](template.md).
+- Immagini e parti estratte: [inventario degli asset](../assets/template_assets/ASSETS.md).
 - Diagrammi in questa bozza: sorgenti Mermaid inline.
 
 ## 6. Glossario

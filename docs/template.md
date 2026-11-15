@@ -1,195 +1,166 @@
-**Indice template **** - ****DOCUMENTO DI ANALISI DEI **** ****REQUISITI ****–**** RAD**
+# Template RAD e SDD
 
-1. **Introduzione**
+Trascrizione strutturata del [documento Word originale](../templates/template.docx), con la gerarchia espressa in Markdown. Le voci degli indici del DOCX ripetono o azzerano alcuni numeri di sezione; qui la numerazione segue l'ordine logico delle sezioni. Le immagini sono collegate ai file estratti dal pacchetto originale.
 
-2. In questa prima fase introduttiva del documento, chiariremo gli scopi del sistema, l’area di
+## Documento di Analisi dei Requisiti (RAD)
 
-3. copertura, gli obiettivi e i criteri di successo, eventuali deﬁnizioni, acronimi e abbreviazioni
+### 1. Introduzione
 
-4. da tenere a mente e forniremo una breve panoramica del sistema
+Descrivere scopo del sistema, area di copertura, obiettivi, criteri di successo, definizioni, acronimi, abbreviazioni e panoramica.
 
-In questa prima fase introduttiva del documento, chiariremo gli scopi del sistema, l’area di copertura (dominio), gli obiettivi e i criteri di successo, eventuali definizioni, acronimi e abbreviazioni da tenere a mente e forniremo una breve panoramica del sistema.
+Nel modello la sezione è introdotta dal testo:
 
-2. **Sistema corrente**
+> In questa prima fase introduttiva del documento, chiariremo gli scopi del sistema, l'area di copertura (dominio), gli obiettivi e i criteri di successo, eventuali definizioni, acronimi e abbreviazioni da tenere a mente e forniremo una breve panoramica del sistema.
 
-Nella seconda fase di stesura del RAD, analizziamo il sistema attuale (qualora esista).! Nel caso non abbiamo a disposizione alcun sistema attuale, in quanto stiamo affrontando un problema di ingegnerizzazione greenfield, quindi stiamo progettando un sistema ex-novo e i requisiti ci vengono comunicati dal committente (v.  intervista col committente), non ci soffermeremo su questa fase della elicitazione dei requisiti, ma passeremo a descrivere direttamente il sistema preposto.
+### 2. Sistema corrente
 
-3. **Sistema proposto**
+> Nella seconda fase di stesura del RAD, analizziamo il sistema attuale (qualora esista). Nel caso non abbiamo a disposizione alcun sistema attuale, in quanto stiamo affrontando un problema di ingegnerizzazione greenfield, quindi stiamo progettando un sistema ex novo e i requisiti ci vengono comunicati dal committente (vedi intervista col committente), non ci soffermeremo su questa fase dell'elicitazione dei requisiti, ma passeremo a descrivere direttamente il sistema proposto.
 
-In questa fase dell’elicitazione dei requisiti e di stesura del RAD, ci soffermiamo su quella che è la parte principale: la de**fi**nizione del sistema pr**o**posto. In base alle informazioni che abbiamo acquisito mediante l’intervista con il committente, possiamo redigere un primo prototipo di sistema da proporgli.
+### 3. Sistema proposto
 
-**3.1 Panoramica**** (obiettivi del sistema)**
+> In questa fase dell'elicitazione dei requisiti e di stesura del RAD, ci soffermiamo su quella che è la parte principale: la definizione del sistema proposto. In base alle informazioni acquisite mediante l'intervista con il committente, possiamo redigere un primo prototipo di sistema da proporgli.
+
+#### 3.1 Panoramica e obiettivi del sistema
 
 Descrivere il sistema proposto e i principali obiettivi.
 
-**3.2 Requisiti funzionali**
+#### 3.2 Requisiti funzionali
 
-È possibile descrivere i Requisiti funzionali sia attraverso delle tabelle (vedi esempio sotto) che attraverso delle descrizioni verbali dove andremo a numerare i requisiti come segue nell’esempio**:**
+È possibile descrivere i requisiti funzionali con tabelle oppure con descrizioni verbali numerate. Il modello include questo esempio:
 
-FR1: Creazione di un account personale*** ***=> Chiunque può creare un account con nome utente, codice fiscale e password e differenziarsi tra cittadino, medico e autorità sanitaria.
+> **FR1 — Creazione di un account personale:** chiunque può creare un account con nome utente, codice fiscale e password e distinguersi tra cittadino, medico e autorità sanitaria.
+>
+> **FR2:** …
 
-FR2:…..
+![Esempio tabellare di requisiti funzionali](../assets/template_assets/package/word/media/image1.png)
 
-**![Immagine che contiene testo, schermata, Carattere, numero
+#### 3.3 Requisiti non funzionali
 
-Descrizione generata automaticamente](template_assets/package/word/media/image1.png)**
+Il modello elenca queste aree: interfaccia utente e fattori umani; documentazione; considerazioni hardware; prestazioni; gestione degli errori e condizioni limite; interfacciamento del sistema; qualità; modifiche del sistema; ambiente fisico; sicurezza; risorse e gestione.
 
-**3.3 Requisiti non funzionali**
+Anche questi requisiti possono essere presentati in forma tabellare oppure come elenco. Esempio del modello:
 
-Di seguito alcuni esempi di requisiti non funzionali. Esempi: Interfaccia utente e fattori umani; Documentazione; Considerazioni hardware; Caratteristiche delle prestazioni; Gestione errori e condizioni limite; Interfacciamento del sistema; Problemi di qualità; Modifiche del sistema; Ambiente fisico; Problemi di sicurezza; Problemi di risorse e gestione.
+> **NFR1 — Sicurezza:** le password dei singoli utenti non devono essere visualizzate né rese accessibili dall'esterno.
+>
+> **NFR2:** …
 
-Anche per questi requisiti possiamo usare una forma di rappresentazione tabellare (vedi esempio sotto), oppure un elenco come quello che segue:
+![Esempio tabellare di requisiti non funzionali](../assets/template_assets/package/word/media/image2.png)
 
-*NFR1: Sicurezza: le password dei singoli utenti non dovranno mai essere visualizzate e accessibili dall’esterno.*
+#### 3.4 Vincoli (pseudo-requisiti)
 
-*NFR2: …*
+I vincoli sono dettati dal committente o dai limiti hardware e software.
 
-**![Immagine che contiene testo, schermata, Carattere, numero
+#### 3.5 Modelli del sistema
 
-Descrizione generata automaticamente](template_assets/package/word/media/image2.png)**
+##### Utenti del sistema
 
-  4.4. **Vincoli (“Pseudo requisiti”) **
+Descrivere gli utenti, i ruoli e il contesto di utilizzo.
 
-Dettati dal committente o da limiti hardware o software.
+##### Scenari
 
-  5.5. **Modelli del sistema**
+Descrivere gli scenari, gli utenti, i ruoli e il contesto di utilizzo.
 
-    i. **Utenti del sistema** (descrizione degli utenti, dei ruoli e del contesto di utilizzo)
+![Esempio tabellare di attori e flussi degli eventi](../assets/template_assets/package/word/media/image3.png)
 
-    ii. **Scenari** (con descrizione degli utenti, dei ruoli e del contesto di utilizzo)
+##### Modello dei casi d'uso
 
-![Immagine che contiene testo, schermata, Carattere, linea
+Inserire il diagramma UML globale dei casi d'uso.
 
-Descrizione generata automaticamente](template_assets/package/word/media/image3.png)
+![Esempio di diagramma UML dei casi d'uso](../assets/template_assets/package/word/media/image4.png)
 
-    iii. **Modello casi d’uso**
+Specificare i casi d'uso in forma tabellare.
 
-**Diagramma dei casi d’uso globale (UML)**
+![Esempio di specifica tabellare di un caso d'uso](../assets/template_assets/package/word/media/image5.png)
 
-**![Immagine che contiene schermata, cerchio, Policromia, arte
+##### Modello degli oggetti
 
-Descrizione generata automaticamente](template_assets/package/word/media/image4.png)**
+Definire le caratteristiche strutturali e le astrazioni del dominio applicativo. Il modello individua gli oggetti `Entity`, `Boundary` e `Control`, che rappresentano le informazioni persistenti mantenute dal sistema.
 
-**Specifiche**** dei casi d’uso**
+**Oggetti entity dei casi d'uso**
 
-(descrizione dei casi di uso del sistema sotto forma di tabella dei casi d’uso)
+![Esempio di oggetti entity](../assets/template_assets/package/word/media/image6.png)
 
-![Immagine che contiene testo, schermata, Carattere, numero
+**Oggetti boundary dei casi d'uso**
 
-Descrizione generata automaticamente](template_assets/package/word/media/image5.png)
+![Esempio di oggetti boundary](../assets/template_assets/package/word/media/image7.png)
 
-    iv. **Modello ****degli**** oggetti**
+**Oggetti control dei casi d'uso**
 
-4. Una  volta  deﬁniti  i  casi  d’uso  e  gli  scenari,  possiamo  iniziare  a  redigere  un  modello
+![Esempio di oggetti control](../assets/template_assets/package/word/media/image8.png)
 
-5. dell’analisi.
+**Diagrammi delle classi**
 
-In questa sezione si definiscono le caratteristiche strutturali e le astrazioni del dominio di applicazione.
+![Esempio di diagramma delle classi](../assets/template_assets/package/word/media/image9.png)
 
-In particolare, si vuole definire l’insieme di oggetti di tipo Entity, boundary e Control, in quanto rappresentano le informazioni persistenti mantenute dal sistema (oggetti del
+##### Modelli dinamici
 
-dominio applicativo).
+Descrivere i diagrammi di sequenza dei casi d'uso più importanti. I modelli dinamici possono comprendere anche diagrammi degli stati e delle attività.
 
-**Oggetti ****entity**** dei casi d’uso**.**![Immagine che contiene testo, schermata, Carattere, ricevuta
+![Esempio di diagramma dinamico](../assets/template_assets/package/word/media/image10.png)
 
-Descrizione generata automaticamente](template_assets/package/word/media/image6.png)**
+### 4. Interfaccia utente
 
-**Oggetti ****bounday**** dei casi d’uso****![Immagine che contiene testo, schermata, Carattere, ricevuta
+Il template rimanda al documento separato `indice_template_interfaccia_utente.docx` per l'indice dell'interfaccia.
 
-Descrizione generata automaticamente](template_assets/package/word/media/image7.png)**
+#### 4.1 Descrizione del prototipo realizzato
 
-**Oggetti control dei casi d’uso**![Immagine che contiene testo, schermata, Carattere, documento
+Specificare:
 
-Descrizione generata automaticamente](template_assets/package/word/media/image8.png)
+- scopo, ruolo, interfaccia e implementazione;
+- modo d'uso: statico, dinamico o interattivo;
+- fedeltà: bassa o alta;
+- completezza funzionale: prototipo orizzontale o verticale;
+- durata: usa e getta, evolutivo, incrementale o interattivo.
 
-**Diagrammi delle class****i**
+#### 4.2 Test di usabilità
 
-![Immagine che contiene testo, diagramma, Piano, Parallelo
+Il template richiede di documentare:
 
-Descrizione generata automaticamente](template_assets/package/word/media/image9.png)
+- **Obiettivi del test:** descrivere brevemente gli obiettivi.
+- **Metodologia:** specificare numero, esperienza e caratteristiche dei partecipanti; compiti e scenari; contesto e strumenti; modalità e durata delle sessioni, per ciascun partecipante e nel complesso; misure raccolte; ruolo degli osservatori e metodo di analisi.
+- **Sintesi delle misure:** fornire una tabella dei risultati, per esempio tempi di esecuzione e percentuale dei compiti completati con successo, per ciascun partecipante e nel complesso.
+- **Analisi dei risultati:** descrivere i problemi incontrati da ciascun partecipante durante ogni compito; allegare screenshot significativi; assegnare un livello di gravità; registrare reazioni e commenti; indicare gli interventi necessari per risolvere i problemi.
+- **Sintesi delle interviste:** sintetizzare i risultati delle interviste svolte dopo il test.
+- **Raccomandazioni finali:** descrivere gli interventi migliorativi, ordinandoli per priorità e collegandoli ai problemi rilevati.
 
-    i. **Modelli dinamici**
+#### 4.3 Valutazione dell'usabilità
 
-Vengono descritti qui di seguito i diagrammi delle sequenze per i casi d’uso ritenuti più importanti all’interno del sistema.
+Valutare i principi di ISO 9241-110 e, se possibile, confrontare il sistema con uno simile. Il modello propone un punteggio da 0 a 4 per ciascun principio e la rappresentazione dei punteggi medi in un diagramma a stella.
 
-I mode3lli Dinamici possono comprendere anche i diagramma degli stati e/o delle attività
+![Esempio di diagramma a stella per la valutazione dell'usabilità](../assets/template_assets/package/word/media/image11.png)
 
-![Immagine che contiene testo, diagramma, Parallelo, linea
+### 5. Allegati
 
-Descrizione generata automaticamente](template_assets/package/word/media/image10.png)
+Raccogliere i dati utili acquisiti durante il test.
 
-4. **Interfaccia utente**** (vedi ****file “indice_template_interfaccia_utente.docx”)**** **
+### 6. Glossario
 
-4.1 **Descrizione del Prototipo Realizzato:**
+Definire i termini usati nel documento con le rispettive definizioni, per facilitarne la consultazione da parte dei nuovi sviluppatori.
 
-    1.%2.1. Scopo (Ruolo, Interfaccia, Implementazione),
+## Documento di progettazione (SDD)
 
-    2.%2.2. Modo d’Uso (Statico, Dinamico, Interattivo),
+Il DOCX riporta questo indice per il *System Design Document*:
 
-    3.%2.3. Fedeltà (Bassa o Alta Fedeltà),
+### 1. Introduzione
 
-    4.%2.4. Completezza Funzionale (prototipo orizzontale o verticale),
+#### 1.1 Scopo del sistema
+#### 1.2 Obiettivi di progettazione
+#### 1.3 Definizioni, acronimi e abbreviazioni
+#### 1.4 Riferimenti
+#### 1.5 Panoramica
 
-    5.%2.5. Durata (usa e getta, evolutivo, incrementale, interattivo)
+### 2. Sistema corrente
 
-  1.1. **Test di Usabilità****:**
+### 3. Sistema proposto
 
-    1.%2.1. **Obiettivi del test** (descrivere brevemente gli obiettivi del test)
+#### 3.1 Panoramica
+#### 3.2 Decomposizione del sistema
+#### 3.3 Mappatura hardware/software
+#### 3.4 Gestione dei dati persistenti
+#### 3.5 Controllo degli accessi e sicurezza
+#### 3.6 Decisioni sul flusso di controllo globale
+#### 3.7 Condizioni limite
 
-    2.%2.2. **Metodologia usata** (Specificare quanti utenti hanno partecipato al test, il loro livello di esperienza e le loro caratteristiche in relazione al prodotto in esame. Specificare i compiti, gli scenari assegnati, il contesto in cui si è svolto il test, e la strumentazione utilizzata. Descrivere come p stato condotto il test e da chi, quanto tempo è durato. (per ciascun utente e complessivamente), quali misure sono state raccolte, il ruolo degli osservatori e come sono stati analizzati i risultati.
+### 4. Servizi del sottosistema
 
-    3.%2.3. **Sintesi delle Misure** (Fornire una tabella di sintesi delle misure raccolte. Per Esempio, i tempi di esecuzione e la percentuale dei compiti che sono stati portati a termine con successo, complessivamente e per ciascun utente). Aggiungere commenti ove opportuno
-
-    4.%2.4. **Analisi dei risultati** (Descrivere analiticamente i problemi incontrati da ciascun utente durante il test, compito per compito, allegando ove opportuno degli screenshot significativi e assegnando ad ogni problema un livello di gravità. Ogni problema sarà numerato, per un più facile riferimento. Descrivere in dettaglio, se significativi, reazioni e commenti degli utenti, registrati durante le prove. Questa sezione è utile a formulare tutti i possibili interventi per rimuovere i problemi descritti, senza che sia necessario tornare ad esaminare il prodotto
-
-    5.%2.5. **Sintesi delle interviste** (Sintetizzare i risultati delle interviste effettuate a ciascun utente dopo l’esecuzione del test)
-
-    6.%2.6. **Raccomandazioni finali** (inserire la descrizione analitica degli interventi migliorativi proposti, raggruppati per livelli di priorità (per esempio: 1: interventi indispensabili; 2: interventi necessari, 3: interventi auspicabili). Per ogni intervento proposto si farà riferimento al problema relativo. Descritto nella sezione precedente. Gli interventi saranno numerati per facilitarne la tracciabilità)
-
-4.3 **Valutazione dell’Usabilità: **
-
-- Con riferimento ai principi dell’ISO 9241-110 valutare l’usabilità del sistema realizzato e, se possibile, confrontarla con l’usabilità di un sistema simile. A questo scopo, occorrerà esaminare ciascun sistema e attribuire un “voto” al grado di applicazione di ogni principio. Sarà poi possibile visualizzare i voti (voto medio dei voti dati dagli “n” valutatori considerati) ottenuti in un diagramma a stella (in cui si è usata una scala da 0 - voto minimo - a 4 – voto massimo) ottenendo il profilo di qualità del sistema.
-
-**![Immagine che contiene diagramma, linea, schermata, cerchio
-
-Descrizione generata automaticamente](template_assets/package/word/media/image11.png)**
-
-4. **Allegati **(qualsiasi dato utile raccolto durante il test.)
-
-5. **Glossario:** Definiamo in questa ultima fase del RAD, i termini più usati all’interno dell’intero documento con  le  rispettive  definizioni,  in  modo  tale  da  aiutare la consultazione  dello  stesso a nuovi sviluppatori.
-
-**Indice documento di progettazione**** System Design ****Document**
-
-1. Introduzione
-
-1.1 Scopo del sistema
-
-1.2 Obiettivi di progettazione
-
-1.3 Definizioni, acronimi e abbreviazioni
-
-1.4 Riferimenti
-
-1.5 Panoramica
-
-2. Sistema corrente
-
-1. Sistema proposto
-
-1.1 Panoramica
-
-1.2 Decomposizione del sistema
-
-1.3 Hardware/Software mapping
-
-1.4 Gestione dei dati persistenti
-
-1.5 Controllo accessi e sicurezza
-
-1.6 Decisioni sul flusso di controllo globale
-
-1.7 Condizioni limite
-
-4. Servizi del sottosistema
-
-**5. Glossario**
+### 5. Glossario
