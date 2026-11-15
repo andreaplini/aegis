@@ -30,7 +30,9 @@ Vedere il glossario del [RAD](RAD.md#6-glossario). In questo documento: API = in
 
 ### 1.5 Panoramica
 
-La soluzione è composta da frontend web responsive, API REST Java/Spring Boot, PostgreSQL/PostGIS, object storage e worker asincroni. Gli adattatori isolano routing, fonti di trasporto, notifiche e storage.
+La soluzione è composta da interfaccia web responsive renderizzata con Jakarta Faces e Facelets, API REST Jakarta EE, PostgreSQL/PostGIS, object storage e worker asincroni. La mappa usa una libreria cartografica nel browser e riceve i dati dall’API. Gli adattatori isolano routing, fonti di trasporto, notifiche e storage.
+
+La versione di Jakarta EE e il runtime compatibile sono da selezionare in base ai requisiti di distribuzione e alle dipendenze effettive; non sono ancora decisioni convalidate.
 
 ## 2. Sistema corrente
 
@@ -41,10 +43,12 @@ Non è stato fornito un sistema software esistente: il progetto è greenfield. I
 ### 3.1 Panoramica
 
 ```text
-Web responsive
-    │ HTTPS / JSON
+Browser (Facelets, HTML e JavaScript accessibile)
+    │ HTTPS / HTML e JSON
     ▼
-API REST versionata (Spring Boot)
+Runtime Jakarta EE
+    ├── Jakarta Faces / Facelets
+    ├── API REST versionata (Jakarta REST)
     ├── places / accessibility
     ├── routing
     ├── reports / moderation
@@ -62,7 +66,7 @@ API REST versionata (Spring Boot)
 
 | Sottosistema | Responsabilità |
 |---|---|
-| Frontend | Ricerca, mappa/elenco accessibile, percorsi, dettagli, segnalazioni e interfaccia moderatore. |
+| Frontend | Viste server-side Jakarta Faces/Facelets, ricerca, mappa/elenco accessibile, percorsi, dettagli, segnalazioni e interfaccia moderatore. |
 | Places | Gestione e ricerca geospaziale di luoghi e fermate. |
 | Accessibility | Gestione di feature, stati, fonti, timestamp e validità. |
 | Routing | Validazione richieste, invocazione provider e presentazione dell’incertezza. |
@@ -92,7 +96,7 @@ Il dominio contiene entità, value object, invarianti e regole. L’application 
 | Nodo/ambiente | Software e responsabilità |
 |---|---|
 | Browser/dispositivo utente | Frontend web responsive e tecnologie assistive. |
-| Container API | Applicazione Spring Boot e API REST versionate. |
+| Container applicativo | Runtime Jakarta EE con Jakarta Faces/Facelets per le viste e Jakarta REST per le API versionate. |
 | Container worker | Sincronizzazioni e processi asincroni. |
 | Database | PostgreSQL con estensione PostGIS e backup automatici gestiti. |
 | Object storage | Foto e oggetti caricati, con accesso controllato e scadenza. |

@@ -88,7 +88,7 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 
 ### 3.4 Vincoli (pseudo-requisiti)
 
-- Usare Java LTS e Spring Boot per API e worker.
+- Usare Java LTS e Jakarta EE per API e worker; realizzare le viste server-side con Jakarta Faces e Facelets.
 - Usare PostgreSQL con PostGIS, migrazioni versionate e storage compatibile S3 per le immagini.
 - Separare frontend, casi d’uso, dominio e adattatori; documentare API versionate con OpenAPI.
 - La consultazione è pubblica; invio e moderazione applicano policy di autenticazione e ruolo ancora da definire.
