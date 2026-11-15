@@ -82,6 +82,7 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 | FR-10 | Adattatore dati | Importare dati ufficiali e registrare versione, esito e timestamp della sincronizzazione. | Should |
 | FR-11 | Sistema | Invalidare la cache dell’area interessata quando riceve un aggiornamento urgente. | Should |
 | FR-12 | Sistema | Inviare notifiche secondo preferenze, autorizzazioni e consensi configurati. | Could |
+| FR-13 | Sistema | Autenticare gli utenti e verificare i ruoli per le operazioni riservate, mantenendo pubblica la consultazione. | Must |
 
 ### 3.3 REQUISITI NON FUNZIONALI
 
@@ -99,6 +100,10 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 | NFR-10 | Continuità | Configurare allarmi e backup automatici e svolgere prove di ripristino. | Definire obiettivi di ripristino prima del lancio. |
 | NFR-11 | Performance | Misurare e mantenere entro soglie concordate la latenza API e il caricamento delle viste principali. | Definire target p95, concorrenza e dataset del pilota; misurare in staging e produzione. |
 | NFR-12 | Compatibilità | Versionare le API e applicare migrazioni compatibili con le versioni applicative in distribuzione. | Supportare rilasci progressivi. |
+| NFR-13 | Usabilità | Rendere i flussi principali comprensibili e coerenti, con feedback sul completamento delle operazioni. | Valutare con compiti osservabili e sessioni con gli utenti; esiti da raccogliere. |
+| NFR-14 | Scalabilità | Dimensionare API, database, worker e indici spaziali in base alla crescita di utenti, luoghi e richieste. | Definire carico, dataset e obiettivi prima del pilota; verificare con misure di carico. |
+| NFR-15 | Manutenibilità | Mantenere separati dominio, casi d’uso e adattatori e documentare le interfacce e le procedure operative. | Verificare con revisione architetturale, build ripetibile e aggiornamento documentale. |
+| NFR-16 | Portabilità | Distribuire API e worker in container e mantenere la configurazione specifica dell’ambiente esterna al codice. | Avviare gli stessi artefatti negli ambienti previsti usando configurazioni distinte. |
 
 ### 3.4 VINCOLI
 
@@ -234,6 +239,9 @@ Il template richiede per ogni caso d’uso attori, condizioni d’ingresso e d�
 | `ReportEvent` | Registra in modo append-only attore, timestamp, decisione e riferimento a un eventuale duplicato. |
 | `SourceSync` | Registra fonte, versione, esito, timestamp e controlli di qualità. |
 | `UserAccount` | Rappresenta identità e ruoli; i dati identificativi sono separati dai contenuti pubblici. |
+| `DataSource` | Rappresenta una fonte con identificativo, responsabile, versione e regola di validità da definire. |
+| `TransitLine` e `TransitStop` | Rappresentano linee e fermate importate, con geometria e riferimenti alla fonte. |
+| `GeoPoint` | Value object immutabile che rappresenta coordinate valide con riferimento spaziale esplicito. |
 
 ##### Oggetti boundary dei casi d’uso
 
@@ -263,7 +271,41 @@ Il diagramma riassume le associazioni concettuali tra luoghi, caratteristiche di
 
 ```mermaid
 classDiagram
+  class Place {
+    PlaceId id
+    String name
+    PlaceType type
+    GeoPoint position
+  }
+  class AccessibilityFeature {
+    FeatureType type
+    FeatureState state
+    Instant observedAt
+    Instant validUntil
+  }
+  class Report {
+    ReportId id
+    ReportCategory category
+    ReportStatus status
+    Instant createdAt
+  }
+  class ReportEvent {
+    ReportEventId id
+    ModerationDecision decision
+    Instant occurredAt
+  }
+  class DataSource {
+    SourceId id
+    String name
+    String version
+  }
+  class SourceSync {
+    SyncResult result
+    Instant completedAt
+  }
   Place --> AccessibilityFeature
+  Place --> TransitStop
+  TransitLine --> TransitStop
   Report --> ReportEvent
   Report --> GeoPoint
   Place --> GeoPoint
@@ -407,7 +449,16 @@ Valutare se le persone riescono a pianificare un viaggio, interpretare freschezz
 
 #### 4.2.2 METODOLOGIA USATA
 
-Il test non è ancora stato condotto. Numero, esperienza e caratteristiche dei partecipanti, compiti, scenari, ambiente, strumenti, modalità e durata delle sessioni sono da definire con persone con disabilità. Prima delle sessioni vanno concordati consenso, misure raccolte, ruolo degli osservatori e metodo di analisi.
+Il test non è ancora stato condotto. Numero, esperienza e caratteristiche dei partecipanti, compiti, scenari, ambiente, strumenti, modalità e durata delle sessioni per partecipante e nel complesso sono da definire con persone con disabilità. Prima delle sessioni vanno concordati consenso, misure raccolte, ruolo degli osservatori e metodo di analisi.
+
+| Elemento metodologico | Definizione |
+|---|---|
+| Partecipanti ed esperienza | Da definire con persone con disabilità e in base ai profili d’uso del pilota. |
+| Compiti e scenari | Pianificare un viaggio, consultare un luogo, inviare e seguire una segnalazione e usare i flussi con tecnologie assistive. Da convalidare prima delle sessioni. |
+| Contesto e strumenti | Da definire; registrare dispositivo, browser, tecnologie assistive e condizioni di rete usati. |
+| Modalità e durata | Sessioni individuali o altra modalità da definire; durata per partecipante e complessiva da registrare. |
+| Misure | Tempi, completamento, errori, richieste di aiuto, comprensione di freschezza e incertezza e riscontri qualitativi. |
+| Osservatori e analisi | Ruoli, metodo di registrazione, trattamento delle evidenze e metodo di analisi da definire prima dei test. |
 
 #### 4.2.3 SINTESI DELLE MISURE
 
@@ -424,7 +475,11 @@ Unità, soglie e modalità di aggregazione sono da concordare prima del test.
 
 #### 4.2.4 ANALISI DEI RISULTATI
 
-Analisi non disponibile perché il test non è stato eseguito. Per ogni partecipante e compito saranno registrati problema, gravità, screenshot o altra evidenza, reazioni e commenti e intervento richiesto. La scala di gravità è da definire nel protocollo.
+Analisi non disponibile perché il test non è stato eseguito. La tabella seguente raccoglie i campi da compilare per ogni partecipante e compito.
+
+| Partecipante e compito | Problema osservato | Evidenza o screenshot | Gravità | Reazione o commento | Intervento necessario |
+|---|---|---|---|---|---|
+| Da rilevare durante il test | Da rilevare | Da raccogliere nel rispetto del consenso | Scala da definire | Da raccogliere | Da determinare dall’analisi |
 
 #### 4.2.5 SINTESI DELLE INTERVISTE
 
@@ -434,21 +489,31 @@ Le interviste successive al test non sono state svolte. Le evidenze saranno sint
 
 Raccomandazioni non disponibili prima delle prove. Saranno ordinate per priorità e collegate ai problemi osservati.
 
+| Problema collegato | Intervento migliorativo | Priorità | Stato |
+|---|---|---|---|
+| Da determinare dopo l’analisi | Da definire sulla base delle evidenze | Da assegnare | Non valutato |
+
 ### 4.3 VALUTAZIONE DELL’USABILITÀ SECONDO ISO 9241-110
 
 La valutazione sarà condotta sul prototipo; partecipanti, metodo, risultati e limiti sono da documentare. Non sono stati assegnati punteggi.
 
 #### 4.3.1 DETTAGLIO PUNTEGGI ASSEGNATI
 
-Il modello di valutazione usa una scala da zero a quattro per ciascun principio. La tabella è predisposta senza valori, da compilare dopo le prove.
+Il modello di valutazione usa una scala da zero a quattro per ciascuno dei sette principi riportati nell’esempio. I punteggi non sono stati assegnati perché il prototipo e le prove non sono disponibili. Le definizioni e i criteri di valutazione saranno concordati prima della valutazione.
 
 | Principio valutato | Punteggio | Evidenza e motivazione |
 |---|---|---|
-| Da definire nel protocollo | Non assegnato | Da raccogliere durante la valutazione |
+| Adeguatezza al compito | Non assegnato | Da valutare sul completamento dei compiti principali. |
+| Auto-descrittività | Non assegnato | Da valutare sulla comprensione di etichette, stati e controlli. |
+| Controllo da parte dell’utente | Non assegnato | Da valutare su navigazione, possibilità di rivedere le scelte e recupero dagli errori. |
+| Conformità alle aspettative | Non assegnato | Da valutare su coerenza di comportamenti, termini e presentazione. |
+| Tolleranza agli errori | Non assegnato | Da valutare sulla prevenzione, segnalazione e correzione degli errori. |
+| Adattabilità | Non assegnato | Da valutare con profili, dispositivi e tecnologie assistive differenti. |
+| Efficienza nell’uso delle risorse | Non assegnato | Da valutare in relazione al compito e alle risorse richieste all’utente. |
 
 #### 4.3.2 PROFILO DI VALUTAZIONE VISIVA
 
-Il profilo visuale non è disponibile perché i punteggi non sono stati raccolti. Dopo la valutazione sarà generato in Markdown come diagramma descrittivo dei risultati, senza introdurre valori non osservati.
+Il profilo visuale non è disponibile perché i punteggi non sono stati raccolti. Dopo la valutazione sarà rappresentato in Markdown, preferibilmente con un diagramma Mermaid o una tabella dei sette principi, senza introdurre valori non osservati. La descrizione testuale accompagnerà sempre la rappresentazione.
 
 ## GLOSSARIO
 

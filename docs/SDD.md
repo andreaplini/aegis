@@ -1,6 +1,6 @@
 # SDD
 
-## System Design Description
+## System Design Document
 
 | Dato | Valore |
 |---|---|
@@ -25,8 +25,8 @@ Bozza aggiornata il 15 novembre 2026. L’architettura è iniziale; runtime Jaka
 | [Gestione dei dati persistenti](#34-gestione-dei-dati-persistenti) | [Struttura relazionale](#341-postgresql-e-struttura-relazionale), [object storage](#342-object-storage), [sincronizzazione](#343-meccanismi-di-sincronizzazione) |
 | [Controllo accessi e sicurezza](#35-controllo-accessi-e-sicurezza) | [Identità](#351-autenticazione-e-identità), [accesso ai dati](#352-controllo-degli-accessi-ai-dati), [immagini](#353-gestione-delle-immagini), [abusi](#354-protezione-da-abusi) |
 | [Flusso di controllo globale](#36-decisioni-sul-flusso-di-controllo-globale) | [Sessione](#361-gestione-della-sessione-utente), [navigazione](#362-navigazione-tra-viste), [asincronia](#363-gestione-asincrona-ed-eventi), [errori](#364-gestione-degli-errori) |
-| [Condizioni limite](#37-condizioni-limite) | Routing, dati, report, moderazione, upload e sincronizzazioni |
-| [Servizi del sottosistema](#servizi-del-sottosistema) | [Luoghi](#41-consultazione-e-ricerca-dei-luoghi), [accessibilità](#42-consultazione-dellaccessibilità), [percorsi](#43-pianificazione-dei-percorsi), [segnalazioni](#44-segnalazioni-e-tracking), [moderazione](#45-moderazione), [sincronizzazione](#46-sincronizzazione-e-notifiche) |
+| [Condizioni limite](#37-condizioni-limite) | Identità, luoghi, segnalazioni duplicate, rete, input e geolocalizzazione |
+| [Servizi del sottosistema](#servizi-del-sottosistema) | [Identità](#41-autenticazione-utente), [luoghi](#42-gestione-dei-luoghi), [accessibilità](#43-informazioni-di-accessibilità), [percorsi](#44-pianificazione-dei-percorsi), [segnalazioni](#45-segnalazioni-e-moderazione), [geolocalizzazione e aggiornamenti](#46-geolocalizzazione-sincronizzazione-e-notifiche) |
 | [Glossario](#glossario) | Termini architetturali e di dominio |
 
 ## INTRODUZIONE
@@ -238,59 +238,59 @@ Gli errori sono convertiti in una forma HTTP uniforme e in messaggi comprensibil
 
 ### 3.7 CONDIZIONI LIMITE
 
-#### 3.7.1 PROVIDER DI ROUTING NON DISPONIBILE
+#### 3.7.1 UTENTE NON AUTENTICATO
 
-Il sistema comunica l’indisponibilità in modo comprensibile. Un eventuale fallback è marcato come non verificato e non dichiara accessibili tratti senza dati affidabili.
+La consultazione pubblica di luoghi e percorsi resta disponibile. Se un utente non autenticato richiede un’operazione protetta, il sistema rifiuta l’operazione e comunica come accedere alla funzione secondo la policy di identità da definire. L’autorizzazione è verificata lato server.
 
-#### 3.7.2 DATI DI ACCESSIBILITÀ ASSENTI, SCADUTI O INCOERENTI
+#### 3.7.2 LUOGO NON TROVATO O IDENTIFICATIVO NON VALIDO
 
-Il sistema presenta la caratteristica come sconosciuta, conserva la provenienza disponibile e non la usa come prova di compatibilità. L’evento è osservabile tramite metriche e controlli operativi configurati.
+Se un identificativo non corrisponde a un luogo, il sistema restituisce un esito coerente senza dati parziali. Se il luogo esiste ma i dati di accessibilità sono assenti, scaduti o incoerenti, li presenta come sconosciuti e non li usa come prova di compatibilità.
 
-#### 3.7.3 NESSUN PERCORSO COMPATIBILE
+#### 3.7.3 SEGNALAZIONI DUPLICATE
 
-Il sistema restituisce un esito esplicito e, quando disponibili, mostra alternative con i relativi tratti non verificati.
+Una segnalazione che descrive un caso già registrato può essere unita al report esistente solo tramite una decisione autorizzata di moderazione. Il sistema conserva entrambe le segnalazioni e registra l’unione nello storico; non crea una relazione duplicata né sovrascrive eventi precedenti.
 
-#### 3.7.4 SEGNALAZIONE INESISTENTE O CODICE NON VALIDO
+#### 3.7.4 INVII RIPETUTI E DUPLICAZIONE DEI DATI IMPORTATI
 
-Il sistema restituisce una risposta coerente che non permette di enumerare le segnalazioni né divulga informazioni su record non autorizzati.
+Retry della creazione e sincronizzazioni ripetute non devono creare segnalazioni o dati di trasporto duplicati. Il sistema usa idempotenza o deduplicazione e rende osservabile l’esito. Un codice di tracking inesistente o non valido non permette di enumerare segnalazioni.
 
-#### 3.7.5 TRANSIZIONE DI MODERAZIONE NON VALIDA O CONCORRENTE
+#### 3.7.5 CARICAMENTO LENTO O ASSENZA DI RETE
 
-Il sistema rifiuta la transizione non ammessa o in conflitto. Stato corrente e cronologia restano invariati quando la transazione non può essere completata.
+Le viste mostrano stati di caricamento e un errore accessibile quando rete, API o provider di routing non rispondono. Un fallback di percorso è marcato come non verificato. Se non esistono percorsi compatibili, il sistema comunica l’esito esplicitamente e presenta eventuali alternative con tratti non verificati.
 
-#### 3.7.6 UPLOAD NON VALIDO O SCANSIONE FALLITA
+#### 3.7.6 INPUT INCOMPLETI O INVALIDI
 
-Il sistema rifiuta o mette in quarantena il file e non lo rende pubblico. L’esito della scansione viene registrato senza esporre il file.
+Richieste di percorso, moduli e identificativi sono validati prima di produrre effetti. In caso di input incompleto o non valido il sistema restituisce errori comprensibili e non persiste modifiche parziali. Un upload non valido o con scansione fallita viene rifiutato o messo in quarantena e non è reso pubblico.
 
-#### 3.7.7 ERRORE DI RETE, INPUT INVALIDO O RETRY DI SINCRONIZZAZIONE
+#### 3.7.7 PERMESSI DI GEOLOCALIZZAZIONE NEGATI
 
-Il sistema mostra un errore accessibile quando una dipendenza non è disponibile. Input incompleti o non validi sono rifiutati prima di produrre effetti. Retry e sincronizzazioni usano operazioni idempotenti o deduplicazione. Un aggiornamento urgente invalida la cache dell’area interessata e registra l’esito.
+Se la persona nega il permesso di geolocalizzazione, il sistema non blocca ricerca e pianificazione. L’interfaccia consente di inserire manualmente origine, destinazione o luogo e non conserva la posizione oltre quanto necessario alla richiesta.
 
 ## SERVIZI DEL SOTTOSISTEMA
 
-### 4.1 CONSULTAZIONE E RICERCA DEI LUOGHI
+### 4.1 AUTENTICAZIONE UTENTE
 
-Il sottosistema Places espone ricerca geospaziale e dettaglio di luoghi, fermate e stazioni. Le query usano PostGIS e restituiscono geometrie e identificativi secondo il contratto API. La consultazione è in sola lettura.
+Il sottosistema Identity verifica l’identità e i ruoli necessari per invio, tracking e moderazione. Provider e protocollo di autenticazione sono da selezionare. La consultazione pubblica non richiede una sessione autenticata. I dati identificativi restano separati dai contenuti pubblici delle segnalazioni.
 
-### 4.2 CONSULTAZIONE DELL’ACCESSIBILITÀ
+### 4.2 GESTIONE DEI LUOGHI
 
-Il sottosistema Accessibility recupera le caratteristiche associate ai luoghi e valuta validità e provenienza. Ogni risposta include lo stato e la freschezza disponibili; dato assente o scaduto è classificato sconosciuto.
+Il sottosistema Places importa e consulta luoghi, fermate e stazioni. Le query geospaziali usano PostGIS e restituiscono geometrie e identificativi secondo il contratto API. La ricerca e il dettaglio sono in sola lettura per i dati ufficiali; gli aggiornamenti arrivano dagli adattatori delle fonti autorizzate.
 
-### 4.3 PIANIFICAZIONE DEI PERCORSI
+### 4.3 INFORMAZIONI DI ACCESSIBILITÀ
+
+Il sottosistema Accessibility recupera le caratteristiche associate ai luoghi e valuta validità e provenienza. Ogni risposta include stato, fonte e freschezza disponibili; dato assente o scaduto è classificato sconosciuto. Le informazioni sono fornite ai dettagli dei luoghi e ai casi d’uso di pianificazione.
+
+### 4.4 PIANIFICAZIONE DEI PERCORSI
 
 Il caso d’uso `PlanRoute` valida origine, destinazione e vincoli, invoca `RoutingProvider` e combina il risultato con le informazioni di accessibilità. Dati affidabili e compatibili possono essere usati per escludere tratti; dati incerti sono mostrati come tali. Il servizio non modifica lo stato persistente di dominio.
 
-### 4.4 SEGNALAZIONI E TRACKING
+### 4.5 SEGNALAZIONI E MODERAZIONE
 
-`CreateReport` valida i dati, gestisce l’eventuale upload attraverso il flusso di scansione e persiste segnalazione ed evento iniziale in modo atomico. `TrackReport` restituisce soltanto lo stato consentito al possessore del codice. I dettagli identificativi sono esclusi dalla risposta pubblica.
+`CreateReport` valida i dati, gestisce l’eventuale upload attraverso il flusso di scansione e persiste segnalazione ed evento iniziale in modo atomico. `TrackReport` restituisce soltanto lo stato consentito al possessore del codice. `ModerateReport` verifica identità, ruolo, esistenza del report e transizione ammessa; aggiorna lo stato e aggiunge un evento append-only nella stessa transazione. Conferma, rifiuto, risoluzione e unione dei duplicati devono essere rappresentati dalla macchina a stati di dominio da definire. I dettagli identificativi sono esclusi dalla risposta pubblica.
 
-### 4.5 MODERAZIONE
+### 4.6 GEOLOCALIZZAZIONE, SINCRONIZZAZIONE E NOTIFICHE
 
-`ModerateReport` verifica identità, ruolo, esistenza del report e transizione ammessa. Aggiorna lo stato e aggiunge un evento append-only nella stessa transazione. La conferma, il rifiuto, la risoluzione e l’unione dei duplicati devono essere rappresentati dalla macchina a stati di dominio da definire.
-
-### 4.6 SINCRONIZZAZIONE E NOTIFICHE
-
-Worker e `TransitDataProvider` importano fonti ufficiali, eseguono controlli di qualità e registrano versione, timestamp ed esito. `NotificationPort` inoltra notifiche in modo asincrono secondo autorizzazioni e consensi. Fonti, frequenze, canali, retry e livelli di servizio sono da selezionare e convalidare.
+La ricerca consente di usare coordinate quando disponibili e un inserimento testuale alternativo quando la persona nega la geolocalizzazione. Worker e `TransitDataProvider` importano fonti ufficiali, eseguono controlli di qualità e registrano versione, timestamp ed esito. `NotificationPort` inoltra notifiche in modo asincrono secondo autorizzazioni e consensi. Provider di geocodifica, fonti, frequenze, canali, retry e livelli di servizio sono da selezionare e convalidare.
 
 ## GLOSSARIO
 
