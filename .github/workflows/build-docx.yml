@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Installa Pandoc
         uses: pandoc/actions/setup@v1
@@ -35,7 +35,7 @@ jobs:
           pandoc --from=gfm --to=docx --standalone --reference-doc=docs/template.docx docs/SDD.md --output=build/docs/sdd-is.docx
 
       - name: Pubblica i DOCX come artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: documentazione-docx
           path: build/docs/*.docx
