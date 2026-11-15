@@ -180,11 +180,15 @@ Documentare partecipanti e relativa esperienza, compiti e scenari, contesto e st
 
 #### 4.2.3 SINTESI DELLE MISURE
 
-Riportare risultati per compito e aggregati. Definire unità, denominatori e metodo di aggregazione; proteggere l’identità dei partecipanti.
+Riportare risultati per partecipante e compito, quindi una sintesi aggregata per compito. Definire unità, denominatori e metodo di aggregazione; proteggere l’identità dei partecipanti.
 
-| Compito | Tempo o misura | Completamento | Errori e note |
+| Partecipante pseudonimizzato | Compito | Tempo o misura | Completamento | Errori e note |
+|---|---|---|---|---|
+| Da raccogliere | Da definire | Da raccogliere | Da raccogliere | Da raccogliere |
+
+| Compito | Tempo medio o statistica definita | Successo (%) o misura definita | Errori e note aggregate |
 |---|---|---|---|
-| Da definire | Da raccogliere | Da raccogliere | Da raccogliere |
+| Da definire | Da calcolare dai dati individuali | Da calcolare dai dati individuali | Da sintetizzare |
 
 #### 4.2.4 ANALISI DEI RISULTATI
 
@@ -226,7 +230,7 @@ Usare la scala prevista dal protocollo e motivare ogni punteggio con evidenze. I
 
 #### 4.3.2 PROFILO DI VALUTAZIONE VISIVA
 
-Rappresentare i punteggi effettivamente raccolti. Accompagnare ogni grafico con una descrizione testuale e non usare valori ipotetici.
+Rappresentare i punteggi effettivamente raccolti con un profilo visivo, preferibilmente un diagramma radar. Accompagnare il grafico con una tabella o una descrizione testuale accessibile e non usare valori ipotetici.
 
 ## GLOSSARIO
 

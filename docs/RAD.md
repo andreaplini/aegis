@@ -462,14 +462,21 @@ Il test non è ancora stato condotto. Numero, esperienza e caratteristiche dei p
 
 #### 4.2.3 SINTESI DELLE MISURE
 
-Risultati non disponibili perché il test non è stato eseguito. La tabella definisce le misure da raccogliere per partecipante e nel complesso.
+Risultati non disponibili perché il test non è stato eseguito. Le misure saranno raccolte per partecipante e compito, quindi aggregate per compito con unità e denominatori espliciti.
 
-| Compito | Tempo di esecuzione | Completamento | Errori e note |
+| Partecipante pseudonimizzato | Compito | Tempo di esecuzione | Completamento | Errori e note |
+|---|---|---|---|---|
+| Da raccogliere | Pianificare un viaggio | Da misurare | Da misurare | Da raccogliere |
+| Da raccogliere | Consultare un luogo | Da misurare | Da misurare | Da raccogliere |
+| Da raccogliere | Inviare e seguire una segnalazione | Da misurare | Da misurare | Da raccogliere |
+| Da raccogliere | Completare i flussi con tecnologie assistive | Da misurare | Da misurare | Da raccogliere |
+
+| Compito | Tempo medio o statistica concordata | Successo o misura aggregata | Errori e note aggregate |
 |---|---|---|---|
-| Pianificare un viaggio | Da misurare | Da misurare | Da raccogliere |
-| Consultare un luogo | Da misurare | Da misurare | Da raccogliere |
-| Inviare e seguire una segnalazione | Da misurare | Da misurare | Da raccogliere |
-| Completare i flussi con tecnologie assistive | Da misurare | Da misurare | Da raccogliere |
+| Pianificare un viaggio | Da calcolare | Da calcolare | Da raccogliere |
+| Consultare un luogo | Da calcolare | Da calcolare | Da raccogliere |
+| Inviare e seguire una segnalazione | Da calcolare | Da calcolare | Da raccogliere |
+| Completare i flussi con tecnologie assistive | Da calcolare | Da calcolare | Da raccogliere |
 
 Unità, soglie e modalità di aggregazione sono da concordare prima del test.
 
@@ -513,7 +520,7 @@ Il modello di valutazione usa una scala da zero a quattro per ciascuno dei sette
 
 #### 4.3.2 PROFILO DI VALUTAZIONE VISIVA
 
-Il profilo visuale non è disponibile perché i punteggi non sono stati raccolti. Dopo la valutazione sarà rappresentato in Markdown, preferibilmente con un diagramma Mermaid o una tabella dei sette principi, senza introdurre valori non osservati. La descrizione testuale accompagnerà sempre la rappresentazione.
+Il profilo visuale non è disponibile perché i punteggi non sono stati raccolti. Dopo la valutazione sarà rappresentato, preferibilmente con un diagramma radar dei sette principi; una tabella accessibile e una descrizione testuale accompagneranno sempre il grafico. Non saranno introdotti valori non osservati.
 
 ## GLOSSARIO
 
