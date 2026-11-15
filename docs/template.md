@@ -2,6 +2,8 @@
 
 Trascrizione strutturata del [documento Word originale](../templates/template.docx), con la gerarchia espressa in Markdown. Le voci degli indici del DOCX ripetono o azzerano alcuni numeri di sezione; qui la numerazione segue l'ordine logico delle sezioni. Le immagini sono collegate ai file estratti dal pacchetto originale.
 
+Per la struttura dei documenti basati sugli esempi accademici, usare i modelli anonimizzati [RAD](template/RAD.md) e [SDD](template/SDD.md). Questa trascrizione resta il riferimento del template Word generico.
+
 ## Documento di Analisi dei Requisiti (RAD)
 
 ### 1. Introduzione

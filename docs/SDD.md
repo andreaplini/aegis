@@ -89,17 +89,17 @@ Il browser riceve HTML per le viste e JSON per le API. La mappa usa una libreria
 
 ### 3.2 DECOMPOSIZIONE DEL SISTEMA
 
-| Modulo | Responsabilità |
-|---|---|
-| Places | Gestire luoghi, fermate e stazioni e fornire ricerche geospaziali. |
-| Accessibility | Gestire caratteristiche, stato, fonte, timestamp e validità. |
-| Routing | Validare richieste, invocare il provider e mostrare l’incertezza dei tratti. |
-| Reports | Creare segnalazioni e consentire il tracking con dati minimizzati. |
-| Moderation | Applicare autorizzazioni e transizioni; conservare la cronologia append-only. |
-| Identity | Gestire autenticazione, ruoli e separazione dei dati identificativi. |
-| Integrations | Implementare adattatori per fonti di trasporto, routing, notifiche e storage. |
-| Worker | Eseguire sincronizzazioni schedulate e attività asincrone con retry idempotenti. |
-| Web | Rendere viste Facelets accessibili, mappa, alternative testuali, moduli e pannello di moderazione. |
+| Modulo | Responsabilità | Requisiti e casi d’uso |
+|---|---|---|
+| Places | Gestire luoghi, fermate e stazioni e fornire ricerche geospaziali. | FR-01, FR-06; UC-02 |
+| Accessibility | Gestire caratteristiche, stato, fonte, timestamp e validità. | FR-02, FR-03; UC-01, UC-02 |
+| Routing | Validare richieste, invocare il provider e mostrare l’incertezza dei tratti. | FR-04, FR-05; UC-01 |
+| Reports | Creare segnalazioni e consentire il tracking con dati minimizzati. | FR-07, FR-08; UC-03, UC-04 |
+| Moderation | Applicare autorizzazioni e transizioni; conservare la cronologia append-only. | FR-09; UC-05 |
+| Identity | Gestire autenticazione, ruoli e separazione dei dati identificativi. | FR-13; UC-03, UC-05, UC-06 |
+| Integrations | Implementare adattatori per fonti di trasporto, routing, notifiche e storage. | FR-10, FR-12; UC-03, UC-05, UC-06 |
+| Worker | Eseguire sincronizzazioni schedulate e attività asincrone con retry idempotenti. | FR-10, FR-11, FR-12; UC-06 |
+| Web | Rendere viste Facelets accessibili, mappa, alternative testuali, moduli e pannello di moderazione. | FR-01–FR-09, FR-13; UC-01–UC-05 |
 
 Il codice Java è organizzato per domini e separa `domain`, `application` e `adapter`. Le entità e i value object contengono invarianti; i casi d’uso orchestrano le operazioni e dipendono da porte; gli adattatori implementano accesso HTTP, persistenza e integrazioni. DTO HTTP, modello di dominio e modello di persistenza sono separati.
 
@@ -123,8 +123,10 @@ flowchart TB
   Integrations[Adattatori di integrazione]
   Database[(PostgreSQL e PostGIS)]
   Storage[(Object storage)]
+  Cache[(Cache geospaziale)]
   Transit[Fonti ufficiali di trasporto]
   RouteProvider[Provider di routing]
+  GeoProvider[Provider di geocodifica]
   Notify[Canali di notifica]
 
   Browser --> Faces
@@ -136,7 +138,9 @@ flowchart TB
   Rest --> Reports
   Rest --> Identity
   Worker --> Integrations
+  Worker --> Cache
   Places --> Database
+  Places --> Cache
   Reports --> Database
   Identity --> Database
   Reports --> Storage
@@ -144,6 +148,7 @@ flowchart TB
   Routing --> Integrations
   Integrations --> Transit
   Integrations --> RouteProvider
+  Integrations --> GeoProvider
   Integrations --> Notify
 ```
 
@@ -159,7 +164,9 @@ flowchart TB
 | Ingress e distribuzione | Terminazione TLS e CDN secondo l’ambiente. | Instradare il traffico verso l’applicazione e distribuire risorse statiche. |
 | Servizi esterni | Fonti ufficiali, provider di routing e canali di notifica da selezionare. | Fornire dati e capacità integrate tramite adattatori. |
 
-In sviluppo è previsto Docker Compose con PostgreSQL/PostGIS e storage locale compatibile S3. I servizi gestiti di produzione, la topologia di rete e i requisiti delle risorse sono da definire prima del rilascio.
+In sviluppo è previsto Docker Compose con PostgreSQL/PostGIS e storage locale compatibile S3. Staging e produzione sono ambienti separati. L’obiettivo di produzione prevede container applicativi gestiti, database con backup automatici, object storage, CDN e gestione centralizzata dei segreti; fornitori, topologia di rete, dimensionamento e obiettivi di ripristino restano da selezionare o concordare.
+
+La pipeline di rilascio dovrà compilare e verificare gli artefatti applicativi, eseguire test e scansioni delle dipendenze, creare immagini versionate e distribuire progressivamente. Le migrazioni devono mantenere la compatibilità con le versioni applicative attive durante il rilascio. La configurazione è versionata e distinta per ambiente; i segreti non sono inclusi nel repository.
 
 ### 3.4 GESTIONE DEI DATI PERSISTENTI
 
@@ -171,6 +178,7 @@ La persistenza relazionale usa PostgreSQL e PostGIS. Le migrazioni sono versiona
 |---|---|
 | `place` | Luogo, fermata o stazione con nome, tipo e geometria a SRID esplicito. |
 | `accessibility_feature` | Tipo, stato, fonte, validità e timestamp della caratteristica; riferimento a `place`. |
+| `data_source` | Fonte autorizzata, responsabile, configurazione di aggiornamento e regola di validità; schema e modalità di gestione da convalidare. |
 | `transit_line` | Linee importate e relativi riferimenti alla fonte. |
 | `transit_stop` | Fermate, geometrie e relazioni con le linee e la fonte. |
 | `report` | Geometria o luogo, categoria, descrizione, stato e date; dati identificativi separati. |
@@ -179,6 +187,8 @@ La persistenza relazionale usa PostgreSQL e PostGIS. Le migrazioni sono versiona
 | `source_sync` | Fonte, versione, timestamp, esito e controlli di qualità. |
 
 Le relazioni sono protette da chiavi esterne e vincoli. Le ricerche geografiche usano indici spaziali; ulteriori indici sono definiti in base alle query validate. Le coordinate di dominio sono rappresentate da `GeoPoint`, value object immutabile con controlli di validità.
+
+La politica di backup, la conservazione delle copie e gli obiettivi di ripristino sono da definire con il responsabile operativo. Le procedure di ripristino devono essere provate prima del lancio e dopo modifiche rilevanti all’infrastruttura.
 
 Ogni caratteristica di accessibilità registra fonte, stato, data di aggiornamento e validità. L’assenza o la scadenza produce lo stato sconosciuto. Ogni operazione di moderazione aggiorna lo stato corrente e inserisce l’evento corrispondente nella stessa transazione; gli eventi non sono modificati né eliminati dall’applicazione ordinaria.
 
@@ -230,11 +240,13 @@ Le API REST sono versionate e separate dal contratto delle viste. Un client cart
 
 #### 3.6.3 GESTIONE ASINCRONA ED EVENTI
 
-Le sincronizzazioni e le attività lente sono eseguite da worker. Le notifiche sono inviate tramite `NotificationPort` dopo il completamento del caso d’uso, con retry e deduplicazione da definire. Gli aggiornamenti urgenti invalidano la cache geograficamente coinvolta. Le chiamate a provider esterni non mantengono aperte transazioni database quando non necessario.
+Le sincronizzazioni e le attività lente sono eseguite da worker. Le notifiche sono inviate tramite `NotificationPort` dopo il completamento del caso d’uso, con retry e deduplicazione da definire. Gli aggiornamenti urgenti invalidano la cache geograficamente coinvolta. Le chiamate a provider esterni non mantengono aperte transazioni database quando non necessario. Metriche e allarmi devono rendere osservabili disponibilità, latenza, ritardo delle fonti, errori di sincronizzazione e dimensione e anzianità della coda di moderazione; soglie e obiettivi di servizio sono da concordare.
 
 #### 3.6.4 GESTIONE DEGLI ERRORI
 
 Gli errori sono convertiti in una forma HTTP uniforme e in messaggi comprensibili per l’interfaccia. I dettagli interni e i dati personali non sono restituiti al client né registrati nei log. Ogni caso d’uso garantisce le proprie condizioni transazionali: un errore di moderazione non lascia divergenze tra stato e cronologia; un errore di creazione non lascia una segnalazione parziale. Le viste espongono in modo accessibile stati di caricamento, assenza di risultati ed errore.
+
+La procedura operativa per gli incidenti deve definire rilevazione, escalation, contenimento, ripristino, comunicazioni e registrazione degli esiti prima dell’apertura del servizio.
 
 ### 3.7 CONDIZIONI LIMITE
 
@@ -298,11 +310,22 @@ La ricerca consente di usare coordinate quando disponibili e un inserimento test
 |---|---|
 | Adattatore | Componente che collega una porta applicativa a un sistema esterno o a un dettaglio tecnico. |
 | Dato sconosciuto | Dato assente, scaduto o non valido che non consente di determinare l’accessibilità. |
+| DataSource | Fonte autorizzata con responsabile e regole di aggiornamento e validità. |
+| DTO | Oggetto di trasferimento usato ai confini applicativi e distinto dal modello di dominio. |
 | Facelets | Tecnologia di viste XHTML usata da Jakarta Faces. |
 | Feature di accessibilità | Caratteristica dichiarata di un luogo, corredata di stato e provenienza. |
+| GeoPoint | Value object immutabile per coordinate valide con riferimento spaziale esplicito. |
 | Jakarta EE | Piattaforma Enterprise Java di riferimento per runtime, API web e servizi applicativi. |
+| Jakarta Faces | API Jakarta EE per viste server-side basate su componenti. |
+| Jakarta REST | API Jakarta EE per l’esposizione di risorse HTTP. |
+| NotificationPort | Porta applicativa per l’invio di notifiche tramite un adattatore sostituibile. |
 | Porta | Interfaccia applicativa che descrive una dipendenza richiesta da un caso d’uso. |
 | PostGIS | Estensione PostgreSQL per dati e interrogazioni geospaziali. |
 | ReportEvent | Evento immutabile che registra una transizione o decisione su una segnalazione. |
+| RoutingProvider | Porta verso il servizio che calcola alternative di percorso. |
+| SourceSync | Registrazione dell’esito, della versione e dei controlli di una sincronizzazione. |
 | SRID | Identificatore del riferimento spaziale di una geometria. |
 | Tracking code | Codice non enumerabile usato per consultare lo stato consentito di una segnalazione. |
+| TransitDataProvider | Porta verso una fonte di dati di trasporto. |
+| Value object | Oggetto immutabile definito dal valore e dalle proprie invarianti. |
+| Worker | Processo asincrono che esegue sincronizzazioni o attività lente fuori dalle richieste interattive. |

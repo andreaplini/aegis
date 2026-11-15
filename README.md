@@ -6,7 +6,7 @@ Monorepo per la piattaforma di mobilità urbana accessibile.
 
 | Percorso | Contenuto |
 |---|---|
-| `docs/` | Documentazione Markdown: RAD, SDD e trascrizione del template. |
+| `docs/` | [RAD](docs/RAD.md), [SDD](docs/SDD.md), [modelli anonimizzati](docs/template/) e [roadmap documentale](docs/MILESTONES.md). |
 | `templates/` | File sorgente usati come modelli. |
 | `assets/` | Immagini e parti estratte dal template. |
 | `config/data/` | Dati e configurazioni del progetto. |
