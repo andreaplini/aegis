@@ -5,3 +5,7 @@
 - Per aggiornare un documento esistente, modifica sempre lo stesso file e mantieni il suo ID o percorso. Non crearne una copia a ogni iterazione; crea un nuovo documento solo quando viene richiesto esplicitamente.
 - Prima di creare un Google Doc, controlla il registro dei link in `docs/GOOGLE_DOCS_SYNC.md`. Se il link esiste, aggiorna quel documento e conserva il suo ID; se non esiste o non è più valido, crea il documento e registra subito il nuovo link nello stesso file.
 - Non introdurre simboli decorativi, caratteri insoliti, artefatti di codifica o testo spazzatura. Usa testo pulito e formattazione coerente con il file; mantieni i caratteri necessari al contenuto e alla lingua.
+
+## Skill Aegis
+
+Le skill specifiche del progetto si trovano in `.agents/skills/`. Usa solo quelle pertinenti alla richiesta; non caricare le skill di altri ambiti per abitudine.
