@@ -200,6 +200,24 @@ class DocxValidationTests(unittest.TestCase):
             self.assertTrue(any("esattamente aegis" in error for error in errors))
             self.assertTrue(any("punto e virgola" in error for error in errors))
 
+    def test_checks_alternative_diagram_descriptions_for_name_and_punctuation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "rad-is.docx"
+            descriptions = [
+                "Aegis " + chr(0x2014) + " descrizione; non conforme",
+                *(f"Descrizione diagramma {index}" for index in range(2, 9)),
+            ]
+            write_docx(
+                path,
+                "aegis\nDocumento di Analisi dei Requisiti\nSOMMARIO\nUC-01",
+                diagram_count=8,
+                diagram_descriptions=descriptions,
+            )
+            errors = validate_docx.validate_document(path)
+            self.assertTrue(any("esattamente aegis" in error for error in errors))
+            self.assertTrue(any("trattino lungo" in error for error in errors))
+            self.assertTrue(any("punto e virgola" in error for error in errors))
+
     def test_rejects_semicolon_punctuation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "rad-is.docx"

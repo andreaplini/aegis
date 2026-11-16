@@ -83,6 +83,11 @@ def document_text(path: Path) -> str:
             paragraphs.append(
                 "".join(node.text or "" for node in paragraph.iter(f"{WORD_NAMESPACE}t"))
             )
+    paragraphs.extend(
+        description
+        for node in document.iter(f"{DRAWING_NAMESPACE}docPr")
+        if (description := node.get("descr", "").strip())
+    )
     return "\n".join(paragraphs)
 
 
