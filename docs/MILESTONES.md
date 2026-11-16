@@ -50,7 +50,8 @@ Questi elementi non impediscono di completare la stesura, ma devono essere risol
 | OPEN-06 | Standard e livello di conformità accessibile da adottare e protocollo delle prove con utenti. | Referente accessibilità con partecipanti e team di prodotto | Criteri approvati, sessioni svolte e risultati documentati nel RAD. |
 | OPEN-07 | Target di performance, disponibilità, concorrenza, dimensione dei dati e obiettivi di ripristino. | Responsabile operativo | Soglie approvate e misure o prove registrate in ambiente concordato. |
 | OPEN-08 | Runtime Java/Jakarta EE, provider gestiti, canali di notifica, dimensionamento e procedure di incidente. | Responsabile tecnico e operativo | Decisioni approvate, configurazioni per ambiente e procedure revisionate. |
-| OPEN-09 | Protezione di `main`, review e status check obbligatori, policy di merge, aggiornamenti Dependabot di sicurezza e canale privato di disclosure. | Proprietario del repository e maintainer | Regole GitHub configurate e verificate; responsabile e canale di disclosure pubblicati. |
+| OPEN-09 | Protezione di `main`, review e status check obbligatori, policy di merge, aggiornamenti Dependabot di sicurezza e segnalazione privata delle vulnerabilità. | Proprietario del repository e maintainer | Regole GitHub configurate e verificate; aggiornamenti di sicurezza abilitati; canale privato attivo e documentato. |
+| OPEN-10 | Licenza del repository pubblico e termini per i contributi esterni. | Proprietario del repository | Decisione approvata e licenza o termini pubblicati nel repository prima di accettare contributi esterni. |
 
 ## Criterio di completamento della roadmap
 

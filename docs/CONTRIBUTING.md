@@ -47,10 +47,12 @@ Verifica di sola lettura del repository `kairosci/aegis` il 16 novembre 2026:
 | Controllo | Stato osservato |
 |---|---|
 | Visibilità e branch predefinito | Pubblico; `main` |
+| Licenza dichiarata su GitHub | Non configurata |
 | Issues | Abilitate |
 | Protezione di `main` e ruleset | Non configurati |
 | Dependabot security updates | Disabilitati |
 | Secret scanning e push protection | Abilitati |
+| Segnalazione privata delle vulnerabilità GitHub | Disabilitata |
 | Release | Nessuna release pubblicata |
 
-La configurazione Dependabot del repository apre controlli periodici delle versioni delle GitHub Actions. Il proprietario deve decidere se richiedere pull request, review e CI verde su `main`, abilitare gli aggiornamenti di sicurezza Dependabot e definire un canale privato per la disclosure di vulnerabilità. Queste impostazioni non sono state cambiate da questa modifica.
+La configurazione Dependabot del repository apre controlli periodici delle versioni delle GitHub Actions. Il proprietario deve decidere la licenza e i termini di contribuzione, se richiedere pull request, review e CI verde su `main`, abilitare gli aggiornamenti di sicurezza Dependabot e attivare la segnalazione privata delle vulnerabilità GitHub o pubblicare un canale privato alternativo. Fino a quando il canale non è disponibile, non inviare dettagli di vulnerabilità tramite issue pubbliche. Queste impostazioni non sono state cambiate da questa modifica.
