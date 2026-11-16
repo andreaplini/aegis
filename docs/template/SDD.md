@@ -50,7 +50,7 @@ Descrivere architettura, processi e limiti esistenti. Se il sistema è greenfiel
 
 ### 3.1 PANORAMICA
 
-Descrivere architettura, componenti, tecnologie approvate, flussi principali e distribuzione. Marcare come da decidere provider e versioni non ancora selezionati.
+Descrivere architettura, componenti, tecnologie approvate, flussi principali e distribuzione. Distinguere ciò che è proposto da ciò che è implementato e verificato, collegando lo stato alle evidenze disponibili. Marcare come da decidere provider e versioni non ancora selezionati.
 
 ### 3.2 DECOMPOSIZIONE DEL SISTEMA
 

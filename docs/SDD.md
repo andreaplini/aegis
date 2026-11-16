@@ -10,7 +10,7 @@
 | Candidati | Da compilare |
 | Anno accademico | Da confermare |
 
-Bozza aggiornata il 16 novembre 2026. L’architettura è iniziale e descrive il sistema proposto; il prodotto non è ancora implementato. Runtime Jakarta EE, fonti dati, area pilota e servizi gestiti sono da convalidare secondo la [roadmap](MILESTONES.md).
+Bozza aggiornata il 16 novembre 2026. L’architettura è iniziale e descrive il sistema proposto; il prodotto non è ancora implementato. Le descrizioni dei componenti e dei flussi indicano comportamenti attesi e non attestano funzionalità realizzate o verificate. Runtime Jakarta EE, fonti dati, area pilota e servizi gestiti sono da convalidare secondo la [roadmap](MILESTONES.md).
 
 ## SOMMARIO
 
@@ -107,7 +107,7 @@ La tabella collega i requisiti del [RAD](RAD.md#32-requisiti-funzionali) ai modu
 
 NFR-15 è trasversale: separazione tra dominio, casi d’uso e adattatori e documentazione delle interfacce si applicano a tutti i moduli, non solo a Runtime e Operations.
 
-Il codice Java è organizzato per domini e separa `domain`, `application` e `adapter`. Le entità e i value object contengono invarianti; i casi d’uso orchestrano le operazioni e dipendono da porte; gli adattatori implementano accesso HTTP, persistenza e integrazioni. DTO HTTP, modello di dominio e modello di persistenza sono separati.
+La struttura applicativa proposta organizza il codice Java per domini e separa `domain`, `application` e `adapter`. Le entità e i value object dovranno contenere invarianti; i casi d’uso dovranno orchestrare le operazioni e dipendere da porte; gli adattatori dovranno implementare accesso HTTP, persistenza e integrazioni. DTO HTTP, modello di dominio e modello di persistenza resteranno separati.
 
 La struttura dei package proposta è `places`, `accessibility`, `routing`, `reports`, `identity`, `integrations` e `shared`, ciascuno articolato secondo le responsabilità effettive. La collocazione dettagliata dei componenti web e dei worker dipende dalla selezione del runtime e dal packaging applicativo.
 
@@ -172,13 +172,13 @@ flowchart TB
 
 In sviluppo è previsto Docker Compose con PostgreSQL/PostGIS e storage locale compatibile S3. Staging e produzione sono ambienti separati. L’obiettivo di produzione prevede container applicativi gestiti, database con backup automatici, object storage, CDN e gestione centralizzata dei segreti; fornitori, topologia di rete, dimensionamento e obiettivi di ripristino restano da selezionare o concordare.
 
-La pipeline di rilascio dovrà compilare e verificare gli artefatti applicativi, eseguire test e scansioni delle dipendenze, creare immagini versionate e distribuire progressivamente. Le migrazioni devono mantenere la compatibilità con le versioni applicative attive durante il rilascio. La configurazione è versionata e distinta per ambiente; i segreti non sono inclusi nel repository.
+La pipeline di rilascio dovrà compilare e verificare gli artefatti applicativi, eseguire test e scansioni delle dipendenze, creare immagini versionate e distribuire progressivamente. Le migrazioni devono mantenere la compatibilità con le versioni applicative attive durante il rilascio. La configurazione applicativa dovrà essere versionata e distinta per ambiente; i segreti non dovranno essere inclusi nel repository.
 
 Le procedure operative per rilascio, migrazione, rollback, incidenti e ripristino sono da redigere e provare in base al runtime e agli ambienti selezionati. Come struttura si può usare il [modello di runbook](template/RUNBOOK.md); il modello non rappresenta procedure già operative.
 
 ### 3.4 GESTIONE DEI DATI PERSISTENTI
 
-La persistenza relazionale usa PostgreSQL e PostGIS. Le migrazioni sono versionate e devono rimanere compatibili con le versioni applicative durante il rilascio progressivo. Le entità di dominio non dipendono dal modello relazionale e sono convertite dagli adattatori di persistenza.
+La persistenza relazionale proposta usa PostgreSQL e PostGIS. Le migrazioni dovranno essere versionate e rimanere compatibili con le versioni applicative durante il rilascio progressivo. Le entità di dominio non dovranno dipendere dal modello relazionale; gli adattatori di persistenza le convertiranno nel modello dati.
 
 #### 3.4.1 POSTGRESQL E STRUTTURA RELAZIONALE
 
