@@ -680,6 +680,83 @@ def validate_entity_class_diagram() -> list[str]:
     return []
 
 
+def validate_report_submission_contract() -> list[str]:
+    errors: list[str] = []
+    rad_path = ROOT / "docs/RAD.md"
+    sdd_path = ROOT / "docs/SDD.md"
+    adr_path = ROOT / "docs/adr/ADR-0005-operability-and-recovery-contract.md"
+    milestones_path = ROOT / "docs/MILESTONES.md"
+
+    rad = rad_path.read_text(encoding="utf-8")
+    sdd = sdd_path.read_text(encoding="utf-8")
+    adr = adr_path.read_text(encoding="utf-8")
+    milestones = milestones_path.read_text(encoding="utf-8")
+
+    schema_row = next(
+        (line for line in sdd.splitlines() if line.startswith("| `report_submission` |")),
+        "",
+    )
+    for phrase in (
+        "vincolo di unicità",
+        "impronta dell’intera richiesta",
+        "prima di effetti esterni",
+    ):
+        if phrase.casefold() not in schema_row.casefold():
+            errors.append(
+                f"docs/SDD.md: report_submission deve documentare {phrase}"
+            )
+
+    report_flow = sdd.split("### 4.5 SEGNALAZIONI E MODERAZIONE", 1)
+    if (
+        len(report_flow) != 2
+        or "report_submission" not in report_flow[1].split("### 4.6", 1)[0]
+    ):
+        errors.append("docs/SDD.md: il flusso CreateReport deve usare report_submission")
+
+    use_case = rad.split("###### UC-03:", 1)
+    if len(use_case) != 2 or "ReportSubmission" not in use_case[1].split("###### UC-04:", 1)[0]:
+        errors.append("docs/RAD.md: UC-03 deve descrivere la prenotazione della richiesta")
+
+    class_diagrams = re.findall(r"```mermaid\s*\n(.*?)\n```", rad, re.DOTALL)
+    if not any(
+        "class ReportSubmission {" in diagram
+        and "ReportSubmission \"1\" --> \"0..*\" ReportAttachment" in diagram
+        for diagram in class_diagrams
+    ):
+        errors.append(
+            "docs/RAD.md: il diagramma delle classi deve collegare la prenotazione agli allegati"
+        )
+
+    sequence_diagrams = [diagram for diagram in class_diagrams if "sequenceDiagram" in diagram]
+    create_report_diagram = next(
+        (diagram for diagram in sequence_diagrams if "POST segnalazione con chiave" in diagram),
+        "",
+    )
+    reservation = create_report_diagram.find("Prenota scope, chiave e impronta")
+    upload_intent = create_report_diagram.find("Registra intento correlato alla prenotazione")
+    commit = create_report_diagram.find("Transazione: completa prenotazione")
+    if not (0 <= reservation < upload_intent < commit):
+        errors.append(
+            "docs/RAD.md: UC-03 deve prenotare la richiesta prima dell’upload e completarla nel commit"
+        )
+
+    if "Prova di prenotazione, conflitto e concorrenza" not in adr:
+        errors.append(
+            "docs/adr/ADR-0005-operability-and-recovery-contract.md: "
+            "manca la prova della prenotazione idempotente"
+        )
+    if not re.search(
+        r"^\| ENG-06 \|[^\n]*prenotazione durevole",
+        milestones,
+        re.MULTILINE | re.IGNORECASE,
+    ):
+        errors.append(
+            "docs/MILESTONES.md: ENG-06 deve richiedere la prenotazione prima degli effetti"
+        )
+
+    return errors
+
+
 def validate_runbook_revision_history() -> list[str]:
     path = ROOT / "docs/template/RUNBOOK.md"
     label = path.relative_to(ROOT).as_posix()
@@ -1221,6 +1298,7 @@ def main() -> int:
     errors.extend(validate_glossaries())
     errors.extend(validate_model_object_tables())
     errors.extend(validate_entity_class_diagram())
+    errors.extend(validate_report_submission_contract())
     errors.extend(validate_runbook_revision_history())
     errors.extend(validate_runbook_operational_coverage())
     errors.extend(validate_non_functional_requirements())

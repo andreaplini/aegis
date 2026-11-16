@@ -99,7 +99,7 @@ I criteri descrivono risultati osservabili ricavati dai flussi dei casi d’uso 
 | FR-04 | Una richiesta valida restituisce zero o più percorsi alternativi con tempi, cambi e stato di verifica secondo il contratto del provider e i profili approvati in OPEN-03. |
 | FR-05 | Ogni tratto del percorso distingue barriere note, compatibilità nota e stato non verificato. Un risultato del provider non dimostra da solo l’accessibilità secondo OPEN-03. |
 | FR-06 | La selezione di un luogo mostra dettaglio, caratteristiche note, fonte e validità secondo OPEN-02. Dati assenti o scaduti risultano sconosciuti. |
-| FR-07 | L’invio valido persiste segnalazione ed evento iniziale. Un errore non lascia una segnalazione parziale. Ripetere la stessa richiesta con la stessa chiave di idempotenza non crea report, eventi, allegati o notifiche duplicati. Riutilizzare la chiave con un payload diverso è rifiutato senza nuovi effetti. La foto facoltativa resta privata finché non supera i controlli OPEN-15 ed è collegata alla segnalazione. Consenso e ciclo di vita seguono OPEN-05. Un errore tra storage e database lascia l’upload recuperabile o eliminabile secondo OPEN-08 e OPEN-15. Ambito, durata e replay sicuro dell’esito seguono OPEN-04, OPEN-05 e OPEN-08. |
+| FR-07 | L’invio valido persiste segnalazione ed evento iniziale. Prima di effetti esterni il sistema registra una prenotazione durevole e univoca della richiesta. Un errore non lascia una segnalazione parziale. Ripetere la stessa richiesta con la stessa chiave di idempotenza non crea report, eventi, allegati o notifiche duplicati. Riutilizzare la chiave con un payload diverso è rifiutato senza nuovi effetti. La foto facoltativa resta privata finché non supera i controlli OPEN-15 ed è collegata alla segnalazione. Consenso e ciclo di vita seguono OPEN-05. Un errore tra storage e database lascia l’upload recuperabile o eliminabile secondo OPEN-08 e OPEN-15. Ambito, durata e replay sicuro dell’esito seguono OPEN-04, OPEN-05 e OPEN-08. |
 | FR-08 | La creazione riuscita restituisce un codice di tracking. La consultazione mostra solo lo stato consentito dalla policy di accesso da approvare in OPEN-04. |
 | FR-09 | Solo una transizione presente nella matrice approvata in OPEN-12 aggiorna stato ed evento nella stessa transazione. Una transizione non ammessa non modifica i dati. Ruoli e attribuzione dell’attore seguono OPEN-04 e OPEN-05. |
 | FR-10 | Solo una generazione completa e validata secondo il contratto della fonte OPEN-14 viene pubblicata. Versione, timestamp, controlli ed esito sono registrati. Un errore mantiene i dati validi precedenti. Fonti e responsabili devono essere approvati in OPEN-01. |
@@ -289,8 +289,8 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | Condizioni d’ingresso | Campi obbligatori validi. Autorizzazione, rate limit, consenso e requisiti dell’eventuale upload conformi alla policy definita. |
 | Condizioni d’uscita | Segnalazione ed evento iniziale persistiti. Codice di tracking restituito. In caso di errore non rimane una segnalazione parziale. Se una notifica prevista fallisce, il fallimento non annulla la segnalazione e resta osservabile e recuperabile secondo la policy da definire in OPEN-08. |
 | Requisiti qualitativi | Il modulo è accessibile. I dati identificativi sono minimizzati e separati dalla segnalazione. La foto non è pubblicata prima dei controlli previsti. |
-| Flusso degli eventi | Il segnalatore inserisce luogo, categoria, descrizione e data. Facoltativamente allega una foto. Il sistema valida i campi e controlla l’upload. Il sistema registra segnalazione ed evento iniziale e restituisce il codice di tracking. Dopo il completamento del caso, pianifica l’eventuale notifica secondo consenso e policy. Se il canale fallisce, registra l’esito per il recupero previsto in OPEN-08. |
-| Flussi alternativi e di errore | Input non valido, autorizzazione negata o limite superato: il sistema rifiuta la richiesta senza persistenza parziale secondo OPEN-04 e OPEN-15. File non valido, scansione fallita o scanner indisponibile: il file resta privato e viene rifiutato, messo in quarantena o eliminato secondo OPEN-15 e OPEN-05. Scrittura interrotta in object storage o errore database dopo la scansione: report ed evento non restano parziali e l’upload non diventa pubblico. L’intento durevole consente retry o pulizia idempotente secondo OPEN-08 e OPEN-15. Commit riuscito ma risposta persa: un retry con la stessa chiave e lo stesso payload recupera l’operazione esistente senza ripetere gli effetti. La stessa chiave con payload diverso è rifiutata. Un’operazione ancora in corso non viene avviata in parallelo. Ambito della chiave, durata, risposta ripetibile e autorizzazione seguono OPEN-04, OPEN-05 e OPEN-08. Notifica fallita o con esito ambiguo: la segnalazione resta registrata, l’esito non è presentato come consegna confermata e il recupero segue OPEN-08. |
+| Flusso degli eventi | Il segnalatore prepara luogo, categoria, descrizione e data e invia la richiesta con una chiave di idempotenza. Facoltativamente allega una foto e il relativo digest. Il sistema valida i campi e l’autorizzazione, quindi prenota chiave e impronta in `ReportSubmission` prima di qualsiasi effetto esterno. Un vincolo univoco coordina richieste concorrenti. Il sistema controlla l’eventuale upload in area privata. Registra segnalazione, evento iniziale, completamento della prenotazione e intenzione autorizzata di notifica nella stessa transazione e restituisce il codice di tracking. Dopo il commit pianifica l’eventuale notifica secondo consenso e policy. Se il canale fallisce, registra l’esito per il recupero previsto in OPEN-08. |
+| Flussi alternativi e di errore | Input non valido, autorizzazione negata o limite superato: il sistema rifiuta la richiesta senza persistenza parziale secondo OPEN-04 e OPEN-15. Prima di scrivere un allegato o invocare altri sistemi esterni, il sistema prenota la chiave e l’impronta in un registro durevole con vincolo di unicità nello scope approvato. File non valido, scansione fallita o scanner indisponibile: il file resta privato e viene rifiutato, messo in quarantena o eliminato secondo OPEN-15 e OPEN-05. Scrittura interrotta in object storage o errore database dopo la scansione: report ed evento non restano parziali e l’upload non diventa pubblico. L’intento durevole consente retry o pulizia idempotente secondo OPEN-08 e OPEN-15. Commit riuscito ma risposta persa: un retry con la stessa chiave e lo stesso payload recupera l’operazione esistente senza ripetere gli effetti. La stessa chiave con payload diverso è rifiutata. Un’operazione ancora in corso non viene avviata in parallelo. Ambito della chiave, durata, risposta ripetibile e autorizzazione seguono OPEN-04, OPEN-05 e OPEN-08. Notifica fallita o con esito ambiguo: la segnalazione resta registrata, l’esito non è presentato come consegna confermata e il recupero segue OPEN-08. |
 
 ###### UC-04: Seguire segnalazione
 
@@ -334,6 +334,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | `Place` | Rappresenta luogo, fermata o stazione con identificativo, nome, tipo e geometria. |
 | `AccessibilityFeature` | Rappresenta una caratteristica con stato esplicito, fonte, timestamp e validità, associata a un luogo. |
 | `Report` | Rappresenta luogo/geometria, categoria, descrizione, stato, date e riferimento protetto per tracking. |
+| `ReportSubmission` | Prenota in modo durevole e univoco la chiave e l’impronta del payload prima degli effetti esterni. Registra lo stato dell’operazione e il report completato per riconciliare retry e richieste concorrenti. Scope, durata e replay seguono OPEN-04, OPEN-05 e OPEN-08. |
 | `ReportAttachment` | Registra l’intento durevole di upload, il riferimento privato all’oggetto, l’esito dei controlli e l’eventuale collegamento autorizzato al report. La pubblicazione richiede una scansione valida. Stati e conservazione seguono OPEN-05 e OPEN-15. |
 | `ReportEvent` | Registra in modo append-only attore, timestamp, decisione e riferimento a un eventuale duplicato. |
 | `AttachmentState` | Stato del ciclo di upload, scansione, associazione o pulizia. Valori e transizioni sono da approvare secondo OPEN-05 e OPEN-15. |
@@ -370,11 +371,11 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 
 #### 3.5.5 DIAGRAMMA DELLE CLASSI
 
-Il diagramma riassume le associazioni concettuali tra luoghi, caratteristiche di accessibilità, segnalazioni, allegati, eventi, intenzioni di notifica, coordinate e fonti.
+Il diagramma riassume le associazioni concettuali tra luoghi, caratteristiche di accessibilità, segnalazioni, prenotazioni idempotenti, allegati, eventi, intenzioni di notifica, coordinate e fonti.
 
 ```mermaid
 classDiagram
-  accDescr: Relazioni concettuali tra luoghi, caratteristiche, segnalazioni, eventi, intenzioni di notifica e fonti.
+  accDescr: Relazioni concettuali tra luoghi, caratteristiche, prenotazioni idempotenti, segnalazioni, eventi, intenzioni di notifica e fonti.
   class Place {
     PlaceId id
     String name
@@ -392,6 +393,16 @@ classDiagram
     ReportCategory category
     ReportStatus status
     Instant createdAt
+  }
+  class ReportSubmission {
+    SubmissionId id
+    String scope
+    String keyDigest
+    String payloadFingerprint
+    SubmissionState state
+  }
+  class SubmissionState {
+    <<enumeration>>
   }
   class ReportEvent {
     ReportEventId id
@@ -448,6 +459,9 @@ classDiagram
   Place --> TransitStop
   TransitLine --> TransitStop
   Report --> ReportEvent
+  ReportSubmission "0..*" --> "0..1" Report : report completato
+  ReportSubmission "1" --> "0..*" ReportAttachment : intenti upload
+  ReportSubmission "0..*" --> "1" SubmissionState : stato
   Report "0..1" --> "0..*" ReportAttachment
   Report "0..*" --> "0..1" Place : luogo
   ReportEvent "0..*" --> "0..1" UserAccount : autore umano
@@ -528,7 +542,7 @@ sequenceDiagram
 
 ##### Invio di una segnalazione
 
-Il diagramma mostra l’intento durevole dell’upload, la scansione privata e la transazione che collega allegato, segnalazione, evento e notifica. Object storage e database non condividono una transazione atomica.
+Il diagramma mostra la prenotazione univoca della richiesta prima degli effetti esterni, l’intento durevole dell’upload, la scansione privata e la transazione che collega allegato, segnalazione, evento e notifica. Object storage e database non condividono una transazione atomica.
 
 ```mermaid
 sequenceDiagram
@@ -541,11 +555,11 @@ sequenceDiagram
   participant Upload as Storage e scanner
   participant W as NotificationWorker
   participant N as NotificationPort
-  S->>API: POST segnalazione
-  API->>UC: input, policy e chiave di idempotenza
-  UC->>Repo: Verifica chiave e impronta del payload
-  alt Retry di richiesta completata con lo stesso payload
-    Repo-->>UC: Esito dell’operazione esistente
+  S->>API: POST segnalazione con chiave
+  API->>UC: input, policy, chiave e impronta
+  UC->>Repo: Prenota scope, chiave e impronta prima degli effetti esterni
+  alt Retry completato con lo stesso payload
+    Repo-->>UC: Report associato alla prenotazione
     UC-->>API: Esito ripetibile secondo OPEN-04 e OPEN-05
     API-->>S: Esito originario consentito
   else Chiave associata a payload diverso
@@ -556,9 +570,9 @@ sequenceDiagram
     Repo-->>UC: Stato pendente
     UC-->>API: Stato senza avviare effetti concorrenti
     API-->>S: Operazione in corso secondo OPEN-08
-  else Nuovo invio o ripresa recuperabile
+  else Prenotazione acquisita o ripresa esclusiva recuperabile
     opt Foto allegata
-      UC->>Attach: Registra intento, chiave idempotente e chiave opaca privata
+      UC->>Attach: Registra intento correlato alla prenotazione e chiave opaca privata
       Attach-->>UC: UploadId e riferimento durevole
       UC->>Upload: Scrive in area privata e richiede scansione
       alt Scansione superata
@@ -573,7 +587,7 @@ sequenceDiagram
       end
     end
     alt Input validi, eventuale upload verificato e commit riuscito
-      UC->>Repo: salva chiave + impronta + Report + ReportEvent + riferimento allegato + intenzione autorizzata
+      UC->>Repo: Transazione: completa prenotazione + Report + ReportEvent + allegato + outbox autorizzata
       Repo-->>UC: commit completato
       UC-->>API: tracking code e stato
       API-->>S: conferma invio
@@ -851,7 +865,8 @@ Il profilo visivo non è disponibile perché i punteggi non sono stati raccolti.
 | Codice di tracking | Codice non enumerabile usato per consultare lo stato di una segnalazione. |
 | Moderazione | Processo di valutazione e decisione su una segnalazione. |
 | Duplicato | Segnalazione riferita a un caso già registrato e collegata senza cancellare la cronologia. |
-| Chiave di idempotenza | Identificativo di una richiesta usato per riconoscere i retry. Ambito, durata e autorizzazione del replay seguono OPEN-04, OPEN-05 e OPEN-08. |
+| Chiave di idempotenza | Identificativo di una richiesta registrato nella prenotazione durevole per riconoscere retry e impedire effetti duplicati. Ambito, durata e autorizzazione del replay seguono OPEN-04, OPEN-05 e OPEN-08. |
+| Prenotazione della richiesta | Record durevole e univoco creato prima degli effetti esterni per serializzare retry e recuperi della stessa operazione. |
 | Role | Ruolo applicativo assegnato a un account. Valori e permessi sono da approvare secondo OPEN-04. |
 | Stato della segnalazione | Fase corrente di un report. Valori, transizioni e condizioni sono da approvare in OPEN-12. |
 | p95 | Valore sotto il quale ricade il 95 per cento delle misurazioni osservate. Popolazione e finestra temporale vanno definite nel protocollo. |

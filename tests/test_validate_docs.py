@@ -119,6 +119,51 @@ Non approvata.
 
 
 class MarkdownValidationTests(unittest.TestCase):
+    def test_report_submission_contract_is_traceable_across_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            adrs = docs / "adr"
+            adrs.mkdir(parents=True)
+            (docs / "RAD.md").write_text(
+                "###### UC-03: Inviare segnalazione\nReportSubmission\n"
+                "###### UC-04: Seguire segnalazione\n\n"
+                "```mermaid\nclassDiagram\n"
+                "  class ReportSubmission {\n    String id\n  }\n"
+                "  ReportSubmission \"1\" --> \"0..*\" ReportAttachment\n```\n"
+                "```mermaid\nsequenceDiagram\n"
+                "S->>API: POST segnalazione con chiave\n"
+                "UC->>Repo: Prenota scope, chiave e impronta prima degli effetti esterni\n"
+                "UC->>Attach: Registra intento correlato alla prenotazione e chiave privata\n"
+                "UC->>Repo: Transazione: completa prenotazione e report\n```\n",
+                encoding="utf-8",
+            )
+            (docs / "SDD.md").write_text(
+                "| `report_submission` | vincolo di unicità, impronta dell’intera richiesta, "
+                "prima di effetti esterni. |\n"
+                "### 4.5 SEGNALAZIONI E MODERAZIONE\n"
+                "`report_submission`\n### 4.6 GEOLOCALIZZAZIONE\n",
+                encoding="utf-8",
+            )
+            (adrs / "ADR-0005-operability-and-recovery-contract.md").write_text(
+                "Prova di prenotazione, conflitto e concorrenza\n", encoding="utf-8"
+            )
+            (docs / "MILESTONES.md").write_text(
+                "| ENG-06 | Prenotazione durevole prima degli effetti |\n",
+                encoding="utf-8",
+            )
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_report_submission_contract(), [])
+
+                sdd = docs / "SDD.md"
+                sdd.write_text(
+                    sdd.read_text(encoding="utf-8").replace("prima di effetti esterni", "dopo gli effetti esterni"),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_report_submission_contract()
+                self.assertTrue(any("prima di effetti esterni" in error for error in errors))
+
     def test_runbook_requires_complete_revision_history(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
