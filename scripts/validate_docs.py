@@ -391,6 +391,35 @@ def validate_adrs() -> list[str]:
     return errors
 
 
+def validate_adr_roadmap_traceability() -> list[str]:
+    adr_directory = ROOT / "docs/adr"
+    adr_files = sorted(adr_directory.glob("ADR-*.md")) if adr_directory.exists() else []
+    if not adr_files:
+        return []
+
+    roadmap_path = ROOT / "docs/MILESTONES.md"
+    label = roadmap_path.relative_to(ROOT).as_posix()
+    if not roadmap_path.exists():
+        return [f"{label}: necessario per verificare gli ADR in ENG-02"]
+
+    lines = roadmap_path.read_text(encoding="utf-8").splitlines()
+    rows = [line for line in lines if re.match(r"^\|\s*ENG-02\s*\|", line)]
+    if len(rows) != 1:
+        return [f"{label}: deve contenere una sola riga ENG-02 per tracciare gli ADR"]
+
+    row = rows[0]
+    errors: list[str] = []
+    for path in adr_files:
+        match = ADR_FILENAME_PATTERN.fullmatch(path.name)
+        if not match:
+            continue
+        identifier = f"ADR-{match.group(1)}"
+        expected_link = f"[{identifier}](adr/{path.name})"
+        if expected_link not in row:
+            errors.append(f"{label}: ENG-02 non include {identifier}")
+    return errors
+
+
 def validate_project_style() -> list[str]:
     errors: list[str] = []
     for source in markdown_files():
@@ -1024,6 +1053,7 @@ def main() -> int:
     errors.extend(validate_traceability())
     errors.extend(validate_roadmap_ids())
     errors.extend(validate_adrs())
+    errors.extend(validate_adr_roadmap_traceability())
     errors.extend(validate_functional_requirements())
     errors.extend(validate_use_case_specs())
     errors.extend(validate_use_case_diagram())

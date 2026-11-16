@@ -254,6 +254,29 @@ class MarkdownValidationTests(unittest.TestCase):
                 self.assertTrue(any("metadati mancanti o vuoti" in error for error in errors))
                 self.assertTrue(any("riga 1 incompleta" in error for error in errors))
 
+    def test_eng02_must_reference_every_architectural_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            adr_directory = root / "docs/adr"
+            adr_directory.mkdir(parents=True)
+            (adr_directory / "ADR-0001-first.md").write_text("# ADR\n", encoding="utf-8")
+            (adr_directory / "ADR-0002-second.md").write_text("# ADR\n", encoding="utf-8")
+            roadmap = root / "docs/MILESTONES.md"
+            roadmap.write_text(
+                "| ENG-02 | Decisioni | [ADR-0001](adr/ADR-0001-first.md) |\n",
+                encoding="utf-8",
+            )
+
+            with patch.object(validate_docs, "ROOT", root):
+                errors = validate_docs.validate_adr_roadmap_traceability()
+                self.assertIn("ENG-02 non include ADR-0002", "\n".join(errors))
+                roadmap.write_text(
+                    "| ENG-02 | Decisioni | [ADR-0001](adr/ADR-0001-first.md), "
+                    "[ADR-0002](adr/ADR-0002-second.md) |\n",
+                    encoding="utf-8",
+                )
+                self.assertEqual(validate_docs.validate_adr_roadmap_traceability(), [])
+
     def test_roadmap_ids_are_unique_and_references_are_declared(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
