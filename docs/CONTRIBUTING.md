@@ -26,7 +26,7 @@ Il comando esegue i test del validatore e controlla percorsi e ancore locali, st
 make docs
 ```
 
-I DOCX generati si trovano in `build/docs/` e non vanno aggiunti al repository. Per modifiche applicative, eseguire i controlli della build e i test definiti quando ENG-03 introdurrà una build applicativa; al momento tali comandi non esistono.
+I DOCX generati si trovano in `build/docs/` e non vanno aggiunti al repository. `make docs` verifica anche integrità del pacchetto, contenuto essenziale, nome e punteggiatura degli export. Per modifiche applicative, eseguire i controlli della build e i test definiti quando ENG-03 introdurrà una build applicativa; al momento tali comandi non esistono.
 
 ## Criteri di revisione
 

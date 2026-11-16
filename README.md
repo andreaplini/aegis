@@ -16,7 +16,7 @@ Il repository contiene la baseline documentale e l'esportazione automatizzata di
 | `.agents/skills/` | Skill Codex specifiche del progetto. |
 | `.github/workflows/` | Automazioni CI. |
 
-La documentazione e tutti i relativi template e materiali di supporto risiedono in `docs/`. Il DOCX sorgente è il riferimento di stile e struttura; i DOCX esportati non sono versionati: il target `make docs` li genera in `build/docs/`. La GitHub Action esegue la stessa conversione e pubblica i due DOCX come artifact.
+La documentazione e tutti i relativi template e materiali di supporto risiedono in `docs/`. Il DOCX sorgente è il riferimento di stile e struttura; i DOCX esportati non sono versionati: il target `make docs` li genera e ne verifica archivio, contenuto e stile in `build/docs/`. La GitHub Action esegue lo stesso target e pubblica i due DOCX come artifact.
 
 ## Esportazione DOCX
 
@@ -26,6 +26,6 @@ Installare Pandoc e lanciare:
 make docs
 ```
 
-La generazione esegue prima `make check-docs`, che verifica test del validatore, collegamenti e ancore locali, struttura dei modelli, tracciabilità RAD/SDD, casi d'uso e stile del progetto. Il controllo può essere lanciato separatamente e non richiede Pandoc.
+La generazione esegue prima `make check-docs`, che verifica test del validatore, collegamenti e ancore locali, struttura dei modelli, tracciabilità RAD/SDD, casi d'uso e stile del progetto. Dopo la conversione controlla integrità, contenuto, nome e punteggiatura nei DOCX. `make check-docs` può essere lanciato separatamente e non richiede Pandoc.
 
 L'esportazione usa `docs/template/template.docx` come riferimento di stile. Pandoc converte Markdown in DOCX; MarkItDown svolge la direzione opposta, da documenti sorgente a Markdown.
