@@ -42,6 +42,8 @@ STORY_PART_PATTERN = re.compile(
     r"^word/(?:document|header\d+|footer\d+|footnotes|endnotes|comments)\.xml$"
 )
 ROOT = Path(__file__).resolve().parents[1]
+REFERENCE_TEMPLATE = ROOT / "docs/template/template.docx"
+EXTRACTED_TEMPLATE_DOCUMENT = ROOT / "docs/template/assets/package/word/document.xml"
 
 
 def document_text(path: Path) -> str:
@@ -104,6 +106,33 @@ def document_text(path: Path) -> str:
             if node.text and node.text.strip()
         )
     return "\n".join(paragraphs)
+
+
+def validate_reference_template(
+    path: Path = REFERENCE_TEMPLATE,
+    extracted_document: Path = EXTRACTED_TEMPLATE_DOCUMENT,
+) -> list[str]:
+    try:
+        text = document_text(path)
+    except (OSError, KeyError, ValueError, zipfile.BadZipFile, ElementTree.ParseError) as error:
+        return [f"{path}: template DOCX non leggibile: {error}"]
+
+    errors: list[str] = []
+    if ";" in text:
+        errors.append(f"{path}: evitare il punto e virgola nel testo del template")
+
+    try:
+        with zipfile.ZipFile(path) as package:
+            source_document = package.read("word/document.xml")
+        extracted = extracted_document.read_bytes()
+    except (OSError, KeyError, zipfile.BadZipFile) as error:
+        errors.append(f"{path}: impossibile confrontare il documento estratto: {error}")
+    else:
+        if source_document != extracted:
+            errors.append(
+                f"{extracted_document}: non corrisponde a word/document.xml del template DOCX"
+            )
+    return errors
 
 
 def document_diagram_count(path: Path) -> int:
@@ -281,16 +310,25 @@ def validate_document(
 
 def main(argv: list[str]) -> int:
     paths = [Path(value) for value in argv[1:]]
-    if len(paths) != 2:
-        print("Uso: python3 scripts/validate_docx.py RAD.docx SDD.docx", file=sys.stderr)
+    if len(paths) not in {2, 3}:
+        print(
+            "Uso: python3 scripts/validate_docx.py RAD.docx SDD.docx [template.docx]",
+            file=sys.stderr,
+        )
         return 2
 
-    errors = [error for path in paths for error in validate_document(path)]
+    errors = [error for path in paths[:2] for error in validate_document(path)]
+    if len(paths) == 3:
+        errors.extend(validate_reference_template(paths[2]))
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1
 
-    print("DOCX validi: archivio, contenuto, nome aegis, punteggiatura e diagrammi verificati.")
+    print(
+        "DOCX validi: archivio, contenuto, nome aegis, punteggiatura e diagrammi verificati."
+        if len(paths) == 2
+        else "DOCX validi: export, template di riferimento, punteggiatura e risorse estratte verificati."
+    )
     return 0
 
 

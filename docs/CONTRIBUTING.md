@@ -30,7 +30,7 @@ Il comando esegue i test del validatore e controlla percorsi e ancore locali, li
 make docs
 ```
 
-I DOCX generati si trovano in `build/docs/` e non vanno aggiunti al repository. `make docs` verifica l’integrità del pacchetto, il contenuto richiesto, i metadati personali, nome e punteggiatura nel testo e nelle descrizioni alternative, le relazioni OOXML e le immagini dei diagrammi. Per modifiche applicative, eseguire i controlli della build e i test definiti quando ENG-03 introdurrà una build applicativa. Al momento tali comandi non esistono.
+I DOCX generati si trovano in `build/docs/` e non vanno aggiunti al repository. `make docs` verifica l’integrità del pacchetto, il contenuto richiesto, i metadati personali, nome e punteggiatura nel testo e nelle descrizioni alternative, le relazioni OOXML e le immagini dei diagrammi. Verifica anche la punteggiatura leggibile nel template Word e che `docs/template/assets/package/word/document.xml` corrisponda alla parte omonima del DOCX sorgente. Per modifiche applicative, eseguire i controlli della build e i test definiti quando ENG-03 introdurrà una build applicativa. Al momento tali comandi non esistono.
 
 ## Criteri di revisione
 

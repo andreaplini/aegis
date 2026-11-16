@@ -280,6 +280,27 @@ class DocxValidationTests(unittest.TestCase):
             self.assertTrue(any("esattamente aegis" in error for error in errors))
             self.assertTrue(any("punto e virgola" in error for error in errors))
 
+    def test_reference_template_rejects_semicolons_and_stale_extraction(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "template.docx"
+            extracted = root / "document.xml"
+            write_docx(source, "Template; esempio")
+            with zipfile.ZipFile(source) as package:
+                extracted.write_bytes(package.read("word/document.xml"))
+
+            errors = validate_docx.validate_reference_template(source, extracted)
+            self.assertTrue(any("punto e virgola" in error for error in errors))
+
+            write_docx(source, "Template, esempio")
+            with zipfile.ZipFile(source) as package:
+                extracted.write_bytes(package.read("word/document.xml"))
+            self.assertEqual(validate_docx.validate_reference_template(source, extracted), [])
+
+            extracted.write_bytes(extracted.read_bytes() + b" ")
+            errors = validate_docx.validate_reference_template(source, extracted)
+            self.assertTrue(any("non corrisponde" in error for error in errors))
+
 
 if __name__ == "__main__":
     unittest.main()

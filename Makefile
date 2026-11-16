@@ -70,7 +70,7 @@ render-docs: check-mermaid
 
 docs: check-docs check-node check-pandoc
 	$(MAKE) --no-print-directory $(OUTPUT_DIR)/rad-is.docx $(OUTPUT_DIR)/sdd-is.docx
-	python3 scripts/validate_docx.py "$(OUTPUT_DIR)/rad-is.docx" "$(OUTPUT_DIR)/sdd-is.docx"
+	python3 scripts/validate_docx.py "$(OUTPUT_DIR)/rad-is.docx" "$(OUTPUT_DIR)/sdd-is.docx" docs/template/template.docx
 
 $(OUTPUT_DIR)/rad-is.docx: docs/RAD.md docs/template/template.docx scripts/validate_docx.py $(DOCX_TOOL_INPUTS) | render-docs
 	$(PANDOC) --from=gfm --to=docx --standalone --reference-doc=docs/template/template.docx --resource-path=".:$(OUTPUT_DIR)" "$(OUTPUT_DIR)/rad-rendered.md" --output="$@"
