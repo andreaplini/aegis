@@ -240,9 +240,9 @@ Il template richiede per ogni caso d’uso attori, condizioni d’ingresso e d�
 |---|---|
 | Attori partecipanti | Gestore fonte, sistema, adattatore della fonte. |
 | Condizioni d’ingresso | Fonte configurata e abilitata. Gestore autenticato e autorizzato quando l’avvio è manuale. Esecuzione schedulata ammessa dalla configurazione. |
-| Condizioni d’uscita | Versione, timestamp, controlli ed esito della sincronizzazione registrati. Un aggiornamento urgente invalida la cache dell’area interessata. Un errore non sostituisce i dati validi con dati parziali. |
+| Condizioni d’uscita | Versione, timestamp, controlli ed esito della sincronizzazione registrati. Solo un insieme completo e validato diventa visibile. Un aggiornamento urgente invalida la cache dell’area interessata dopo la pubblicazione. Un errore mantiene disponibili i dati validi precedenti e non pubblica dati parziali. |
 | Requisiti qualitativi | Retry idempotenti. Provenienza e freschezza conservate. Dati assenti, incoerenti o scaduti non sono presentati come accessibili. |
-| Flusso degli eventi | Il gestore avvia o consulta il processo, oppure scatta la pianificazione. Il sistema invoca l’adattatore. L’adattatore acquisisce e valida i dati. Il sistema registra versione, timestamp, controlli ed esito. Se richiesto, invalida la cache dell’area interessata e rende disponibile l’esito operativo. |
+| Flusso degli eventi | Il gestore avvia o consulta il processo, oppure scatta la pianificazione. Il sistema invoca l’adattatore. L’adattatore acquisisce i dati in un insieme candidato non visibile agli utenti. Il sistema valida contratto, chiavi e qualità, quindi registra versione, timestamp, controlli ed esito. Se i controlli passano, pubblica l’insieme candidato con un passaggio atomico e invalida la cache interessata dopo la pubblicazione. Se l’acquisizione o la validazione falliscono, mantiene attivi i dati precedenti e registra l’esito senza pubblicare dati parziali. |
 
 #### 3.5.4 MODELLO DEGLI OGGETTI
 
@@ -461,11 +461,11 @@ sequenceDiagram
 
 ##### Sincronizzazione di una fonte
 
-Il diagramma descrive acquisizione, controlli, persistenza dell’esito e invalidazione della cache per un aggiornamento urgente.
+Il diagramma descrive l’acquisizione isolata, la validazione, la pubblicazione atomica e l’invalidazione della cache dopo un aggiornamento riuscito.
 
 ```mermaid
 sequenceDiagram
-  accDescr: Il worker importa i dati, registra l'esito e invalida la cache se urgente.
+  accDescr: Il worker valida una generazione candidata, la pubblica solo se completa e invalida la cache dopo il commit.
   actor G as Gestore fonte
   participant W as Worker
   participant P as TransitDataProvider
@@ -474,10 +474,15 @@ sequenceDiagram
   G->>W: Avvia o consulta sincronizzazione
   W->>P: Richiede aggiornamento
   P-->>W: Dati e versione
-  W->>W: Valida e deduplica
-  W->>R: Persiste dati validati ed esito
-  opt Aggiornamento urgente
-    W->>C: Invalida area coinvolta
+  W->>R: Scrive generazione candidata isolata
+  W->>W: Valida schema, chiavi e qualità
+  alt Validazione superata
+    W->>R: Attiva generazione e registra esito nella stessa transazione
+    opt Aggiornamento urgente
+      W->>C: Invalida area dopo il commit
+    end
+  else Acquisizione o validazione fallita
+    W->>R: Registra errore e conserva la generazione attiva
   end
   W-->>G: Esito operativo
 ```

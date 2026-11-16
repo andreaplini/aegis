@@ -193,7 +193,7 @@ La persistenza relazionale proposta usa PostgreSQL e PostGIS. Le migrazioni dovr
 | `report` | Geometria o luogo, categoria, descrizione, stato e date. Dati identificativi separati. |
 | `report_event` | Eventi append-only con autore, data, decisione e riferimento a eventuale duplicato. |
 | `user_account` | Riferimento d’identità e ruoli con accesso limitato. |
-| `source_sync` | Fonte, versione, timestamp, esito e controlli di qualità. |
+| `source_sync` | Fonte, versione, timestamp, esito, controlli di qualità e riferimento alla generazione candidata o pubblicata. |
 
 Le relazioni sono protette da chiavi esterne e vincoli. Le ricerche geografiche usano indici spaziali. Ulteriori indici sono definiti in base alle query validate. Le coordinate di dominio sono rappresentate da `GeoPoint`, value object immutabile con controlli di validità.
 
@@ -207,9 +207,13 @@ Le foto sono conservate fuori dal database in object storage. Prima della pubbli
 
 #### 3.4.3 MECCANISMI DI SINCRONIZZAZIONE
 
-Worker asincroni importano dati di trasporto e accessibilità tramite adattatori isolati. Ogni esecuzione registra fonte, versione, timestamp, esito e controlli di qualità in `source_sync`. Le operazioni sono idempotenti o usano deduplicazione per gestire retry.
+Worker asincroni importano dati di trasporto e accessibilità tramite adattatori isolati. Ogni esecuzione ha un identificativo e registra fonte, versione, timestamp, esito, controlli di qualità e riferimento alla generazione in `source_sync`. Retry e replay devono essere idempotenti. La deduplicazione usa le chiavi stabili definite dal contratto della fonte. Se la fonte non fornisce chiavi stabili, la regola di riconciliazione deve essere approvata prima di attivare l’importazione.
+
+I dati acquisiti sono scritti in una generazione candidata isolata dalle letture pubbliche. Il worker valida contratto e schema, chiavi, completezza secondo le regole concordate per la fonte e coerenza dei dati. Solo una generazione che supera tutti i controlli può diventare attiva tramite un passaggio atomico. L’attivazione della generazione e la registrazione dell’esito pubblicato avvengono nella stessa transazione. Un errore lascia attiva la generazione pubblicata in precedenza e registra l’esito fallito senza esporre dati parziali. La rappresentazione fisica delle generazioni dipende dal contratto della fonte e dal volume, ma deve preservare isolamento, pubblicazione atomica e recuperabilità.
 
 Frequenza e validità sono definite per ciascuna fonte e tipologia durante la selezione dell’area pilota. I dati oltre la validità sono esposti come sconosciuti. Un aggiornamento urgente invalida la cache dell’area interessata e rende osservabile l’esito dell’invalidazione.
+
+L’invalidazione della cache avviene solo dopo il commit della generazione attiva. L’operazione è idempotente e un errore resta osservabile e ritentabile. L’ordinamento delle generazioni concorrenti segue la versione della fonte quando disponibile. In assenza di una versione confrontabile, gli aggiornamenti della stessa fonte sono serializzati secondo una regola da definire.
 
 ### 3.5 CONTROLLO ACCESSI E SICUREZZA
 
@@ -248,7 +252,7 @@ Gli endpoint applicano rate limiting e validazione server-side. Le richieste non
 |---|---|---|---|
 | Una caratteristica di accessibilità assente, scaduta o incoerente viene interpretata come disponibile. | La persona sceglie un luogo o un tratto che non può utilizzare. | Propagare lo stato sconosciuto senza convertirlo in accessibile. Mostrare fonte e validità quando disponibili. Escludere il dato incerto dalle dichiarazioni di compatibilità. | Test end-to-end per dato assente, scaduto, incoerente e aggiornamento fallito. Revisione dei testi con persone del profilo pilota. |
 | Un percorso include un tratto non verificato o un fallback del provider. | La persona incontra una barriera o non riesce a completare il tragitto. | Etichettare i tratti non verificati. Rendere visibili le limitazioni e l'origine del percorso. Fornire un esito esplicito quando non è possibile stabilire la compatibilità. | Prove con provider indisponibile, dati parziali e profili approvati. Verifica dell'equivalenza tra mappa e descrizione testuale. |
-| Una sincronizzazione incompleta o duplicata pubblica uno stato non coerente. | La persona pianifica sulla base di informazioni obsolete o contraddittorie. | Applicare importazioni idempotenti e aggiornamenti atomici. Mantenere provenienza e tempi. Rendere osservabili esito e ritardo della sincronizzazione. Non promuovere dati parziali a stato verificato. | Prove di retry, interruzione a metà importazione, duplicati e ripristino. Confronto tra fonte e dati pubblicati. |
+| Una sincronizzazione incompleta, duplicata o fuori ordine pubblica uno stato non coerente. | La persona pianifica sulla base di informazioni obsolete o contraddittorie. | Isolare le generazioni candidate, validare contratto e completezza, attivare in modo atomico, preservare la generazione precedente in caso di errore e ordinare le pubblicazioni concorrenti. Rendere osservabili esito e ritardo. | Prove di retry, interruzione in ogni fase, duplicati, aggiornamenti concorrenti, errore di pubblicazione e ripristino. Confronto tra fonte e dati attivi. |
 | Un avviso o un errore non è percepibile o comprensibile con la modalità d'interazione usata. | La persona non nota l'incertezza o non riesce a scegliere un'alternativa. | Esporre avvisi nel contenuto e nella struttura accessibile, senza affidarsi al solo colore, alla sola mappa o a notifiche temporanee. Mantenere il messaggio disponibile nella vista. | Verifica con tastiera e tecnologie assistive, prove con utenti e controllo che gli stati equivalenti siano disponibili in forma testuale. |
 
 Gli esiti delle verifiche, le limitazioni note e l'accettazione del rischio residuo devono essere registrati prima del pilota. I criteri di accettazione e i profili coinvolti dipendono dalle decisioni OPEN-02, OPEN-03 e OPEN-06.
