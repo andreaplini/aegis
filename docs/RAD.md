@@ -333,7 +333,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | `NotificationAttemptState` | Stato tecnico di un tentativo di notifica. Valori e transizioni sono da definire secondo OPEN-08. |
 | `SourceSync` | Registra fonte, versione, esito, timestamp e controlli di qualità. |
 | `UserAccount` | Rappresenta identità e ruoli. I dati identificativi sono separati dai contenuti pubblici. |
-| `DataSource` | Rappresenta una fonte con identificativo, responsabile, versione e regola di validità da definire. |
+| `DataSource` | Rappresenta una fonte con identificativo, responsabile, versione e regola di validità da definire secondo OPEN-01, OPEN-02 e OPEN-14. |
 | `TransitLine` e `TransitStop` | Rappresentano linee e fermate importate, con geometria e riferimenti alla fonte. |
 | `GeoPoint` | Value object immutabile che rappresenta coordinate valide con riferimento spaziale esplicito. |
 
@@ -508,7 +508,7 @@ sequenceDiagram
   end
 ```
 
-Le transizioni ammesse di moderazione e gli stati completi del report sono da definire nel modello di dominio.
+Le transizioni ammesse di moderazione e gli stati completi del report sono da approvare in OPEN-12 secondo la proposta [ADR-0011](adr/ADR-0011-report-moderation-state-machine.md).
 
 ##### Tracking di una segnalazione
 
