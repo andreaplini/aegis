@@ -302,6 +302,12 @@ class DocxValidationTests(unittest.TestCase):
             errors = validate_docx.validate_reference_template(source, extracted)
             self.assertTrue(any("punto e virgola" in error for error in errors))
 
+            write_docx(source, "Template " + chr(0x2014) + " esempio")
+            with zipfile.ZipFile(source) as package:
+                extracted.write_bytes(package.read("word/document.xml"))
+            errors = validate_docx.validate_reference_template(source, extracted)
+            self.assertTrue(any("trattino lungo" in error for error in errors))
+
             write_docx(source, "Template, esempio")
             with zipfile.ZipFile(source) as package:
                 extracted.write_bytes(package.read("word/document.xml"))

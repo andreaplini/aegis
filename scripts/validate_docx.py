@@ -120,6 +120,8 @@ def validate_reference_template(
     errors: list[str] = []
     if ";" in text:
         errors.append(f"{path}: evitare il punto e virgola nel testo del template")
+    if chr(0x2014) in text:
+        errors.append(f"{path}: usare punteggiatura semplice, senza trattino lungo")
 
     try:
         with zipfile.ZipFile(path) as package:
