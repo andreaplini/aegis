@@ -51,6 +51,16 @@ VALID_SDD = """# SDD
 
 
 class MarkdownValidationTests(unittest.TestCase):
+    def test_local_google_docs_registry_is_not_project_documentation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "docs").mkdir()
+            registry = root / "docs/GOOGLE_DOCS_SYNC.md"
+            registry.write_text("# Link privati\n", encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertNotIn(registry, validate_docs.markdown_files())
+
     def test_mermaid_diagrams_require_accessible_descriptions(self) -> None:
         valid = "```mermaid\nflowchart LR\n  accDescr: Diagramma accessibile.\n  A-->B\n```\n"
         invalid = "```mermaid\nflowchart LR\n  A-->B\n```\n"

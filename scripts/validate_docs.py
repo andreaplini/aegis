@@ -28,7 +28,11 @@ def markdown_files() -> list[Path]:
         ROOT / "README.md",
         ROOT / "AGENTS.md",
         *sorted((ROOT / ".agents/skills").rglob("*.md")),
-        *sorted((ROOT / "docs").rglob("*.md")),
+        *sorted(
+            path
+            for path in (ROOT / "docs").rglob("*.md")
+            if path != ROOT / "docs/GOOGLE_DOCS_SYNC.md"
+        ),
     ]
 
 
