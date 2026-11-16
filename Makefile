@@ -1,8 +1,11 @@
+include config/tool-versions.env
+
+export PANDOC_VERSION
 PANDOC ?= pandoc
 OUTPUT_DIR ?= build/docs
 
 .DEFAULT_GOAL := help
-.PHONY: help check-docs docs
+.PHONY: help check-docs check-pandoc docs
 
 help:
 	@printf '%s\n' \
@@ -14,7 +17,14 @@ check-docs:
 	python3 -m unittest discover -s tests
 	python3 scripts/validate_docs.py
 
-docs: check-docs
+check-pandoc:
+	@version="$$($(PANDOC) --version | sed -n '1s/^pandoc //p')"; \
+	if [ "$$version" != "$(PANDOC_VERSION)" ]; then \
+	  printf 'Versione Pandoc richiesta: %s. Versione trovata: %s.\n' "$(PANDOC_VERSION)" "$$version" >&2; \
+	  exit 1; \
+	fi
+
+docs: check-docs check-pandoc
 	$(MAKE) --no-print-directory $(OUTPUT_DIR)/rad-is.docx $(OUTPUT_DIR)/sdd-is.docx
 	python3 scripts/validate_docx.py "$(OUTPUT_DIR)/rad-is.docx" "$(OUTPUT_DIR)/sdd-is.docx"
 
