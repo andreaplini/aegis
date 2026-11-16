@@ -366,12 +366,14 @@ La ricerca consente di usare coordinate quando disponibili e un inserimento test
 | Termine | Definizione |
 |---|---|
 | Adattatore | Componente che collega una porta applicativa a un sistema esterno o a un dettaglio tecnico. |
+| Generazione attiva | Insieme completo e validato dei dati di una fonte selezionato dal repository per le letture correnti. |
 | Dato sconosciuto | Dato assente, scaduto o non valido che non consente di determinare l’accessibilità. |
 | DataSource | Fonte autorizzata con responsabile e regole di aggiornamento e validità. |
 | DTO | Oggetto di trasferimento usato ai confini applicativi e distinto dal modello di dominio. |
 | Facelets | Tecnologia di viste XHTML usata da Jakarta Faces. |
 | Feature di accessibilità | Caratteristica dichiarata di un luogo, corredata di stato e provenienza. |
 | GeoPoint | Value object immutabile per coordinate valide con riferimento spaziale esplicito. |
+| Snapshot consistente | Vista del repository che usa gli stessi riferimenti di generazione per selezionare i dati e la loro provenienza durante una lettura. |
 | Jakarta EE | Piattaforma Enterprise Java di riferimento per runtime, API web e servizi applicativi. |
 | Jakarta Faces | API Jakarta EE per viste server-side basate su componenti. |
 | Jakarta REST | API Jakarta EE per l’esposizione di risorse HTTP. |
@@ -384,5 +386,6 @@ La ricerca consente di usare coordinate quando disponibili e un inserimento test
 | SRID | Identificatore del riferimento spaziale di una geometria. |
 | Tracking code | Codice non enumerabile usato per consultare lo stato consentito di una segnalazione. |
 | TransitDataProvider | Porta verso una fonte di dati di trasporto. |
+| Vettore delle generazioni | Insieme dei riferimenti alle generazioni attive delle fonti coinvolte in una query. Identifica la versione dei dati usata per costruire la chiave cache. |
 | Value object | Oggetto immutabile definito dal valore e dalle proprie invarianti. |
 | Worker | Processo asincrono che esegue sincronizzazioni o attività lente fuori dalle richieste interattive. |
