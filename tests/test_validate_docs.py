@@ -169,19 +169,28 @@ class MarkdownValidationTests(unittest.TestCase):
                 self.assertEqual(validate_docs.validate_runbook_operational_coverage(), [])
                 runbook.write_text(content.replace("outbox", "archivio"), encoding="utf-8")
                 errors = validate_docs.validate_runbook_operational_coverage()
-                self.assertTrue(any("sezione Recupero dei lavori asincroni priva di copertura per outbox" in error for error in errors))
+                self.assertIn(
+                    "sezione Recupero dei lavori asincroni priva di copertura per outbox",
+                    "\n".join(errors),
+                )
                 runbook.write_text(
                     content.replace("outbox notifiche", "notifiche"),
                     encoding="utf-8",
                 )
                 errors = validate_docs.validate_runbook_operational_coverage()
-                self.assertTrue(any("sezione Ripristino da backup priva di copertura per outbox notifiche" in error for error in errors))
+                self.assertIn(
+                    "sezione Ripristino da backup priva di copertura per outbox notifiche",
+                    "\n".join(errors),
+                )
                 runbook.write_text(
                     content.replace("Pulizia cache pendente", "Pulizia cache"),
                     encoding="utf-8",
                 )
                 errors = validate_docs.validate_runbook_operational_coverage()
-                self.assertTrue(any("sezione Segnali e diagnosi priva di copertura per pulizia cache pendente" in error for error in errors))
+                self.assertIn(
+                    "sezione Segnali e diagnosi priva di copertura per pulizia cache pendente",
+                    "\n".join(errors),
+                )
 
     def test_glossaries_require_complete_unique_entries(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
