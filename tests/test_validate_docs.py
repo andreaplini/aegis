@@ -143,6 +143,28 @@ class MarkdownValidationTests(unittest.TestCase):
                 errors = validate_docs.validate_runbook_revision_history()
                 self.assertTrue(any("riga 1 del registro revisioni incompleta" in error for error in errors))
 
+    def test_runbook_requires_async_recovery_and_moderation_coverage(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            template_directory = root / "docs/template"
+            template_directory.mkdir(parents=True)
+            runbook = template_directory / "RUNBOOK.md"
+            content = (
+                "# Runbook\n\n"
+                "### Recupero dei lavori asincroni\n"
+                "Sincronizzazione, pulizia cache, outbox, esito ambiguo e idempotenza. "
+                "OPEN-08 e ADR-0005.\n\n"
+                "### Coda di moderazione\n"
+                "OPEN-12, autorizzazioni e transizioni.\n"
+            )
+            runbook.write_text(content, encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_runbook_operational_coverage(), [])
+                runbook.write_text(content.replace("outbox", "archivio"), encoding="utf-8")
+                errors = validate_docs.validate_runbook_operational_coverage()
+                self.assertTrue(any("sezione Recupero dei lavori asincroni priva di copertura per outbox" in error for error in errors))
+
     def test_glossaries_require_complete_unique_entries(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

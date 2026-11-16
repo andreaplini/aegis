@@ -532,6 +532,52 @@ def validate_runbook_revision_history() -> list[str]:
     return errors
 
 
+def validate_runbook_operational_coverage() -> list[str]:
+    path = ROOT / "docs/template/RUNBOOK.md"
+    label = path.relative_to(ROOT).as_posix()
+    lines = path.read_text(encoding="utf-8").splitlines()
+    required_sections = {
+        "### Recupero dei lavori asincroni": [
+            "sincronizzazione",
+            "pulizia cache",
+            "outbox",
+            "esito ambiguo",
+            "idempotenza",
+            "OPEN-08",
+            "ADR-0005",
+        ],
+        "### Coda di moderazione": [
+            "OPEN-12",
+            "autorizzazioni",
+            "transizioni",
+        ],
+    }
+    errors: list[str] = []
+    for heading, required_terms in required_sections.items():
+        indexes = [index for index, line in enumerate(lines) if line.strip() == heading]
+        if len(indexes) != 1:
+            errors.append(f"{label}: deve contenere una sola sezione {heading[4:]}")
+            continue
+
+        start = indexes[0] + 1
+        end = next(
+            (
+                index
+                for index in range(start, len(lines))
+                if re.match(r"^#{1,3}\s", lines[index])
+            ),
+            len(lines),
+        )
+        section = "\n".join(lines[start:end]).casefold()
+        missing = [term for term in required_terms if term.casefold() not in section]
+        if missing:
+            errors.append(
+                f"{label}: sezione {heading[4:]} priva di copertura per {', '.join(missing)}"
+            )
+
+    return errors
+
+
 def validate_non_functional_requirements() -> list[str]:
     path = ROOT / "docs/RAD.md"
     lines = path.read_text(encoding="utf-8").splitlines()
@@ -972,6 +1018,7 @@ def main() -> int:
     errors.extend(validate_document_structure())
     errors.extend(validate_glossaries())
     errors.extend(validate_runbook_revision_history())
+    errors.extend(validate_runbook_operational_coverage())
     errors.extend(validate_non_functional_requirements())
     errors.extend(validate_nfr_template())
     errors.extend(validate_functional_acceptance())
@@ -983,7 +1030,7 @@ def main() -> int:
 
     print(
         "Documentazione valida: link, ancore, struttura, milestone, requisiti, casi d’uso, "
-        "diagramma dei casi, glossari, ADR, tracciabilità, descrizioni accessibili e stile del nome "
+        "diagramma dei casi, glossari, runbook, ADR, tracciabilità, descrizioni accessibili e stile del nome "
         f"verificati in {len(files)} file Markdown."
     )
     return 0
