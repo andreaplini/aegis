@@ -27,6 +27,12 @@ VALID_RAD = """# RAD
 |---|---|---|---|---|
 | NFR-01 | Accessibilità | Usare i flussi con screen reader. | Verificare i flussi accessibili. | Referente accessibilità, da designare |
 
+#### REGISTRO DELLE VERIFICHE NFR
+
+| ID | Esito osservato | Riferimento evidenza |
+|---|---|---|
+| NFR-01 | Non eseguito | Da registrare |
+
 ### 3.4 VINCOLI
 
 ###### UC-01: Consultare un luogo
@@ -295,7 +301,7 @@ class MarkdownValidationTests(unittest.TestCase):
                 self.assertTrue(any("senza caso d’uso valido" in error for error in errors))
                 self.assertTrue(any("duplicati" in error for error in errors))
 
-    def test_non_functional_requirements_have_action_criterion_and_acceptance_owner(self) -> None:
+    def test_non_functional_requirements_have_verification_owner_result_and_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             docs = root / "docs"
@@ -306,6 +312,10 @@ class MarkdownValidationTests(unittest.TestCase):
                 "| ID | Qualità | Azione richiesta | Criterio di verifica | Responsabile dell’accettazione |\n"
                 "|---|---|---|---|---|\n"
                 "| NFR-01 | Accessibilità | Usare la tastiera | Verificare il flusso | Referente accessibilità |\n"
+                "#### REGISTRO DELLE VERIFICHE NFR\n"
+                "| ID | Esito osservato | Riferimento evidenza |\n"
+                "|---|---|---|\n"
+                "| NFR-01 | Non eseguito | Da registrare |\n"
                 "### 3.4 VINCOLI\n",
                 encoding="utf-8",
             )
@@ -324,6 +334,18 @@ class MarkdownValidationTests(unittest.TestCase):
                 )
                 errors = validate_docs.validate_non_functional_requirements()
                 self.assertTrue(any("responsabile dell’accettazione" in error for error in errors))
+                rad.write_text(
+                    rad.read_text(encoding="utf-8").replace("| Da registrare |", "|  |"),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_non_functional_requirements()
+                self.assertTrue(any("riferimento evidenza" in error for error in errors))
+                rad.write_text(
+                    rad.read_text(encoding="utf-8").replace("| NFR-01 | Non eseguito |", "| NFR-02 | Non eseguito |"),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_non_functional_requirements()
+                self.assertTrue(any("ID del registro verifiche NFR" in error for error in errors))
 
     def test_fenced_code_is_ignored_when_scanning_links(self) -> None:
         text = """[valid](docs.md)

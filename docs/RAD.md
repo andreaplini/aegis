@@ -105,6 +105,29 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 | NFR-15 | Manutenibilità | Mantenere separati dominio, casi d’uso e adattatori e documentare le interfacce e le procedure operative. | Effettuare revisione architetturale e verificare build ripetibile, test e documentazione delle interfacce e procedure. | Responsabile tecnico, da designare |
 | NFR-16 | Portabilità | Distribuire API e worker in container e mantenere la configurazione specifica dell’ambiente esterna al codice. | Avviare la stessa versione degli artefatti negli ambienti approvati e verificare le funzioni essenziali con test smoke e configurazioni distinte. | Responsabile tecnico, da designare |
 
+#### REGISTRO DELLE VERIFICHE NFR
+
+Registrare l’esito effettivamente osservato e un riferimento consultabile all’evidenza. Finché la verifica non è eseguita, usare `Non eseguito` e `Da registrare`.
+
+| ID | Esito osservato | Riferimento evidenza |
+|---|---|---|
+| NFR-01 | Non eseguito | Da registrare |
+| NFR-02 | Non eseguito | Da registrare |
+| NFR-03 | Non eseguito | Da registrare |
+| NFR-04 | Non eseguito | Da registrare |
+| NFR-05 | Non eseguito | Da registrare |
+| NFR-06 | Non eseguito | Da registrare |
+| NFR-07 | Non eseguito | Da registrare |
+| NFR-08 | Non eseguito | Da registrare |
+| NFR-09 | Non eseguito | Da registrare |
+| NFR-10 | Non eseguito | Da registrare |
+| NFR-11 | Non eseguito | Da registrare |
+| NFR-12 | Non eseguito | Da registrare |
+| NFR-13 | Non eseguito | Da registrare |
+| NFR-14 | Non eseguito | Da registrare |
+| NFR-15 | Non eseguito | Da registrare |
+| NFR-16 | Non eseguito | Da registrare |
+
 ### 3.4 VINCOLI
 
 | Vincolo | Specifica e stato |

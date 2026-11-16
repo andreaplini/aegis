@@ -42,11 +42,19 @@ Ogni requisito descrive un’azione osservabile, indica chi la avvia o la esegue
 
 ### 3.3 REQUISITI NON FUNZIONALI
 
-Descrivere qualità e vincoli misurabili. Ogni riga deve indicare un’azione richiesta, un criterio osservabile e il ruolo responsabile dell’accettazione. Se la persona non è stata designata, dichiararlo. Soglie e metodi non ancora concordati restano da definire.
+Descrivere qualità e vincoli misurabili. Ogni riga deve indicare un’azione richiesta, un criterio osservabile e il ruolo responsabile dell’accettazione. Se la persona non è stata designata, dichiararlo. Registrare l’esito osservato e il riferimento all’evidenza. Finché la verifica non è eseguita, indicare `Non eseguito` e `Da registrare`. Soglie e metodi non ancora concordati restano da definire.
 
 | ID | Qualità | Azione richiesta | Criterio di verifica | Responsabile dell’accettazione |
 |---|---|---|---|---|
 | NFR-XX | Da definire | Da descrivere in forma verificabile | Misura, metodo, ambiente e soglia da concordare | Ruolo responsabile, da designare |
+
+#### REGISTRO DELLE VERIFICHE NFR
+
+Registrare l’esito effettivamente osservato e un riferimento consultabile all’evidenza. Finché la verifica non è eseguita, usare `Non eseguito` e `Da registrare`.
+
+| ID | Esito osservato | Riferimento evidenza |
+|---|---|---|
+| NFR-XX | Non eseguito | Da registrare |
 
 Considerare, quando pertinenti, usabilità e accessibilità, performance, scalabilità, sicurezza e privacy, affidabilità, compatibilità, manutenibilità e portabilità.
 

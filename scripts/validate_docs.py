@@ -508,32 +508,45 @@ def validate_non_functional_requirements() -> list[str]:
     end = lines.index(section_end)
     section = lines[start:end]
     expected_headers = ["ID", "Qualità", "Azione richiesta", "Criterio di verifica", "Responsabile dell’accettazione"]
-    header_line = next((line for line in section if line.startswith("| ID |")), None)
-    if header_line is None:
+    evidence_headers = ["ID", "Esito osservato", "Riferimento evidenza"]
+    header_lines = [line for line in section if line.startswith("| ID |")]
+    if not header_lines:
         return ["docs/RAD.md: tabella NFR senza intestazione"]
-    headers = [cell.strip() for cell in header_line.strip().strip("|").split("|")]
     errors: list[str] = []
-    if headers != expected_headers:
-        errors.append("docs/RAD.md: intestazione tabella NFR non conforme al modello")
+    if len(header_lines) != 2:
+        errors.append("docs/RAD.md: tabelle NFR incomplete o duplicate")
+    if [cell.strip() for cell in header_lines[0].strip().strip("|").split("|")] != expected_headers:
+        errors.append("docs/RAD.md: intestazione requisiti NFR non conforme al modello")
+    if len(header_lines) > 1 and [cell.strip() for cell in header_lines[1].strip().strip("|").split("|")] != evidence_headers:
+        errors.append("docs/RAD.md: intestazione registro verifiche NFR non conforme al modello")
 
     ids: list[str] = []
+    evidence_ids: list[str] = []
+    evidence_table_started = False
     for line in section:
+        if line in header_lines:
+            evidence_table_started = line == header_lines[1] if len(header_lines) > 1 else False
+            continue
         if not NON_FUNCTIONAL_REQUIREMENT_ROW_PATTERN.match(line):
             continue
         cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
         requirement_id = cells[0]
-        ids.append(requirement_id)
-        if len(cells) != len(expected_headers):
-            errors.append(f"docs/RAD.md: {requirement_id} ha un numero di colonne non valido")
-            continue
-        if not cells[1] or not cells[2] or not cells[3] or not cells[4]:
-            errors.append(f"docs/RAD.md: {requirement_id} deve avere qualità, azione, criterio di verifica e responsabile dell’accettazione")
+        if evidence_table_started:
+            evidence_ids.append(requirement_id)
+            if len(cells) != len(evidence_headers) or not all(cells[1:]):
+                errors.append(f"docs/RAD.md: {requirement_id} deve avere esito osservato e riferimento evidenza")
+        else:
+            ids.append(requirement_id)
+            if len(cells) != len(expected_headers) or not all(cells[1:]):
+                errors.append(f"docs/RAD.md: {requirement_id} deve avere qualità, azione, criterio di verifica e responsabile dell’accettazione")
 
     if not ids:
         errors.append("docs/RAD.md: tabella NFR senza requisiti")
     duplicates = sorted({requirement_id for requirement_id in ids if ids.count(requirement_id) > 1})
     if duplicates:
         errors.append(f"docs/RAD.md: requisiti non funzionali duplicati: {', '.join(duplicates)}")
+    if sorted(ids) != sorted(evidence_ids):
+        errors.append("docs/RAD.md: gli ID del registro verifiche NFR devono corrispondere ai requisiti NFR")
     return errors
 
 

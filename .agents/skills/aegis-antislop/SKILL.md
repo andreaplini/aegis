@@ -25,7 +25,7 @@ Use this skill whenever creating, reviewing, or revising aegis documentation, di
 ## Requirements and diagrams
 
 - Give each functional requirement an actor, observable action, priority, and defined use case.
-- Give each quality requirement an action, testable acceptance method, and acceptance owner. If governance has not appointed a person, record the accountable role and mark the appointment as pending.
+- Give each quality requirement an action, testable acceptance method, acceptance owner, observed result, and evidence reference. If governance has not appointed a person, record the accountable role and mark the appointment as pending. Mark unexecuted checks explicitly and never invent results.
 - Give each use case actors, preconditions, postconditions, quality constraints, normal flow, and relevant alternatives or errors.
 - Keep the overview diagram synchronized with the detailed cases. Show each use-case ID once, all participating human and external actors, and their associations.
 - Ensure diagram labels, descriptions, flows, failure behavior, and requirements agree.
