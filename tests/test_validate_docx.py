@@ -84,7 +84,8 @@ class DocxValidationTests(unittest.TestCase):
     def test_rejects_wrong_project_name_and_long_dash(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "sdd-is.docx"
-            write_docx(path, "Aegis — architettura\nTitolo documento")
+            invalid_title = " ".join(("aegis".capitalize(), chr(0x2014), "architettura"))
+            write_docx(path, invalid_title + "\nTitolo documento")
             errors = validate_docx.validate_document(path, ("Titolo documento",))
             self.assertTrue(any("esattamente aegis" in error for error in errors))
             self.assertTrue(any("trattino lungo" in error for error in errors))
