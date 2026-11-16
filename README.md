@@ -11,7 +11,8 @@ Il repository contiene la baseline documentale e l'esportazione automatizzata di
 | Percorso | Contenuto |
 |---|---|
 | `docs/` | [RAD](docs/RAD.md), [SDD](docs/SDD.md), [modelli e riferimenti](docs/template.md), [roadmap](docs/MILESTONES.md) e [guida ai contributi](docs/CONTRIBUTING.md). |
-| `config/data/` | Dati e configurazioni del progetto. |
+| `config/` | Configurazione condivisa della toolchain, inclusa la versione Pandoc. |
+| `config/data/` | Directory per i dati del progetto; attualmente vuota. |
 | `src/` | Codice applicativo. |
 | `.agents/skills/` | Skill Codex specifiche del progetto. |
 | `.github/` | Workflow CI, Dependabot e collegamento issue alla segnalazione privata delle vulnerabilità. |
