@@ -86,6 +86,8 @@ def validate_document(path: Path, required_text: tuple[str, ...] | None = None) 
         errors.append(f"{path}: il nome del prodotto deve essere scritto esattamente aegis")
     if chr(0x2014) in text:
         errors.append(f"{path}: usare punteggiatura semplice, senza trattino lungo")
+    if ";" in text:
+        errors.append(f"{path}: evitare il punto e virgola nel documento esportato")
     return errors
 
 
