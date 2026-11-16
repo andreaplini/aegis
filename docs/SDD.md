@@ -68,6 +68,7 @@ Questo documento descrive l’architettura software proposta per aegis e dettagl
 | [Template RAD/SDD convertito](template.md) | Struttura accademica di riferimento. |
 | [ADR-0001: Baseline Java e Jakarta EE](adr/ADR-0001-runtime-baseline.md) | Proposta non approvata per la baseline runtime. Include le fonti ufficiali consultate. |
 | [ADR-0002: Validità dei dati e coerenza della cache](adr/ADR-0002-data-freshness-and-cache-consistency.md) | Proposta non approvata per regole di validità per fonte e tipo e consistenza delle cache. |
+| [ADR-0003: Contratto del provider di routing accessibile](adr/ADR-0003-routing-provider-contract.md) | Proposta non approvata per il contratto, la compatibilità e il fallback del routing. |
 | Specifica OpenAPI | Da generare e versionare insieme all’API. |
 | Documentazione Jakarta EE e PostGIS | Riferimenti tecnici da associare alle versioni selezionate. |
 
@@ -352,7 +353,7 @@ Il sottosistema Accessibility recupera le caratteristiche associate ai luoghi e 
 
 ### 4.4 PIANIFICAZIONE DEI PERCORSI
 
-Il caso d’uso `PlanRoute` valida origine, destinazione e vincoli, invoca `RoutingProvider` e combina il risultato con le informazioni di accessibilità. Dati affidabili e compatibili possono essere usati per escludere tratti. Dati incerti sono mostrati come tali. Il servizio non modifica lo stato persistente di dominio.
+Il caso d’uso `PlanRoute` valida origine, destinazione e vincoli, invoca `RoutingProvider` e combina il risultato con le informazioni di accessibilità. Dati affidabili e compatibili possono essere usati per escludere tratti. Dati incerti sono mostrati come tali. Un risultato del provider non costituisce da solo prova di accessibilità. Timeout, risposta parziale e profilo non supportato sono esiti espliciti, mentre un eventuale fallback è marcato non verificato. Contratto e criteri di selezione del provider sono proposti in [ADR-0003](adr/ADR-0003-routing-provider-contract.md) e restano da approvare. Il servizio non modifica lo stato persistente di dominio.
 
 ### 4.5 SEGNALAZIONI E MODERAZIONE
 
