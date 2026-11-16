@@ -95,7 +95,7 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 | NFR-05 | Sicurezza | Proteggere le comunicazioni con TLS e le funzioni riservate con ruoli. | Verificare TLS sugli endpoint esposti e rifiuto lato server delle operazioni riservate per ruoli non autorizzati. |
 | NFR-06 | Sicurezza | Applicare rate limiting, validazione server-side e protezione da injection agli endpoint. | Provare input malformati e injection. Verificare il rifiuto senza effetti parziali e il comportamento del rate limiting rispetto alle soglie approvate. |
 | NFR-07 | Sicurezza | Controllare gli upload per tipo, dimensione e contenuto prima dell’uso o pubblicazione. | Provare file ammessi, non validi e con scansione fallita. Verificare rifiuto o quarantena e accesso controllato ai file. |
-| NFR-08 | Affidabilità dati | Esporre provenienza e freschezza e applicare scadenze per fonte e tipo di dato. | Verificare fonte, timestamp e validità. Testare dati assenti, scaduti e incoerenti e confermare che risultino sconosciuti. |
+| NFR-08 | Affidabilità dati | Esporre provenienza e freschezza e applicare scadenze per fonte e tipo di dato. | Verificare fonte, timestamp e validità. Testare dati assenti, scaduti e incoerenti e confermare che risultino sconosciuti. Con pubblicazioni concorrenti, verificare che ogni risposta e chiave cache usino un vettore coerente delle generazioni attive. |
 | NFR-09 | Operatività | Produrre log strutturati senza dati sensibili e metriche operative. | In ambiente concordato verificare log e metriche di disponibilità, latenza, sincronizzazioni e coda di moderazione. Controllare che log e allarmi non espongano dati sensibili. |
 | NFR-10 | Continuità | Configurare allarmi e backup automatici e svolgere prove di ripristino. | Eseguire e registrare una prova di ripristino e verificare l’integrità dei dati. Approvare gli obiettivi di ripristino prima del lancio. |
 | NFR-11 | Performance | Misurare e mantenere entro soglie concordate la latenza API e il caricamento delle viste principali. | Misurare p95 in staging con concorrenza e dataset approvati. Il requisito non è valutabile finché target e carico non sono concordati. |
@@ -491,19 +491,19 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-  accDescr: La query legge dal repository la generazione attiva e usa una chiave cache versionata. Il worker recupera la pulizia pendente e può ripeterla dopo un errore.
+  accDescr: La query legge in modo consistente le generazioni attive e usa una chiave cache versionata. Al cache miss legge i dati nello stesso snapshot. Il worker recupera la pulizia pendente e può ripeterla dopo un errore.
   participant Q as Query luoghi
   participant R as Repository
   participant C as Cache geografica
   participant W as Worker pulizia cache
-  Q->>R: Legge gli ID delle generazioni attive
-  R-->>Q: Fonte e generazione attiva
-  Q->>C: Cerca chiave per fonte, generazione e area
+  Q->>R: Legge in modo consistente il vettore delle generazioni attive
+  R-->>Q: Fonti e generazioni dello snapshot
+  Q->>C: Cerca chiave per vettore, area e query normalizzata
   alt Cache valida
     C-->>Q: Dati della generazione attiva
   else Cache assente
-    Q->>R: Legge i dati della generazione attiva
-    R-->>Q: Dati e provenienza
+    Q->>R: Legge dati e provenienza nello stesso snapshot
+    R-->>Q: Dati del vettore richiesto
     Q->>C: Memorizza con la chiave versionata
   end
   loop Finché la pulizia è pendente
