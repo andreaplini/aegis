@@ -17,10 +17,17 @@ VALID_RAD = """# RAD
 
 ### 3.2 REQUISITI FUNZIONALI
 
-| ID | Azione | Caso |
-|---|---|---|
-| FR-01 | Consultare un luogo | UC-01 |
-| NFR-01 | Accessibilità | Usare i flussi con screen reader |
+| ID | Responsabile dell’azione | Azione richiesta | Priorità | Caso d’uso |
+|---|---|---|---|---|
+| FR-01 | Sistema | Consultare un luogo. | Must | UC-01 |
+
+### 3.3 REQUISITI NON FUNZIONALI
+
+| ID | Qualità | Azione richiesta | Criterio di verifica |
+|---|---|---|---|
+| NFR-01 | Accessibilità | Usare i flussi con screen reader. | Verificare i flussi accessibili. |
+
+### 3.4 VINCOLI
 
 ###### UC-01: Consultare un luogo
 
@@ -35,9 +42,9 @@ VALID_SDD = """# SDD
 
 ### 3.2 DECOMPOSIZIONE DEL SISTEMA
 
-| Modulo | Requisiti |
-|---|---|
-| Places | FR-01, UC-01, NFR-01 |
+| Modulo | Responsabilità | Requisiti funzionali e casi d’uso | Requisiti di qualità |
+|---|---|---|---|
+| Places | Gestire i luoghi. | FR-01, UC-01 | NFR-01 |
 
 #### 3.2.1 DIAGRAMMA DEI MODULI
 """
@@ -133,7 +140,7 @@ class MarkdownValidationTests(unittest.TestCase):
                 self.assertIn("inesistente", validate_docs.validate_link(source, "missing.md"))
                 self.assertIn("ancora inesistente", validate_docs.validate_link(source, "target.md#missing"))
 
-    def test_all_requirement_and_case_ids_map_to_a_module(self) -> None:
+    def test_module_traceability_rejects_missing_unknown_and_mismatched_ids(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             docs = root / "docs"
@@ -144,8 +151,32 @@ class MarkdownValidationTests(unittest.TestCase):
             with patch.object(validate_docs, "ROOT", root):
                 self.assertEqual(validate_docs.validate_traceability(), [])
                 sdd = docs / "SDD.md"
-                sdd.write_text(VALID_SDD.replace(", NFR-01", ""), encoding="utf-8")
+                sdd.write_text(VALID_SDD.replace("| NFR-01 |", "|  |"), encoding="utf-8")
                 self.assertIn("NFR-01", validate_docs.validate_traceability()[0])
+
+                sdd.write_text(VALID_SDD.replace("NFR-01", "NFR-99"), encoding="utf-8")
+                errors = validate_docs.validate_traceability()
+                self.assertTrue(any("non presenti nel RAD: NFR-99" in error for error in errors))
+
+                rad = docs / "RAD.md"
+                two_requirements = VALID_RAD.replace(
+                    "### 3.3 REQUISITI NON FUNZIONALI",
+                    "| FR-02 | Sistema | Pianificare un viaggio. | Must | UC-02 |\n"
+                    "### 3.3 REQUISITI NON FUNZIONALI",
+                )
+                rad.write_text(two_requirements, encoding="utf-8")
+                mismatched_modules = VALID_SDD.replace(
+                    "FR-01, UC-01",
+                    "FR-01, UC-02",
+                ).replace(
+                    "#### 3.2.1 DIAGRAMMA DEI MODULI",
+                    "| Routing | Pianificare i viaggi. | FR-02, UC-01 | NFR-01 |\n\n"
+                    "#### 3.2.1 DIAGRAMMA DEI MODULI",
+                )
+                sdd.write_text(mismatched_modules, encoding="utf-8")
+                errors = validate_docs.validate_traceability()
+                self.assertTrue(any("FR-01 non è collegato" in error for error in errors))
+                self.assertTrue(any("FR-02 non è collegato" in error for error in errors))
 
     def test_use_case_fields_and_requirement_mapping(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

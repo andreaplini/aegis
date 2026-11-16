@@ -104,7 +104,8 @@ def validate_link(source: Path, destination: str) -> str | None:
 def validate_traceability() -> list[str]:
     rad_path = ROOT / "docs/RAD.md"
     sdd_path = ROOT / "docs/SDD.md"
-    rad_ids = set(TRACE_ID_PATTERN.findall(rad_path.read_text(encoding="utf-8")))
+    rad_text = rad_path.read_text(encoding="utf-8")
+    rad_ids = set(TRACE_ID_PATTERN.findall(rad_text))
     sdd_text = sdd_path.read_text(encoding="utf-8")
     section_start = "### 3.2 DECOMPOSIZIONE DEL SISTEMA"
     section_end = "#### 3.2.1 DIAGRAMMA DEI MODULI"
@@ -112,11 +113,57 @@ def validate_traceability() -> list[str]:
         return ["docs/SDD.md: sezione di decomposizione dei moduli non trovata"]
 
     module_section = sdd_text.split(section_start, 1)[1].split(section_end, 1)[0]
-    module_ids = set(TRACE_ID_PATTERN.findall(module_section))
+    module_mappings: dict[str, set[str]] = {}
+    for line in module_section.splitlines():
+        if not line.startswith("|"):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) < 3 or cells[0] in {"Modulo", "---"}:
+            continue
+        module_mappings.setdefault(cells[0], set()).update(
+            TRACE_ID_PATTERN.findall("|".join(cells[2:]))
+        )
+
+    module_ids = set().union(*module_mappings.values()) if module_mappings else set()
+    errors: list[str] = []
     missing = sorted(rad_ids - module_ids)
-    if not missing:
-        return []
-    return [f"docs/SDD.md: requisiti o casi d’uso RAD non mappati a un modulo: {', '.join(missing)}"]
+    if missing:
+        errors.append(
+            "docs/SDD.md: requisiti o casi d’uso RAD non mappati a un modulo: "
+            + ", ".join(missing)
+        )
+    unknown = sorted(module_ids - rad_ids)
+    if unknown:
+        errors.append(
+            "docs/SDD.md: requisiti o casi d’uso non presenti nel RAD: " + ", ".join(unknown)
+        )
+
+    rad_lines = rad_text.splitlines()
+    fr_start = "### 3.2 REQUISITI FUNZIONALI"
+    fr_end = "### 3.3 REQUISITI NON FUNZIONALI"
+    if fr_start not in rad_lines or fr_end not in rad_lines:
+        return errors + ["docs/RAD.md: sezione requisiti funzionali non trovata per la tracciabilità"]
+    start = rad_lines.index(fr_start) + 1
+    end = rad_lines.index(fr_end)
+    for line in rad_lines[start:end]:
+        if not FUNCTIONAL_REQUIREMENT_ROW_PATTERN.match(line):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) < 5:
+            continue
+        requirement_id = cells[0]
+        linked_cases = set(re.findall(r"UC-\d{2}", cells[4]))
+        mapped_cases: set[str] = set()
+        for mapping in module_mappings.values():
+            if requirement_id in mapping:
+                mapped_cases.update(mapping & linked_cases)
+        absent_cases = sorted(linked_cases - mapped_cases)
+        if absent_cases:
+            errors.append(
+                f"docs/SDD.md: {requirement_id} non è collegato nei moduli ai casi d’uso RAD: "
+                + ", ".join(absent_cases)
+            )
+    return errors
 
 
 def validate_project_style() -> list[str]:
