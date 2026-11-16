@@ -42,7 +42,7 @@ Bozza aggiornata il 16 novembre 2026. I requisiti sono da convalidare con person
 
 La web app aiuta le persone con disabilità a pianificare spostamenti urbani, consultare l’accessibilità di stazioni, fermate e mezzi e segnalare barriere o guasti. Il sistema mostra la fonte e la data di aggiornamento delle caratteristiche. Un dato assente o scaduto è sconosciuto e non viene interpretato come prova di accessibilità.
 
-Gli obiettivi sono trovare e confrontare percorsi, consultare le caratteristiche dei luoghi, inviare e tracciare segnalazioni e permettere ai moderatori di gestirle senza perdere la cronologia. Il successo sarà valutato con prove sul campo e sessioni con persone con disabilità. Area pilota, partecipanti, metriche e soglie sono da definire.
+Gli obiettivi sono trovare e confrontare percorsi, consultare le caratteristiche dei luoghi, inviare e tracciare segnalazioni e permettere ai moderatori di gestirle senza perdere la cronologia. Il successo sarà valutato con prove sul campo e sessioni con persone con disabilità. Area pilota e fonti sono da approvare in OPEN-01. Partecipanti e protocollo di usabilità seguono OPEN-06. Metriche operative e soglie seguono OPEN-07.
 
 | Obiettivo | Criterio di verifica |
 |---|---|
@@ -136,8 +136,8 @@ Registrare l’esito effettivamente osservato e un collegamento consultabile all
 | NFR-03 | Accessibilità | Verificare contrasto e fruibilità con zoom. | Verificare i criteri dello standard e del livello da approvare in OPEN-06. Rivedere la proposta [ADR-0010](adr/ADR-0010-accessibility-evaluation-baseline.md). Finché OPEN-06 resta aperto il requisito non è valutabile. | Referente accessibilità, da designare |
 | NFR-04 | Privacy | Minimizzare i dati personali e separare identità e segnalazioni pubbliche. | Prima del lancio approvare finalità, accessi, conservazione e cancellazione. Verificare autorizzazioni, scadenza e cancellazione con prove sui dati. | Responsabile privacy, da designare |
 | NFR-05 | Sicurezza | Proteggere le comunicazioni con TLS e le funzioni riservate con ruoli. | Verificare TLS sugli endpoint esposti e rifiuto lato server delle operazioni riservate per ruoli non autorizzati. | Responsabile sicurezza, da designare |
-| NFR-06 | Sicurezza | Applicare rate limiting, validazione server-side e protezione da injection agli endpoint. | Provare input malformati e injection. Verificare il rifiuto senza effetti parziali e il comportamento del rate limiting rispetto alle soglie approvate. | Responsabile sicurezza, da designare |
-| NFR-07 | Sicurezza | Controllare gli upload per tipo, dimensione e contenuto prima dell’uso o pubblicazione. | Provare file ammessi, non validi e con scansione fallita. Verificare rifiuto o quarantena e accesso controllato ai file. | Responsabile sicurezza, da designare |
+| NFR-06 | Sicurezza | Applicare rate limiting, validazione server-side e protezione da injection agli endpoint. | Provare input malformati e injection. Verificare il rifiuto senza effetti parziali e il comportamento del rate limiting rispetto alle regole da approvare in OPEN-15. | Responsabile sicurezza, da designare |
+| NFR-07 | Sicurezza | Controllare gli upload per tipo, dimensione e contenuto prima dell’uso o pubblicazione. | Provare file ammessi, non validi, con scansione fallita o indisponibile. Verificare rifiuto o quarantena e accesso controllato secondo OPEN-15 e OPEN-05. | Responsabile sicurezza, da designare |
 | NFR-08 | Affidabilità dati | Esporre provenienza e freschezza e applicare scadenze per fonte e tipo di dato. | Verificare fonte, timestamp e validità. Testare dati assenti, scaduti e incoerenti e confermare che risultino sconosciuti. Con pubblicazioni concorrenti, verificare che ogni risposta e chiave cache usino un vettore coerente delle generazioni attive. | Responsabile dati, da designare |
 | NFR-09 | Operatività | Produrre log strutturati senza dati sensibili e metriche operative. | In ambiente concordato verificare log e metriche di disponibilità, latenza, sincronizzazioni, coda di moderazione e stato delle notifiche pendenti. Controllare che log e allarmi non espongano dati sensibili. | Responsabile operativo, da designare |
 | NFR-10 | Continuità | Configurare allarmi e backup automatici e svolgere prove di ripristino. | Eseguire e registrare una prova di ripristino. Verificare integrità, riferimenti tra dati e oggetti e ripresa dei lavori asincroni pendenti, inclusi gli esiti di notifica ambigui. Approvare gli obiettivi di ripristino prima del lancio. | Responsabile operativo, da designare |
@@ -175,12 +175,12 @@ Registrare l’esito effettivamente osservato e un collegamento consultabile all
 
 | Vincolo | Specifica e stato |
 |---|---|
-| Piattaforma applicativa | Usare Java LTS e Jakarta EE per API e worker. Usare Jakarta Faces e Facelets per le viste server-side. Versioni e runtime sono da convalidare. |
+| Piattaforma applicativa | Usare Java LTS e Jakarta EE per API e worker. Usare Jakarta Faces e Facelets per le viste server-side. Versioni e runtime sono da convalidare secondo OPEN-08. |
 | Persistenza e file | Usare PostgreSQL con PostGIS, migrazioni versionate e storage compatibile S3 per le immagini. |
 | Struttura software | Separare frontend, casi d’uso, dominio e adattatori. Documentare API versionate con OpenAPI. |
-| Accesso | La consultazione è pubblica. Autenticazione e ruoli per invio e moderazione sono da definire. |
+| Accesso | La consultazione è pubblica. Autenticazione e ruoli per invio e moderazione sono da definire secondo OPEN-04 e OPEN-12. |
 | Dati di accessibilità | Ogni proprietà registra provenienza e validità. Dato assente o scaduto è sconosciuto. |
-| Dati personali e immagini | Applicare consenso, accesso controllato, conservazione limitata e cancellazione secondo policy da concordare. |
+| Dati personali e immagini | Applicare consenso, accesso controllato, conservazione limitata e cancellazione secondo le policy da approvare in OPEN-05. |
 
 ### 3.5 MODELLI DI SISTEMA
 
@@ -189,9 +189,9 @@ Registrare l’esito effettivamente osservato e un collegamento consultabile all
 | Utente/ruolo | Obiettivi | Contesto |
 |---|---|---|
 | Viaggiatore | Consultare luoghi e pianificare un viaggio secondo le proprie esigenze. | Web responsive, anche con tecnologie assistive. |
-| Segnalatore | Inviare una barriera o un guasto e seguirne lo stato. | Pubblico. Autenticazione e possibilità di invio anonimo da definire. |
+| Segnalatore | Inviare una barriera o un guasto e seguirne lo stato. | Pubblico. Autenticazione e possibilità di invio anonimo da definire secondo OPEN-04. |
 | Moderatore | Valutare segnalazioni e gestire duplicati. | Area riservata, autenticazione e ruolo richiesti. |
-| Gestore fonte | Mantenere configurazione e qualità delle sincronizzazioni. | Ruolo operativo da definire. |
+| Gestore fonte | Mantenere configurazione e qualità delle sincronizzazioni. | Ruolo operativo da concordare secondo OPEN-01 e OPEN-14. |
 | Amministratore tecnico | Gestire configurazione, sicurezza e operatività. | Accesso privilegiato e audit. |
 
 #### 3.5.2 SCENARI
