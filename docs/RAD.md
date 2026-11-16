@@ -549,25 +549,25 @@ Raccomandazioni non disponibili prima delle prove. Saranno ordinate per priorit�
 
 ### 4.3 VALUTAZIONE DELL’USABILITÀ SECONDO ISO 9241-110
 
-La valutazione sarà condotta sul prototipo; partecipanti, metodo, risultati e limiti sono da documentare. Non sono stati assegnati punteggi.
+La valutazione potrà essere condotta sul prototipo usando come riferimento [ISO 9241-110:2020](https://www.iso.org/standard/75258.html), indicata da ISO come edizione corrente e confermata nel 2025. L’adozione dello standard, il protocollo, i partecipanti, i risultati e i limiti restano da concordare secondo OPEN-06. Non sono stati assegnati punteggi.
 
 #### 4.3.1 DETTAGLIO PUNTEGGI ASSEGNATI
 
-Il modello di valutazione usa una scala da zero a quattro per ciascuno dei sette principi riportati nell’esempio. I punteggi non sono stati assegnati perché il prototipo e le prove non sono disponibili. Le definizioni e i criteri di valutazione saranno concordati prima della valutazione.
+La matrice riporta i sette principi dell’edizione 2020 per pianificare la valutazione. Scala, criteri ed evidenze saranno definiti nel protocollo approvato prima delle prove. I punteggi non sono stati assegnati perché il prototipo e le prove non sono disponibili.
 
 | Principio valutato | Punteggio | Evidenza e motivazione |
 |---|---|---|
-| Adeguatezza al compito | Non assegnato | Da valutare sul completamento dei compiti principali. |
+| Idoneità ai compiti dell’utente | Non assegnato | Da valutare sul supporto ai compiti e agli obiettivi degli utenti. |
 | Auto-descrittività | Non assegnato | Da valutare sulla comprensione di etichette, stati e controlli. |
-| Controllo da parte dell’utente | Non assegnato | Da valutare su navigazione, possibilità di rivedere le scelte e recupero dagli errori. |
-| Conformità alle aspettative | Non assegnato | Da valutare su coerenza di comportamenti, termini e presentazione. |
-| Tolleranza agli errori | Non assegnato | Da valutare sulla prevenzione, segnalazione e correzione degli errori. |
-| Adattabilità | Non assegnato | Da valutare con profili, dispositivi e tecnologie assistive differenti. |
-| Efficienza nell’uso delle risorse | Non assegnato | Da valutare in relazione al compito e alle risorse richieste all’utente. |
+| Conformità alle aspettative dell’utente | Non assegnato | Da valutare su coerenza di comportamenti, termini e presentazione. |
+| Apprendibilità | Non assegnato | Da valutare sulla facilità di apprendimento e di ripresa dopo un’interruzione. |
+| Controllabilità | Non assegnato | Da valutare su navigazione, possibilità di rivedere le scelte e controllo dell’interazione. |
+| Robustezza agli errori d’uso | Non assegnato | Da valutare sulla prevenzione, segnalazione e correzione degli errori. |
+| Coinvolgimento dell’utente | Non assegnato | Da valutare sull’interazione e sulla motivazione rispetto ai compiti d’uso. |
 
 #### 4.3.2 PROFILO DI VALUTAZIONE VISIVA
 
-Il profilo visuale non è disponibile perché i punteggi non sono stati raccolti. Dopo la valutazione sarà rappresentato, preferibilmente con un diagramma radar dei sette principi; una tabella accessibile e una descrizione testuale accompagneranno sempre il grafico. Non saranno introdotti valori non osservati.
+Il profilo visivo non è disponibile perché i punteggi non sono stati raccolti. Dopo la valutazione potrà essere rappresentato con un diagramma radar dei sette principi; una tabella accessibile e una descrizione testuale accompagneranno il grafico. Non saranno introdotti valori non osservati.
 
 ## GLOSSARIO
 
