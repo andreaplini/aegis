@@ -2,12 +2,12 @@
 
 ## Stato e ambito
 
-Il repository contiene la documentazione RAD/SDD e l’esportazione DOCX. L’applicazione non è ancora implementata e non dispone di build o test applicativi. Seguire la [roadmap](MILESTONES.md) per distinguere attività completate, pianificate e decisioni aperte.
+Il repository contiene la documentazione RAD/SDD e l’esportazione DOCX. L’applicazione non è ancora implementata e non dispone di build o test applicativi. Il repository è pubblico ma non dichiara una licenza. Finché OPEN-10 non è risolta, non inviare contributi esterni che richiedono diritti di riuso o ridistribuzione. Consultare la proposta [ADR-0008](adr/ADR-0008-repository-license-and-contributions.md). Seguire la [roadmap](MILESTONES.md) per distinguere attività completate, pianificate e decisioni aperte.
 
 ## Flusso di lavoro
 
 1. Aprire o aggiornare un’attività descrivendo problema, attore, risultato atteso, criteri di accettazione e requisiti collegati. È possibile copiare il [modello di issue](template/ISSUE.md).
-2. Lavorare su un branch dedicato e aprire una pull request verso `main`. Non riscrivere la cronologia condivisa e non inserire segreti o dati personali nel repository o nelle issue.
+2. I maintainer lavorano su un branch dedicato e aprono una pull request verso `main`. Chi segnala un problema può usare le issue abilitate. Non riscrivere la cronologia condivisa e non inserire segreti o dati personali nel repository o nelle issue.
 3. Aggiornare RAD per modifiche di requisito o comportamento. Aggiornare SDD per modifiche architetturali o operative. Registrare le decisioni architetturali in un ADR, mantenendo esplicito lo stato di approvazione.
 4. Collegare ogni requisito funzionale interessato a casi d’uso, moduli e verifiche. Specificare come vengono verificate accessibilità, privacy e sicurezza quando la modifica le influenza.
 5. Riportare nella pull request i controlli eseguiti e i risultati osservati. Non indicare test, prove con utenti, verifiche di ripristino o analisi non eseguite.
