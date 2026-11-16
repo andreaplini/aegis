@@ -63,3 +63,18 @@ Verifica di sola lettura del repository `kairosci/aegis` il 16 novembre 2026:
 | Release | Nessuna release pubblicata |
 
 La configurazione Dependabot apre pull request settimanali per gli aggiornamenti di versione delle GitHub Actions e degli strumenti Node documentali. La CI esegue `make audit-doc-tools` sugli strumenti e blocca la build per vulnerabilità ad alta o critica gravità. Lo stesso controllo può essere eseguito in locale. Gli avvisi, gli aggiornamenti di sicurezza e la segnalazione privata delle vulnerabilità sono attivi. Il flusso “New issue” mostra il collegamento al report privato e la [politica di sicurezza](SECURITY.md) ne descrive l'uso. Il proprietario deve ancora decidere la licenza e i termini di contribuzione, la protezione di `main`, le review e gli status check obbligatori e la policy di merge.
+
+La verifica delle impostazioni GitHub è stata eseguita in sola lettura il 16 novembre 2026. Gli endpoint sono relativi a `https://api.github.com`.
+
+| Evidenza | Endpoint o artefatto | Risultato osservato |
+|---|---|---|
+| Visibilità, branch predefinito e licenza | `GET /repos/kairosci/aegis` tramite `gh repo view` | Pubblico, `main`, licenza assente. |
+| Protezione del branch | `GET /repos/kairosci/aegis/branches/main/protection` | `404`, branch non protetto. |
+| Ruleset | `GET /repos/kairosci/aegis/rulesets` | Elenco vuoto. |
+| Avvisi di vulnerabilità | `GET /repos/kairosci/aegis/vulnerability-alerts` | Attivi, risposta positiva senza corpo. |
+| Aggiornamenti di sicurezza Dependabot | `GET /repos/kairosci/aegis/automated-security-fixes` | `enabled: true`. |
+| Scansione e protezione dei segreti | Proprietà `security_and_analysis` di `GET /repos/kairosci/aegis` | Scansione e push protection attive. Pattern non provider e controlli di validità disattivati. |
+| Segnalazione privata delle vulnerabilità | `GET /repos/kairosci/aegis/private-vulnerability-reporting` | `enabled: true`. |
+| Configurazione versionata | [.github/dependabot.yml](../.github/dependabot.yml) e [.github/ISSUE_TEMPLATE/config.yml](../.github/ISSUE_TEMPLATE/config.yml) | Aggiornamenti settimanali documentati e collegamento al report privato configurato. |
+
+Questi risultati descrivono lo stato osservato in quella data e non sostituiscono la decisione del proprietario su OPEN-09, OPEN-10 e OPEN-11.
