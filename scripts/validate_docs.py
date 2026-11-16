@@ -894,6 +894,7 @@ def validate_use_case_specs() -> list[str]:
         "condizioni d’uscita",
         "requisiti qualitativi",
         "flusso degli eventi",
+        "flussi alternativi e di errore",
     }
     for index, (start, case_id) in enumerate(headings):
         end = headings[index + 1][0] if index + 1 < len(headings) else len(lines)

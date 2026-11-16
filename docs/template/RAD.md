@@ -120,7 +120,7 @@ flowchart LR
 
 ##### Specifiche dei casi d’uso
 
-Ogni scheda riporta identificativo, scopo, attori, precondizioni, postcondizioni e flusso principale. Specificare alternative ed errori quando modificano l’esito.
+Ogni scheda riporta identificativo, scopo, attori, precondizioni, postcondizioni, requisiti qualitativi, flusso principale e flussi alternativi o di errore pertinenti. Dichiarare esplicitamente quando un errore modifica o impedisce gli effetti del caso d’uso.
 
 | Campo | Specifica |
 |---|---|
@@ -130,7 +130,7 @@ Ogni scheda riporta identificativo, scopo, attori, precondizioni, postcondizioni
 | Precondizioni | Condizioni vere prima dell’avvio |
 | Postcondizioni | Stato garantito al termine con successo. Indicare anche gli effetti in caso di errore rilevante |
 | Flusso principale | Passi numerati solo quando necessari alla sequenza |
-| Flussi alternativi ed errori | Da descrivere |
+| Flussi alternativi e di errore | Da descrivere |
 | Requisiti collegati | Identificativi FR e NFR |
 
 #### 3.5.4 MODELLO DEGLI OGGETTI

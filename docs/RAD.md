@@ -248,7 +248,7 @@ flowchart TB
 
 ##### Specifiche dei casi d’uso
 
-Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requisiti qualitativi e flusso degli eventi.
+Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requisiti qualitativi, flusso principale e alternative o errori pertinenti.
 
 | ID | Caso d’uso | Titolo | Attore principale | Descrizione |
 |---|---|---|---|---|
@@ -268,6 +268,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | Condizioni d’uscita | Restituiti zero o più percorsi con tempi, cambi e stato di verifica. Fonte e freschezza sono esposte quando disponibili. Dati assenti o scaduti non risultano accessibili. |
 | Requisiti qualitativi | Il sistema distingue barriere note, tratti compatibili e tratti non verificati e presenta alternative disponibili. |
 | Flusso degli eventi | Il viaggiatore inserisce origine, destinazione ed esigenze. Il sistema valida la richiesta e la inoltra al provider. Il provider restituisce le alternative. Il sistema aggiunge stato di verifica e provenienza disponibili e mostra risultati e incertezze. |
+| Flussi alternativi e di errore | Input non valido: il sistema segnala i campi da correggere e non invoca il provider. Nessun percorso disponibile: il sistema mostra l’esito vuoto senza dichiarare compatibilità. Provider non disponibile, timeout, risposta parziale o profilo non supportato: il sistema comunica il limite e non presenta risultati incompleti come verificati. Un fallback è ammesso solo secondo OPEN-03 e viene marcato non verificato. |
 
 ###### UC-02: Consultare luogo
 
@@ -278,6 +279,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | Condizioni d’uscita | Dettaglio e caratteristiche note sono mostrati con fonte e validità. Dati assenti o scaduti sono indicati come sconosciuti. Nessuna modifica ai dati. |
 | Requisiti qualitativi | Le informazioni presentate sulla mappa sono disponibili anche in forma testuale e risultano utilizzabili da tastiera e tecnologie assistive. |
 | Flusso degli eventi | Il viaggiatore seleziona o cerca un luogo. Il sistema recupera dettaglio e caratteristiche. Il sistema valuta la freschezza secondo la validità della fonte. Il sistema mostra caratteristiche, fonte, aggiornamento e stati sconosciuti. |
+| Flussi alternativi e di errore | Identificativo non valido o luogo non trovato: il sistema non mostra un dettaglio inesistente. Caratteristiche assenti, scadute o contraddittorie: il sistema le presenta come sconosciute e non inferisce accessibilità. Repository non disponibile: il sistema comunica l’errore senza presentare dati scaduti come aggiornati. |
 
 ###### UC-03: Inviare segnalazione
 
@@ -288,6 +290,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | Condizioni d’uscita | Segnalazione ed evento iniziale persistiti. Codice di tracking restituito. In caso di errore non rimane una segnalazione parziale. Se una notifica prevista fallisce, il fallimento non annulla la segnalazione e resta osservabile e recuperabile secondo la policy da definire in OPEN-08. |
 | Requisiti qualitativi | Il modulo è accessibile. I dati identificativi sono minimizzati e separati dalla segnalazione. La foto non è pubblicata prima dei controlli previsti. |
 | Flusso degli eventi | Il segnalatore inserisce luogo, categoria, descrizione e data. Facoltativamente allega una foto. Il sistema valida i campi e controlla l’upload. Il sistema registra segnalazione ed evento iniziale e restituisce il codice di tracking. Dopo il completamento del caso, pianifica l’eventuale notifica secondo consenso e policy. Se il canale fallisce, registra l’esito per il recupero previsto in OPEN-08. |
+| Flussi alternativi e di errore | Input non valido, autorizzazione negata o limite superato: il sistema rifiuta la richiesta senza persistenza parziale secondo OPEN-04 e OPEN-15. File non valido, scansione fallita o scanner indisponibile: il file non è pubblicato e viene rifiutato o messo in quarantena secondo OPEN-15. Errore di persistenza: report ed evento iniziale non restano parziali. Notifica fallita o con esito ambiguo: la segnalazione resta registrata, l’esito non è presentato come consegna confermata e il recupero segue OPEN-08. |
 
 ###### UC-04: Seguire segnalazione
 
@@ -298,6 +301,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | Condizioni d’uscita | È mostrato solo lo stato consentito dalla policy di accesso approvata. Identità e dettagli riservati non sono esposti. Nessuna modifica al report. |
 | Requisiti qualitativi | La risposta non consente l’enumerazione delle segnalazioni e comunica lo stato in forma accessibile. |
 | Flusso degli eventi | Il segnalatore inserisce il codice. Il sistema lo verifica e recupera lo stato consentito. Il sistema mostra lo stato senza esporre dati riservati. |
+| Flussi alternativi e di errore | Codice non valido, scaduto o non riconosciuto: il sistema non restituisce dati della segnalazione e la risposta non rivela se il report esiste, secondo la policy OPEN-04. Archivio non disponibile: il sistema comunica un errore temporaneo e non restituisce dati non verificati. |
 
 ###### UC-05: Moderare segnalazione
 
@@ -308,6 +312,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | Condizioni d’uscita | Stato ed evento append-only aggiornati nella stessa transazione, con attore e timestamp. Una transizione non valida non modifica i dati. Se una notifica prevista fallisce, il fallimento non annulla la transizione registrata e resta osservabile e recuperabile secondo la policy da definire in OPEN-08. |
 | Requisiti qualitativi | Ogni decisione è tracciabile. Gli eventi precedenti restano consultabili e non sono sovrascritti. |
 | Flusso degli eventi | Il moderatore apre il report. Il sistema mostra i dati e la cronologia autorizzati. Il moderatore sceglie conferma, rifiuto, risoluzione o unione e inserisce la motivazione richiesta. Il sistema valida la transizione e registra stato ed evento nella stessa transazione. Dopo il completamento del caso, pianifica l’eventuale notifica secondo consenso e policy. Se il canale fallisce, registra l’esito per il recupero previsto in OPEN-08. |
+| Flussi alternativi e di errore | Attore non autorizzato, report inesistente o transizione non ammessa: il sistema rifiuta il comando senza modificare stato o cronologia. Errore durante la persistenza: transizione ed evento sono annullati insieme. Notifica fallita o con esito ambiguo: la moderazione resta registrata e il recupero segue OPEN-08 senza dichiarare la consegna. |
 
 ###### UC-06: Aggiornare una fonte
 
@@ -318,6 +323,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | Condizioni d’uscita | Versione, timestamp, controlli ed esito della sincronizzazione registrati. Solo un insieme completo e validato diventa visibile. Un aggiornamento urgente invalida la cache dell’area interessata dopo la pubblicazione. Un errore mantiene disponibili i dati validi precedenti e non pubblica dati parziali. |
 | Requisiti qualitativi | Retry idempotenti. Provenienza e freschezza conservate. Dati assenti, incoerenti o scaduti non sono presentati come accessibili. |
 | Flusso degli eventi | Il gestore avvia o consulta il processo, oppure scatta la pianificazione. Il sistema invoca l’adattatore. L’adattatore acquisisce i dati in un insieme candidato non visibile agli utenti. Il sistema valida contratto, chiavi e qualità, quindi registra versione, timestamp, controlli ed esito. Se i controlli passano, pubblica l’insieme candidato con un passaggio atomico e invalida la cache interessata dopo la pubblicazione. Se l’acquisizione o la validazione falliscono, mantiene attivi i dati precedenti e registra l’esito senza pubblicare dati parziali. |
+| Flussi alternativi e di errore | Avvio manuale non autorizzato: il sistema rifiuta il comando. Fonte non disponibile, contratto non valido, duplicato o aggiornamento fuori ordine: la generazione candidata non viene pubblicata, la generazione attiva resta disponibile e l’esito è registrato secondo OPEN-14. Errore di pulizia cache dopo il commit: il lavoro resta pendente e recuperabile secondo OPEN-08. |
 
 #### 3.5.4 MODELLO DEGLI OGGETTI
 
@@ -447,10 +453,17 @@ sequenceDiagram
   UI->>API: Richiesta di percorso
   API->>UC: Richiesta validata
   UC->>RP: Calcola alternative
-  RP-->>UC: Alternative e tratti
-  UC-->>API: Percorsi con stato di verifica
-  API-->>UI: Risultati
-  UI-->>V: Percorsi e incertezze
+  alt Provider disponibile e risposta valida
+    RP-->>UC: Alternative e tratti
+    UC-->>API: Percorsi con stato di verifica
+    API-->>UI: Risultati
+    UI-->>V: Percorsi e incertezze
+  else Timeout, risposta parziale o profilo non supportato
+    RP-->>UC: Errore o risposta non utilizzabile
+    UC-->>API: Esito non disponibile secondo OPEN-03
+    API-->>UI: Errore senza risultati dichiarati verificati
+    UI-->>V: Limite del servizio
+  end
 ```
 
 ##### Consultazione di un luogo
@@ -469,10 +482,17 @@ sequenceDiagram
   UI->>API: Richiede il dettaglio
   API->>UC: Identificativo validato
   UC->>Repo: Recupera luogo e caratteristiche
-  Repo-->>UC: Dati e provenienza
-  UC-->>API: Dettaglio con freschezza valutata
-  API-->>UI: Risposta
-  UI-->>V: Caratteristiche, fonte e stato
+  alt Luogo trovato
+    Repo-->>UC: Dati e provenienza
+    UC-->>API: Dettaglio con freschezza valutata
+    API-->>UI: Risposta
+    UI-->>V: Caratteristiche, fonte e stato
+  else Luogo non trovato o repository non disponibile
+    Repo-->>UC: Assenza o errore
+    UC-->>API: Esito senza dati di accessibilità
+    API-->>UI: Luogo assente o errore temporaneo
+    UI-->>V: Esito senza dati non verificati
+  end
 ```
 
 ##### Invio di una segnalazione
@@ -486,14 +506,32 @@ sequenceDiagram
   participant API as Reports API
   participant UC as CreateReport
   participant Repo as ReportRepository
+  participant Upload as Storage e scanner
   participant W as NotificationWorker
   participant N as NotificationPort
   S->>API: POST segnalazione
   API->>UC: input validato
-  UC->>Repo: salva Report + ReportEvent + intenzione autorizzata
-  Repo-->>UC: commit completato
-  UC-->>API: tracking code e stato
-  API-->>S: conferma invio
+  opt Foto allegata
+    UC->>Upload: Verifica tipo, dimensione e contenuto
+    alt Scansione superata
+      Upload-->>UC: File validato
+    else File non valido o scanner indisponibile
+      Upload-->>UC: File rifiutato o scansione non disponibile
+      break Upload non accettabile secondo OPEN-15
+        UC-->>API: Rifiuto senza persistenza del report
+        API-->>S: Upload non accettato
+      end
+    end
+  end
+  alt Input e autorizzazione validi, upload conforme
+    UC->>Repo: salva Report + ReportEvent + intenzione autorizzata
+    Repo-->>UC: commit completato
+    UC-->>API: tracking code e stato
+    API-->>S: conferma invio
+  else Validazione, autorizzazione o upload falliti
+    UC-->>API: Rifiuto senza persistenza parziale
+    API-->>S: Errore comprensibile
+  end
   opt Intenzione di notifica presente
     W->>Repo: Legge intenzione pendente
     Repo-->>W: Intenzione e riferimento
@@ -524,12 +562,18 @@ sequenceDiagram
   participant Repo as ReportRepository
   S->>UI: Inserisce il codice di tracking
   UI->>API: Richiede lo stato
-  API->>UC: Codice validato
-  UC->>Repo: Recupera report
-  Repo-->>UC: Stato e dati autorizzati
-  UC-->>API: Stato minimizzato
-  API-->>UI: Risposta
-  UI-->>S: Stato consentito
+  API->>UC: Codice ricevuto
+  alt Codice valido e accesso consentito
+    UC->>Repo: Recupera report
+    Repo-->>UC: Stato e dati autorizzati
+    UC-->>API: Stato minimizzato
+    API-->>UI: Risposta
+    UI-->>S: Stato consentito
+  else Codice non valido o archivio non disponibile
+    UC-->>API: Nessun dato del report
+    API-->>UI: Esito non rivelatore o errore temporaneo
+    UI-->>S: Stato non disponibile
+  end
 ```
 
 ##### Moderazione di una segnalazione
@@ -548,14 +592,31 @@ sequenceDiagram
   participant N as NotificationPort
   M->>UI: Seleziona decisione e motivazione
   UI->>API: Invia decisione
-  API->>UC: Comando autorizzato
-  UC->>Repo: Carica report e cronologia
-  Repo-->>UC: Stato corrente
-  UC->>UC: Verifica transizione
-  UC->>Repo: Salva stato, evento e intenzione autorizzata
-  Repo-->>UC: Operazione completata
-  UC-->>API: Esito
-  API-->>UI: Conferma o errore
+  API->>UC: Comando
+  UC->>UC: Verifica identità e ruolo
+  alt Attore autorizzato
+    UC->>Repo: Carica report e cronologia
+    alt Report esistente
+      Repo-->>UC: Stato corrente
+      UC->>UC: Verifica transizione secondo OPEN-12
+      alt Transizione ammessa
+        UC->>Repo: Salva stato, evento e intenzione autorizzata
+        Repo-->>UC: Operazione completata
+        UC-->>API: Esito
+        API-->>UI: Conferma
+      else Transizione non ammessa
+        UC-->>API: Rifiuto senza modifica
+        API-->>UI: Errore
+      end
+    else Report assente
+      Repo-->>UC: Report non trovato
+      UC-->>API: Rifiuto senza modifica
+      API-->>UI: Errore
+    end
+  else Attore non autorizzato
+    UC-->>API: Rifiuto senza modifica
+    API-->>UI: Errore
+  end
   opt Intenzione di notifica presente
     W->>Repo: Legge intenzione pendente
     Repo-->>W: Intenzione e riferimento

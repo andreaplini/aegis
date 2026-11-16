@@ -54,6 +54,7 @@ VALID_RAD = """# RAD
 | Condizioni d’uscita | Dettaglio mostrato |
 | Requisiti qualitativi | Informazioni accessibili |
 | Flusso degli eventi | Il sistema recupera e mostra il luogo |
+| Flussi alternativi e di errore | Luogo assente: nessun dato viene mostrato |
 """
 
 VALID_SDD = """# SDD
@@ -634,6 +635,9 @@ class MarkdownValidationTests(unittest.TestCase):
                 rad.write_text(VALID_RAD.replace("| Condizioni d’uscita | Dettaglio mostrato |\n", ""), encoding="utf-8")
                 errors = validate_docs.validate_use_case_specs()
                 self.assertTrue(any("condizioni d’uscita" in error for error in errors))
+                rad.write_text(VALID_RAD.replace("| Flussi alternativi e di errore | Luogo assente: nessun dato viene mostrato |\n", ""), encoding="utf-8")
+                errors = validate_docs.validate_use_case_specs()
+                self.assertTrue(any("flussi alternativi e di errore" in error for error in errors))
 
     def test_use_case_diagram_covers_defined_cases_and_actor_associations(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
