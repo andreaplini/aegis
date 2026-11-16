@@ -51,6 +51,46 @@ VALID_SDD = """# SDD
 
 
 class MarkdownValidationTests(unittest.TestCase):
+    def test_roadmap_ids_are_unique_and_references_are_declared(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            docs.mkdir()
+            milestones = docs / "MILESTONES.md"
+            milestones.write_text(
+                "## Roadmap\n"
+                "| DOC-01 | Documentazione |\n"
+                "## Applicazione degli sprint\n"
+                "| DOC-01 | Documentazione completata |\n"
+                "## Decisioni documentali ancora aperte\n"
+                "| OPEN-01 | Decisione |\n"
+                "## Criterio di completamento della roadmap\n"
+                "## Milestone di ingegneria del prodotto\n"
+                "| ENG-01 | Implementazione | OPEN-01 |\n"
+                "## Regole di avanzamento\n",
+                encoding="utf-8",
+            )
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_roadmap_ids(), [])
+                milestones.write_text(
+                    "## Roadmap\n"
+                    "| DOC-01 | Documentazione |\n"
+                    "## Applicazione degli sprint\n"
+                    "| DOC-01 | Documentazione completata |\n"
+                    "## Decisioni documentali ancora aperte\n"
+                    "| OPEN-01 | Decisione |\n"
+                    "| OPEN-01 | Duplicato |\n"
+                    "## Criterio di completamento della roadmap\n"
+                    "## Milestone di ingegneria del prodotto\n"
+                    "| ENG-01 | Implementazione | OPEN-02 |\n"
+                    "## Regole di avanzamento\n",
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_roadmap_ids()
+                self.assertTrue(any("ID milestone duplicati: OPEN-01" in error for error in errors))
+                self.assertTrue(any("ID milestone non dichiarati: OPEN-02" in error for error in errors))
+
     def test_local_google_docs_registry_is_not_project_documentation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

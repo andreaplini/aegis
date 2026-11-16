@@ -6,6 +6,7 @@ from __future__ import annotations
 import re
 import sys
 import unicodedata
+from collections import Counter
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
@@ -21,6 +22,8 @@ NON_FUNCTIONAL_REQUIREMENT_ROW_PATTERN = re.compile(r"^\|\s*(NFR-\d{2})\s*\|")
 CASE_FIELD_PATTERN = re.compile(r"^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|")
 NUMBERED_SECTION_PATTERN = re.compile(r"^(#{2,6})\s+(\d+(?:\.\d+)+)(?:\s|$)", re.MULTILINE)
 MERMAID_BLOCK_PATTERN = re.compile(r"```mermaid\s*\n(.*?)\n```", re.DOTALL)
+ROADMAP_ROW_PATTERN = re.compile(r"^\|\s*((?:DOC|OPEN|ENG)-\d{2})\s*\|", re.MULTILINE)
+ROADMAP_REFERENCE_PATTERN = re.compile(r"\b(?:DOC|OPEN|ENG)-\d{2}\b")
 
 
 def markdown_files() -> list[Path]:
@@ -183,6 +186,38 @@ def validate_traceability() -> list[str]:
                 f"docs/SDD.md: {requirement_id} non è collegato nei moduli ai casi d’uso RAD: "
                 + ", ".join(absent_cases)
             )
+    return errors
+
+
+def validate_roadmap_ids() -> list[str]:
+    path = ROOT / "docs/MILESTONES.md"
+    content = path.read_text(encoding="utf-8")
+    sections = (
+        ("## Roadmap", "## Applicazione degli sprint"),
+        ("## Decisioni documentali ancora aperte", "## Criterio di completamento della roadmap"),
+        ("## Milestone di ingegneria del prodotto", "## Regole di avanzamento"),
+    )
+    rows: list[str] = []
+    errors: list[str] = []
+    for start_heading, end_heading in sections:
+        if start_heading not in content or end_heading not in content:
+            errors.append(f"docs/MILESTONES.md: sezione roadmap mancante: {start_heading}")
+            continue
+        section = content.split(start_heading, 1)[1].split(end_heading, 1)[0]
+        rows.extend(ROADMAP_ROW_PATTERN.findall(section))
+
+    declared = set(rows)
+
+    duplicates = sorted(identifier for identifier, count in Counter(rows).items() if count > 1)
+    if duplicates:
+        errors.append(f"docs/MILESTONES.md: ID milestone duplicati: {', '.join(duplicates)}")
+
+    undeclared = sorted(set(ROADMAP_REFERENCE_PATTERN.findall(content)) - declared)
+    if undeclared:
+        errors.append(
+            "docs/MILESTONES.md: riferimenti a ID milestone non dichiarati: "
+            + ", ".join(undeclared)
+        )
     return errors
 
 
@@ -395,6 +430,7 @@ def main() -> int:
             if error:
                 errors.append(error)
     errors.extend(validate_traceability())
+    errors.extend(validate_roadmap_ids())
     errors.extend(validate_functional_requirements())
     errors.extend(validate_use_case_specs())
     errors.extend(validate_project_style())
@@ -406,7 +442,7 @@ def main() -> int:
         print("\n".join(errors), file=sys.stderr)
         return 1
 
-    print(f"Documentazione valida: link, ancore, struttura, requisiti, casi d’uso, tracciabilità e stile del nome verificati in {len(files)} file Markdown.")
+    print(f"Documentazione valida: link, ancore, struttura, milestone, requisiti, casi d’uso, tracciabilità e stile del nome verificati in {len(files)} file Markdown.")
     return 0
 
 
