@@ -173,6 +173,8 @@ In sviluppo è previsto Docker Compose con PostgreSQL/PostGIS e storage locale c
 
 La pipeline di rilascio dovrà compilare e verificare gli artefatti applicativi, eseguire test e scansioni delle dipendenze, creare immagini versionate e distribuire progressivamente. Le migrazioni devono mantenere la compatibilità con le versioni applicative attive durante il rilascio. La configurazione è versionata e distinta per ambiente; i segreti non sono inclusi nel repository.
 
+Le procedure operative per rilascio, migrazione, rollback, incidenti e ripristino sono da redigere e provare in base al runtime e agli ambienti selezionati. Come struttura si può usare il [modello di runbook](template/RUNBOOK.md); il modello non rappresenta procedure già operative.
+
 ### 3.4 GESTIONE DEI DATI PERSISTENTI
 
 La persistenza relazionale usa PostgreSQL e PostGIS. Le migrazioni sono versionate e devono rimanere compatibili con le versioni applicative durante il rilascio progressivo. Le entità di dominio non dipendono dal modello relazionale e sono convertite dagli adattatori di persistenza.

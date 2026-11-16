@@ -6,6 +6,8 @@ Per la struttura dei documenti basati sugli esempi accademici, usare i modelli a
 
 Per registrare decisioni architetturali approvate o proposte, usare il [modello ADR](template/ADR.md). Un ADR non sostituisce i requisiti RAD né la descrizione architetturale SDD.
 
+Per procedure di distribuzione, ripristino e gestione degli incidenti, usare il [modello di runbook operativo](template/RUNBOOK.md). Le procedure vanno completate e provate nell’ambiente di riferimento prima di essere considerate operative.
+
 ## Documento di Analisi dei Requisiti (RAD)
 
 ### 1. Introduzione
