@@ -27,7 +27,7 @@ def write_docx(
     story_parts: dict[str, str] | None = None,
     diagram_count: int = 0,
     diagram_descriptions: list[str] | None = None,
-    personal_metadata: dict[str, str] | None = None,
+    core_metadata: dict[str, str] | None = None,
     include_diagram_images: bool = True,
 ) -> None:
     document = ElementTree.Element(f"{{{WORD_NAMESPACE}}}document")
@@ -106,18 +106,21 @@ def write_docx(
         if include_diagram_images:
             for index in range(diagram_count):
                 package.writestr(f"word/media/image{index + 1}.png", b"test image")
-        if personal_metadata is not None:
+        if core_metadata is not None:
             properties = ElementTree.Element(
                 "{http://schemas.openxmlformats.org/package/2006/metadata/core-properties}coreProperties"
             )
             metadata_tags = {
                 "creator": "{http://purl.org/dc/elements/1.1/}creator",
+                "title": "{http://purl.org/dc/elements/1.1/}title",
+                "description": "{http://purl.org/dc/elements/1.1/}description",
+                "subject": "{http://purl.org/dc/elements/1.1/}subject",
                 "lastModifiedBy": (
                     "{http://schemas.openxmlformats.org/package/2006/metadata/core-properties}"
                     "lastModifiedBy"
                 ),
             }
-            for name, value in personal_metadata.items():
+            for name, value in core_metadata.items():
                 node = ElementTree.SubElement(properties, metadata_tags[name])
                 node.text = value
             package.writestr("docProps/core.xml", ElementTree.tostring(properties))
@@ -238,10 +241,22 @@ class DocxValidationTests(unittest.TestCase):
             write_docx(
                 path,
                 "aegis\nTitolo documento",
-                personal_metadata={"creator": "Autore", "lastModifiedBy": "Revisore"},
+                core_metadata={"creator": "Autore", "lastModifiedBy": "Revisore"},
             )
             errors = validate_docx.validate_document(path, ("Titolo documento",))
             self.assertTrue(any("metadati personali" in error for error in errors))
+
+    def test_checks_core_property_text_for_name_and_punctuation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "rad-is.docx"
+            write_docx(
+                path,
+                "aegis\nTitolo documento",
+                core_metadata={"title": "Aegis; documento"},
+            )
+            errors = validate_docx.validate_document(path, ("Titolo documento",))
+            self.assertTrue(any("esattamente aegis" in error for error in errors))
+            self.assertTrue(any("punto e virgola" in error for error in errors))
 
 
 if __name__ == "__main__":

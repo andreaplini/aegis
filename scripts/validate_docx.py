@@ -76,6 +76,11 @@ def document_text(path: Path) -> str:
             for name in package.namelist()
             if name != "word/document.xml" and STORY_PART_PATTERN.fullmatch(name)
         ]
+        core_properties = (
+            ElementTree.fromstring(package.read("docProps/core.xml"))
+            if "docProps/core.xml" in package.namelist()
+            else None
+        )
 
     paragraphs: list[str] = []
     for story in (document, *story_parts):
@@ -88,6 +93,12 @@ def document_text(path: Path) -> str:
         for node in document.iter(f"{DRAWING_NAMESPACE}docPr")
         if (description := node.get("descr", "").strip())
     )
+    if core_properties is not None:
+        paragraphs.extend(
+            node.text.strip()
+            for node in core_properties.iter()
+            if node.text and node.text.strip()
+        )
     return "\n".join(paragraphs)
 
 
