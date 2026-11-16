@@ -32,12 +32,12 @@ I DOCX generati si trovano in `build/docs/` e non vanno aggiunti al repository. 
 
 La revisione controlla che:
 
-- requisiti, casi d’uso, codice, test e documentazione restino tracciabili.
-- input esterni siano validati al confine e regole di dominio siano rappresentate con tipi e invarianti espliciti.
-- dati assenti o scaduti non siano mostrati come prova di accessibilità.
-- autorizzazioni e transizioni siano verificate lato server e gli effetti atomici siano coperti da test.
-- log, esempi e fixture non contengano segreti, codici di tracking reali o dati personali.
-- interfacce, viste testuali e flussi essenziali siano verificati con tastiera e tecnologie assistive.
+- requisiti, casi d’uso, codice, test e documentazione restino tracciabili,
+- input esterni siano validati al confine e regole di dominio siano rappresentate con tipi e invarianti espliciti,
+- dati assenti o scaduti non siano mostrati come prova di accessibilità,
+- autorizzazioni e transizioni siano verificate lato server e gli effetti atomici siano coperti da test,
+- log, esempi e fixture non contengano segreti, codici di tracking reali o dati personali,
+- interfacce, viste testuali e flussi essenziali siano verificati con tastiera e tecnologie assistive,
 - le verifiche riportate siano riproducibili e collegate all’ambiente e alla versione usati.
 
 ## Stato della governance GitHub

@@ -114,18 +114,18 @@ Il template rimanda al documento separato `indice_template_interfaccia_utente.do
 
 Specificare:
 
-- scopo, ruolo, interfaccia e implementazione.
-- modo d'uso: statico, dinamico o interattivo.
-- fedeltà: bassa o alta.
-- completezza funzionale: prototipo orizzontale o verticale.
-- durata: usa e getta, evolutivo, incrementale o interattivo.
+- scopo, ruolo, interfaccia e implementazione
+- modo d'uso: statico, dinamico o interattivo
+- fedeltà: bassa o alta
+- completezza funzionale: prototipo orizzontale o verticale
+- durata: usa e getta, evolutivo, incrementale o interattivo
 
 #### 4.2 Test di usabilità
 
 Il template richiede di documentare:
 
 - **Obiettivi del test:** descrivere brevemente gli obiettivi.
-- **Metodologia:** specificare numero, esperienza e caratteristiche dei partecipanti. Compiti e scenari. Contesto e strumenti. Modalità e durata delle sessioni, per ciascun partecipante e nel complesso. Misure raccolte. Ruolo degli osservatori e metodo di analisi.
+- **Metodologia:** specificare numero, esperienza e caratteristiche dei partecipanti. Descrivere compiti, scenari, contesto e strumenti. Indicare modalità e durata delle sessioni per ogni partecipante e nel complesso. Elencare le misure raccolte. Descrivere il ruolo degli osservatori e il metodo di analisi.
 - **Sintesi delle misure:** fornire una tabella dei risultati, per esempio tempi di esecuzione e percentuale dei compiti completati con successo, per ciascun partecipante e nel complesso.
 - **Analisi dei risultati:** descrivere i problemi incontrati da ciascun partecipante durante ogni compito. Allegare screenshot significativi. Assegnare un livello di gravità. Registrare reazioni e commenti. Indicare gli interventi necessari per risolvere i problemi.
 - **Sintesi delle interviste:** sintetizzare i risultati delle interviste svolte dopo il test.
