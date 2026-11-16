@@ -63,8 +63,68 @@ flowchart TB
 ```
 """
 
+VALID_ADR = """# ADR-0001: Baseline
+
+## Metadati
+
+| Campo | Valore |
+|---|---|
+| ID | ADR-0001 |
+| Titolo | Baseline |
+| Stato | Proposto |
+| Data | 16 novembre 2026 |
+| Responsabile | Da designare |
+| Revisori | Da designare |
+| Requisiti correlati | OPEN-08 |
+
+## Contesto e problema
+Contesto.
+
+## Driver decisionali
+Driver.
+
+## Opzioni considerate
+| Opzione | Vantaggi | Costi e rischi | Requisiti soddisfatti o non soddisfatti |
+|---|---|---|---|
+| A | Vantaggio | Rischio | Requisito |
+| B | Vantaggio | Rischio | Requisito |
+
+## Decisione
+Non approvata.
+
+## Verifica e revisione
+| Evidenza richiesta | Criterio di accettazione | Responsabile | Esito e riferimento |
+|---|---|---|---|
+| Revisione | Approvazione | Da designare | In attesa |
+"""
+
 
 class MarkdownValidationTests(unittest.TestCase):
+    def test_adrs_require_traceable_metadata_options_and_verification(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            adr_directory = root / "docs/adr"
+            adr_directory.mkdir(parents=True)
+            adr = adr_directory / "ADR-0001.md"
+            adr.write_text(VALID_ADR, encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_adrs(), [])
+                adr.write_text(
+                    VALID_ADR.replace("| ID | ADR-0001 |", "| ID | ADR-0002 |")
+                    .replace("| Stato | Proposto |", "| Stato | Approvato |")
+                    .replace("| Titolo | Baseline |", "| Titolo | |")
+                    .replace("| A | Vantaggio | Rischio | Requisito |", "| A | | Rischio | Requisito |")
+                    .replace("| B | Vantaggio | Rischio | Requisito |\n", ""),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_adrs()
+                self.assertTrue(any("diverso dal nome file" in error for error in errors))
+                self.assertTrue(any("stato non valido" in error for error in errors))
+                self.assertTrue(any("righe insufficienti" in error for error in errors))
+                self.assertTrue(any("metadati mancanti o vuoti" in error for error in errors))
+                self.assertTrue(any("riga 1 incompleta" in error for error in errors))
+
     def test_roadmap_ids_are_unique_and_references_are_declared(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

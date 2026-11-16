@@ -6,7 +6,7 @@
 |---|---|
 | ID | ADR-0001 |
 | Titolo | Baseline Java e Jakarta EE |
-| Stato | Proposto. In attesa di approvazione |
+| Stato | Proposto |
 | Data | 16 novembre 2026 |
 | Responsabile | Da designare |
 | Revisori | Responsabile tecnico e team di progetto, da designare |

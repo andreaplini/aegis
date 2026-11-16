@@ -36,6 +36,8 @@ NUMBERED_SECTION_PATTERN = re.compile(r"^(#{2,6})\s+(\d+(?:\.\d+)+)(?:\s|$)", re
 MERMAID_BLOCK_PATTERN = re.compile(r"```mermaid\s*\n(.*?)\n```", re.DOTALL)
 ROADMAP_ROW_PATTERN = re.compile(r"^\|\s*((?:DOC|OPEN|ENG)-\d{2})\s*\|", re.MULTILINE)
 ROADMAP_REFERENCE_PATTERN = re.compile(r"\b(?:DOC|OPEN|ENG)-\d{2}\b")
+ADR_FILENAME_PATTERN = re.compile(r"ADR-(\d{4})(?:-[a-z0-9-]+)?\.md$")
+ADR_STATUSES = {"Proposto", "Accettato", "Rifiutato", "Sostituito"}
 
 
 def markdown_files() -> list[Path]:
@@ -230,6 +232,126 @@ def validate_roadmap_ids() -> list[str]:
             "docs/MILESTONES.md: riferimenti a ID milestone non dichiarati: "
             + ", ".join(undeclared)
         )
+    return errors
+
+
+def validate_adrs() -> list[str]:
+    errors: list[str] = []
+    declared_ids: list[str] = []
+    adr_directory = ROOT / "docs/adr"
+    if not adr_directory.exists():
+        return errors
+
+    required_metadata = {
+        "id",
+        "titolo",
+        "stato",
+        "data",
+        "responsabile",
+        "revisori",
+        "requisiti correlati",
+    }
+    required_sections = (
+        "## Contesto e problema",
+        "## Driver decisionali",
+        "## Opzioni considerate",
+        "## Decisione",
+        "## Verifica e revisione",
+    )
+
+    for path in sorted(adr_directory.glob("ADR-*.md")):
+        label = path.relative_to(ROOT).as_posix()
+        content = path.read_text(encoding="utf-8")
+        filename_match = ADR_FILENAME_PATTERN.fullmatch(path.name)
+        if not filename_match:
+            errors.append(f"{label}: nome file ADR non conforme al formato ADR-NNNN.md")
+            continue
+
+        metadata_section = content.split("## Metadati", 1)
+        if len(metadata_section) != 2:
+            errors.append(f"{label}: sezione Metadati non trovata")
+            continue
+        metadata_text = metadata_section[1].split("## ", 1)[0]
+        metadata: dict[str, str] = {}
+        for line in metadata_text.splitlines():
+            if not line.startswith("|"):
+                continue
+            cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+            if len(cells) == 2 and cells[0].lower() not in {"campo", "---"}:
+                metadata[cells[0].casefold()] = cells[1]
+
+        missing_metadata = sorted(key for key in required_metadata if not metadata.get(key))
+        if missing_metadata:
+            errors.append(f"{label}: metadati mancanti o vuoti: {', '.join(missing_metadata)}")
+
+        expected_id = f"ADR-{filename_match.group(1)}"
+        declared_ids.append(expected_id)
+        if metadata.get("id") and metadata["id"] != expected_id:
+            errors.append(f"{label}: ID {metadata['id']} diverso dal nome file {expected_id}")
+        if metadata.get("stato") and metadata["stato"] not in ADR_STATUSES:
+            errors.append(
+                f"{label}: stato non valido. Usare uno tra: {', '.join(sorted(ADR_STATUSES))}"
+            )
+
+        for heading in required_sections:
+            if heading not in content.splitlines():
+                errors.append(f"{label}: sezione obbligatoria non trovata: {heading}")
+
+        def table_rows(section: str, heading: str) -> list[list[str]]:
+            parts = section.split(heading, 1)
+            if len(parts) != 2:
+                return []
+            body = parts[1].split("## ", 1)[0]
+            rows: list[list[str]] = []
+            for line in body.splitlines():
+                if not line.startswith("|"):
+                    continue
+                cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+                if cells and all(re.fullmatch(r":?-{3,}:?", cell) for cell in cells):
+                    continue
+                rows.append(cells)
+            return rows
+
+        expected_tables = {
+            "## Opzioni considerate": [
+                "Opzione",
+                "Vantaggi",
+                "Costi e rischi",
+                "Requisiti soddisfatti o non soddisfatti",
+            ],
+            "## Verifica e revisione": [
+                "Evidenza richiesta",
+                "Criterio di accettazione",
+                "Responsabile",
+                "Esito e riferimento",
+            ],
+        }
+        for heading, expected_headers in expected_tables.items():
+            rows = table_rows(content, heading)
+            if not rows:
+                continue
+            if rows[0] != expected_headers:
+                errors.append(
+                    f"{label}: intestazione tabella non conforme nella sezione {heading[3:]}"
+                )
+            data_rows = rows[1:]
+            minimum_rows = 2 if heading == "## Opzioni considerate" else 1
+            if len(data_rows) < minimum_rows:
+                errors.append(
+                    f"{label}: righe insufficienti nella sezione {heading[3:]}"
+                )
+            for row_number, row in enumerate(data_rows, start=1):
+                if len(row) != len(expected_headers) or any(not cell for cell in row):
+                    errors.append(
+                        f"{label}: riga {row_number} incompleta nella sezione {heading[3:]}"
+                    )
+
+    duplicates = sorted(
+        identifier for identifier, count in Counter(declared_ids).items() if count > 1
+    )
+    if duplicates:
+        errors.append("docs/adr: ID ADR duplicati: " + ", ".join(duplicates))
+
     return errors
 
 
@@ -557,6 +679,7 @@ def main() -> int:
                 errors.append(error)
     errors.extend(validate_traceability())
     errors.extend(validate_roadmap_ids())
+    errors.extend(validate_adrs())
     errors.extend(validate_functional_requirements())
     errors.extend(validate_use_case_specs())
     errors.extend(validate_use_case_diagram())
@@ -571,7 +694,7 @@ def main() -> int:
 
     print(
         "Documentazione valida: link, ancore, struttura, milestone, requisiti, casi d’uso, "
-        "diagramma dei casi, tracciabilità, descrizioni accessibili e stile del nome "
+        "diagramma dei casi, ADR, tracciabilità, descrizioni accessibili e stile del nome "
         f"verificati in {len(files)} file Markdown."
     )
     return 0
