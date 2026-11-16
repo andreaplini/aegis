@@ -458,6 +458,44 @@ def validate_glossaries() -> list[str]:
     return errors
 
 
+def validate_runbook_revision_history() -> list[str]:
+    path = ROOT / "docs/template/RUNBOOK.md"
+    label = path.relative_to(ROOT).as_posix()
+    lines = path.read_text(encoding="utf-8").splitlines()
+    heading = "## Registro delle revisioni"
+    headings = [index for index, line in enumerate(lines) if line.strip() == heading]
+    if len(headings) != 1:
+        return [f"{label}: deve contenere una sola sezione Registro delle revisioni"]
+
+    start = headings[0] + 1
+    end = next(
+        (index for index in range(start, len(lines)) if re.match(r"^#{1,2}\s", lines[index])),
+        len(lines),
+    )
+    table_rows = [line for line in lines[start:end] if line.strip().startswith("|")]
+    if len(table_rows) < 3:
+        return [f"{label}: registro delle revisioni privo di righe"]
+
+    expected_headers = [
+        "Versione",
+        "Data",
+        "Modifica e motivazione",
+        "Autore",
+        "Revisore e approvazione",
+    ]
+    header = [cell.strip() for cell in table_rows[0].strip().strip("|").split("|")]
+    errors: list[str] = []
+    if header != expected_headers:
+        errors.append(f"{label}: intestazione del registro revisioni non conforme")
+
+    for row_number, row in enumerate(table_rows[2:], start=1):
+        cells = [cell.strip() for cell in row.strip().strip("|").split("|")]
+        if len(cells) != len(expected_headers) or any(not cell for cell in cells):
+            errors.append(f"{label}: riga {row_number} del registro revisioni incompleta")
+
+    return errors
+
+
 def validate_non_functional_requirements() -> list[str]:
     path = ROOT / "docs/RAD.md"
     lines = path.read_text(encoding="utf-8").splitlines()
@@ -729,6 +767,7 @@ def main() -> int:
     errors.extend(validate_mermaid_descriptions())
     errors.extend(validate_document_structure())
     errors.extend(validate_glossaries())
+    errors.extend(validate_runbook_revision_history())
     errors.extend(validate_non_functional_requirements())
 
     if errors:

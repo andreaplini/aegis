@@ -13,6 +13,14 @@ Creare un runbook per servizio e ambiente. Completare i campi con procedure prov
 | Ultima revisione | Da compilare |
 | Prossima revisione | Da concordare |
 
+## Registro delle revisioni
+
+Registrare le modifiche approvate senza sovrascrivere le prove operative precedenti.
+
+| Versione | Data | Modifica e motivazione | Autore | Revisore e approvazione |
+|---|---|---|---|---|
+| Da compilare | Da compilare | Da descrivere | Da designare | Da registrare |
+
 ## Scopo e impatto
 
 Descrivere le funzioni del servizio, gli utenti interessati, gli impatti di indisponibilità o dati non aggiornati e i servizi dipendenti. Collegare i requisiti e i criteri di servizio approvati.

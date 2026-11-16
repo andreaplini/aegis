@@ -100,6 +100,31 @@ Non approvata.
 
 
 class MarkdownValidationTests(unittest.TestCase):
+    def test_runbook_requires_complete_revision_history(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            template_directory = root / "docs/template"
+            template_directory.mkdir(parents=True)
+            runbook = template_directory / "RUNBOOK.md"
+            content = (
+                "# Runbook\n\n"
+                "## Registro delle revisioni\n\n"
+                "| Versione | Data | Modifica e motivazione | Autore | Revisore e approvazione |\n"
+                "|---|---|---|---|---|\n"
+                "| 1.0 | Da compilare | Da descrivere | Da designare | Da registrare |\n\n"
+                "## Scopo e impatto\n"
+            )
+            runbook.write_text(content, encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_runbook_revision_history(), [])
+                runbook.write_text(
+                    content.replace("| Da registrare |", "|  |"),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_runbook_revision_history()
+                self.assertTrue(any("riga 1 del registro revisioni incompleta" in error for error in errors))
+
     def test_glossaries_require_complete_unique_entries(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
