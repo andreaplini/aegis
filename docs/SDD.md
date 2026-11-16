@@ -312,7 +312,7 @@ Se la persona nega il permesso di geolocalizzazione, il sistema non blocca ricer
 
 ### 4.1 AUTENTICAZIONE UTENTE
 
-Il sottosistema Identity verifica l’identità e i ruoli necessari per invio, tracking e moderazione. Provider e protocollo di autenticazione sono da selezionare. La consultazione pubblica non richiede una sessione autenticata. I dati identificativi restano separati dai contenuti pubblici delle segnalazioni.
+Il sottosistema Identity gestisce autenticazione e autorizzazione delle funzioni protette. La moderazione richiede un moderatore autenticato e autorizzato; anche l’avvio manuale di una sincronizzazione richiede un gestore autorizzato. Le policy per autenticazione dell’invio e accesso al tracking restano da definire secondo OPEN-04. Il flusso proposto di tracking restituisce al possessore del codice solo lo stato consentito, senza rendere già approvata la policy di accesso. Provider e protocollo di autenticazione sono da selezionare. La consultazione pubblica non richiede una sessione autenticata. I dati identificativi restano separati dai contenuti pubblici delle segnalazioni.
 
 ### 4.2 GESTIONE DEI LUOGHI
 

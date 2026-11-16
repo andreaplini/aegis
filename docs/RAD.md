@@ -214,8 +214,8 @@ Il template richiede per ogni caso d’uso attori, condizioni d’ingresso e d�
 | Campo | Specifica |
 |---|---|
 | Attori partecipanti | Segnalatore, sistema. |
-| Condizioni d’ingresso | Codice di tracking valido fornito dal richiedente. |
-| Condizioni d’uscita | È mostrato solo lo stato consentito; identità e dettagli riservati non sono esposti; nessuna modifica al report. |
+| Condizioni d’ingresso | Codice di tracking valido fornito dal richiedente; modalità di accesso da definire secondo OPEN-04. |
+| Condizioni d’uscita | È mostrato solo lo stato consentito dalla policy di accesso approvata; identità e dettagli riservati non sono esposti; nessuna modifica al report. |
 | Requisiti qualitativi | La risposta non consente l’enumerazione delle segnalazioni e comunica lo stato in forma accessibile. |
 | Flusso degli eventi | Il segnalatore inserisce il codice; il sistema lo verifica e recupera lo stato consentito; il sistema mostra lo stato senza esporre dati riservati. |
 
