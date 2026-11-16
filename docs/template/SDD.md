@@ -118,6 +118,12 @@ Descrivere limiti, controlli del tipo e del contenuto, scansione, quarantena, au
 
 Descrivere validazione, rate limiting, idempotenza, rilevamento di duplicati, moderazione e audit. Quantità e soglie restano da concordare finché non sono approvate.
 
+Analizzare gli scenari di minaccia rilevanti indicando bene esposto, impatto, controllo progettato, metodo di verifica e stato. Distinguere i controlli previsti da quelli implementati e verificati; non dichiarare mitigato un rischio senza evidenza.
+
+| Scenario di minaccia | Bene e impatto | Controllo progettato | Verifica richiesta |
+|---|---|---|---|
+| Da descrivere | Da valutare | Da approvare | Da pianificare |
+
 ### 3.6 DECISIONI SUL FLUSSO DI CONTROLLO GLOBALE
 
 Descrivere come richieste, eventi e dipendenze attraversano i componenti, inclusi errori, transazioni e operazioni asincrone.
