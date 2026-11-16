@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 LINK_PATTERN = re.compile(r"!?\[[^\]]*\]\((<[^>]+>|[^)]+)\)")
 HEADING_PATTERN = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$")
 FENCE_PATTERN = re.compile(r"^\s*(`{3,}|~{3,})")
+TRACE_ID_PATTERN = re.compile(r"\b(?:FR|NFR|UC)-\d{2}\b")
 
 
 def markdown_files() -> list[Path]:
@@ -90,6 +91,17 @@ def validate_link(source: Path, destination: str) -> str | None:
     return None
 
 
+def validate_traceability() -> list[str]:
+    rad_path = ROOT / "docs/RAD.md"
+    sdd_path = ROOT / "docs/SDD.md"
+    rad_ids = set(TRACE_ID_PATTERN.findall(rad_path.read_text(encoding="utf-8")))
+    sdd_ids = set(TRACE_ID_PATTERN.findall(sdd_path.read_text(encoding="utf-8")))
+    missing = sorted(rad_ids - sdd_ids)
+    if not missing:
+        return []
+    return [f"docs/SDD.md: requisiti o casi d’uso RAD non tracciati: {', '.join(missing)}"]
+
+
 def main() -> int:
     errors: list[str] = []
     files = markdown_files()
@@ -104,12 +116,13 @@ def main() -> int:
             error = validate_link(source, destination)
             if error:
                 errors.append(error)
+    errors.extend(validate_traceability())
 
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1
 
-    print(f"Documentazione valida: link e ancore locali verificati in {len(files)} file Markdown.")
+    print(f"Documentazione valida: link, ancore e tracciabilità RAD/SDD verificati in {len(files)} file Markdown.")
     return 0
 
 
