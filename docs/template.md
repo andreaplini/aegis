@@ -6,7 +6,7 @@ Per la struttura dei documenti basati sugli esempi accademici, usare i modelli a
 
 Per registrare decisioni architetturali approvate o proposte, usare il [modello ADR](template/ADR.md). Un ADR non sostituisce i requisiti RAD né la descrizione architetturale SDD.
 
-Per procedure di distribuzione, ripristino e gestione degli incidenti, usare il [modello di runbook operativo](template/RUNBOOK.md). Le procedure vanno completate e provate nell’ambiente di riferimento prima di essere considerate operative.
+Per procedure di distribuzione, ripristino, riconciliazione dei lavori asincroni e gestione degli incidenti, usare il [modello di runbook operativo](template/RUNBOOK.md). Le procedure vanno completate e provate nell’ambiente di riferimento prima di essere considerate operative.
 
 Per segnalare problemi o richieste di funzionalità nel repository, si può copiare il [modello di issue](template/ISSUE.md). Non usarlo per pubblicare segreti, dati personali o dettagli di vulnerabilità.
 

@@ -40,6 +40,8 @@ Descrivere le funzioni del servizio, gli utenti interessati, gli impatti di indi
 |---|---|---|---|
 | Indisponibilità o latenza elevata | Metriche e log approvati | Soglia e responsabile da concordare | Da definire |
 | Sincronizzazione fallita o dati scaduti | Esito, fonte e timestamp della sincronizzazione | Regola per fonte da approvare | Da definire |
+| Pulizia cache pendente | Generazione attiva, lavoro registrato ed esito del worker | Tempo massimo e responsabile da concordare | Da definire |
+| Notifica pendente o con esito ambiguo | Stato dell'outbox, tentativi e riscontro disponibile dal provider | Regola di riconciliazione e responsabile da approvare | Da definire |
 | Coda di moderazione in crescita | Dimensione ed età della coda | Soglia e responsabile da concordare | Da definire |
 | Errore di sicurezza o privacy | Audit e segnalazione controllata | Procedura di incidente da approvare | Da definire |
 
@@ -55,9 +57,19 @@ Indicare controlli pre-rilascio, versione e provenienza degli artefatti, compati
 
 Indicare la fonte della copia, l’ambiente isolato, i passaggi di ripristino, la validazione d’integrità, i controlli applicativi e la registrazione dell’esito. Specificare l’obiettivo di punto di ripristino (Recovery Point Objective, RPO) e l’obiettivo di tempo di ripristino (Recovery Time Objective, RTO) solo dopo approvazione e misurazione.
 
+Durante il ripristino verificare anche riferimenti tra database e object storage, stato di cancellazione secondo OPEN-05, generazioni e cache, lavori pendenti di sincronizzazione e outbox notifiche. Definire come riconciliare ogni lavoro ripristinato prima di riattivare worker o canali esterni.
+
 ### Sincronizzazione delle fonti
 
 Descrivere avvio, retry, idempotenza, validazione, invalidazione cache e verifica dell’esito. In caso di fonte non valida o scaduta, mantenere i dati come sconosciuti e seguire la procedura di escalation approvata.
+
+### Recupero dei lavori asincroni
+
+Documentare una procedura per ogni tipo di lavoro durevole, inclusi sincronizzazione, pulizia cache e invio notifiche. Indicare l'archivio autorevole dello stato, i passaggi per distinguere lavoro pendente, fallito e con esito ambiguo, le verifiche prima di un retry o replay, i controlli di idempotenza, le possibili duplicazioni, l'escalation e la registrazione dell'esito. Per la pulizia cache verificare la generazione attiva e non dichiarare incoerenti i dati solo perché la rimozione di chiavi superate è ancora pendente. Per una notifica ambigua, verificare il riscontro disponibile dal provider e applicare la regola approvata prima di ritentare. Non dichiarare consegna esattamente una volta e non registrare come riuscito un lavoro senza evidenza. Retry, backoff, scadenze e responsabilità restano da approvare secondo OPEN-08 e [ADR-0005](../adr/ADR-0005-operability-and-recovery-contract.md).
+
+### Coda di moderazione
+
+Indicare come consultare dimensione, anzianità ed errori della coda, il responsabile della presa in carico, i criteri di escalation e il canale operativo approvato. Ogni azione su una segnalazione deve rispettare autorizzazioni e transizioni della matrice OPEN-12. Non modificare direttamente lo stato o gli eventi per aggirare un errore del flusso applicativo. Registrare identificativi tecnici minimizzati e riferimenti alla procedura senza copiare descrizioni, credenziali o codici di tracking nei log del runbook.
 
 ### Gestione degli incidenti
 
