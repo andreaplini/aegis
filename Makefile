@@ -9,12 +9,13 @@ OUTPUT_DIR ?= build/docs
 DOCX_TOOL_INPUTS = Makefile config/tool-versions.env config/documentation/package.json config/documentation/package-lock.json
 
 .DEFAULT_GOAL := help
-.PHONY: help install-doc-tools check-docs check-pandoc check-mermaid render-docs docs
+.PHONY: help install-doc-tools audit-doc-tools check-docs check-pandoc check-mermaid render-docs docs
 
 help:
 	@printf '%s\n' \
 	  'make docs       Generate and validate RAD and SDD DOCX files in $(OUTPUT_DIR)' \
 	  'make install-doc-tools  Install pinned Node tools and Chromium for Mermaid exports' \
+	  'make audit-doc-tools  Check documentation tool dependencies for high severity vulnerabilities' \
 	  'make check-docs  Test and validate docs, structure, traceability, and style' \
 	  'make check-pandoc Check local Pandoc against config/tool-versions.env' \
 	  'Set PANDOC and MERMAID to select alternate executables'
@@ -22,6 +23,9 @@ help:
 install-doc-tools:
 	npm ci --prefix config/documentation
 	npm exec --prefix config/documentation -- puppeteer browsers install chrome-headless-shell
+
+audit-doc-tools:
+	npm audit --prefix config/documentation --audit-level=high
 
 check-docs:
 	python3 -m unittest discover -s tests

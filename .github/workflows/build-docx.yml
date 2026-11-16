@@ -53,7 +53,7 @@ jobs:
         run: npm ci --prefix config/documentation
 
       - name: Verifica vulnerabilità degli strumenti Node
-        run: npm audit --prefix config/documentation --audit-level=high
+        run: make audit-doc-tools
 
       - name: Installa Chromium headless
         run: npm exec --prefix config/documentation -- puppeteer browsers install chrome-headless-shell
