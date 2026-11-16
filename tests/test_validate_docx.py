@@ -16,6 +16,8 @@ import validate_docx
 
 WORD_NAMESPACE = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 DRAWING_NAMESPACE = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+DRAWING_MAIN_NAMESPACE = "http://schemas.openxmlformats.org/drawingml/2006/main"
+DOCUMENT_RELATIONSHIP_NAMESPACE = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 ElementTree.register_namespace("w", WORD_NAMESPACE)
 
 
@@ -26,6 +28,7 @@ def write_docx(
     diagram_count: int = 0,
     diagram_descriptions: list[str] | None = None,
     personal_metadata: dict[str, str] | None = None,
+    include_diagram_images: bool = True,
 ) -> None:
     document = ElementTree.Element(f"{{{WORD_NAMESPACE}}}document")
     body = ElementTree.SubElement(document, f"{{{WORD_NAMESPACE}}}body")
@@ -48,6 +51,11 @@ def write_docx(
             inline,
             f"{{{DRAWING_NAMESPACE}}}docPr",
             {"id": str(index + 1), "name": f"Diagramma {index + 1}", "descr": description},
+        )
+        ElementTree.SubElement(
+            inline,
+            f"{{{DRAWING_MAIN_NAMESPACE}}}blip",
+            {f"{{{DOCUMENT_RELATIONSHIP_NAMESPACE}}}embed": f"rIdImage{index + 1}"},
         )
 
     with zipfile.ZipFile(path, "w") as package:
@@ -74,9 +82,30 @@ def write_docx(
                 "Target": "word/document.xml",
             },
         )
+        document_relationships = ElementTree.Element(
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships"
+        )
+        for index in range(diagram_count):
+            ElementTree.SubElement(
+                document_relationships,
+                "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+                {
+                    "Id": f"rIdImage{index + 1}",
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image",
+                    "Target": f"media/image{index + 1}.png",
+                },
+            )
         package.writestr("[Content_Types].xml", ElementTree.tostring(content_types))
         package.writestr("_rels/.rels", ElementTree.tostring(relationships))
         package.writestr("word/document.xml", ElementTree.tostring(document))
+        if diagram_count:
+            package.writestr(
+                "word/_rels/document.xml.rels",
+                ElementTree.tostring(document_relationships),
+            )
+        if include_diagram_images:
+            for index in range(diagram_count):
+                package.writestr(f"word/media/image{index + 1}.png", b"test image")
         if personal_metadata is not None:
             properties = ElementTree.Element(
                 "{http://schemas.openxmlformats.org/package/2006/metadata/core-properties}coreProperties"
@@ -114,6 +143,10 @@ class DocxValidationTests(unittest.TestCase):
 
             write_docx(path, required, diagram_count=8)
             self.assertEqual(validate_docx.validate_document(path), [])
+
+            write_docx(path, required, diagram_count=8, include_diagram_images=False)
+            errors = validate_docx.validate_document(path)
+            self.assertTrue(any("immagine incorporata mancante" in error for error in errors))
 
             write_docx(path, required, diagram_count=8, diagram_descriptions=[""] * 8)
             errors = validate_docx.validate_document(path)

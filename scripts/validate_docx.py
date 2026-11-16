@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import posixpath
 import re
 import sys
 import zipfile
@@ -12,11 +13,14 @@ from xml.etree import ElementTree
 
 WORD_NAMESPACE = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 DRAWING_NAMESPACE = "{http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing}"
+DRAWING_MAIN_NAMESPACE = "{http://schemas.openxmlformats.org/drawingml/2006/main}"
+DOCUMENT_RELATIONSHIP_NAMESPACE = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
 CONTENT_TYPES_NAMESPACE = "{http://schemas.openxmlformats.org/package/2006/content-types}"
 PACKAGE_RELATIONSHIPS_NAMESPACE = "{http://schemas.openxmlformats.org/package/2006/relationships}"
 CORE_PROPERTIES_NAMESPACE = "{http://schemas.openxmlformats.org/package/2006/metadata/core-properties}"
 DC_NAMESPACE = "{http://purl.org/dc/elements/1.1/}"
 OFFICE_DOCUMENT_RELATIONSHIP = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"
+IMAGE_RELATIONSHIP = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"
 DOCUMENT_CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
 REQUIRED_PARTS = {"[Content_Types].xml", "_rels/.rels", "word/document.xml"}
 REQUIRED_TEXT = {
@@ -97,6 +101,59 @@ def document_diagram_descriptions(path: Path) -> list[str]:
     ]
 
 
+def document_image_errors(path: Path, expected_diagrams: int) -> list[str]:
+    errors: list[str] = []
+    with zipfile.ZipFile(path) as package:
+        document = ElementTree.fromstring(package.read("word/document.xml"))
+        image_references = [
+            node.get(f"{DOCUMENT_RELATIONSHIP_NAMESPACE}embed")
+            for node in document.iter(f"{DRAWING_MAIN_NAMESPACE}blip")
+        ]
+        diagram_count = sum(1 for _ in document.iter(f"{WORD_NAMESPACE}drawing"))
+        if diagram_count == expected_diagrams and len(image_references) != expected_diagrams:
+            errors.append(
+                f"{path}: attesi {expected_diagrams} riferimenti a immagini, "
+                f"trovati {len(image_references)}"
+            )
+        if not image_references:
+            return errors
+
+        relationship_part = "word/_rels/document.xml.rels"
+        if relationship_part not in package.namelist():
+            return errors + [f"{path}: relazioni delle immagini mancanti"]
+
+        relationships = ElementTree.fromstring(package.read(relationship_part))
+        by_id = {
+            relationship.get("Id"): relationship
+            for relationship in relationships.findall(
+                f"{PACKAGE_RELATIONSHIPS_NAMESPACE}Relationship"
+            )
+        }
+        package_parts = set(package.namelist())
+        for reference in image_references:
+            relationship = by_id.get(reference)
+            if relationship is None:
+                errors.append(f"{path}: relazione immagine {reference!r} inesistente")
+                continue
+            if relationship.get("Type") != IMAGE_RELATIONSHIP:
+                errors.append(f"{path}: relazione {reference!r} non è un’immagine")
+                continue
+            target = relationship.get("Target", "")
+            if relationship.get("TargetMode") == "External" or not target:
+                errors.append(f"{path}: immagine {reference!r} non è incorporata nel DOCX")
+                continue
+            part = (
+                target.lstrip("/")
+                if target.startswith("/")
+                else posixpath.normpath(posixpath.join("word", target))
+            )
+            if part in {"", ".", ".."} or part.startswith("../"):
+                errors.append(f"{path}: percorso immagine non valido per {reference!r}")
+            elif part not in package_parts:
+                errors.append(f"{path}: immagine incorporata mancante: {part}")
+    return errors
+
+
 def document_personal_metadata(path: Path) -> list[str]:
     with zipfile.ZipFile(path) as package:
         if "docProps/core.xml" not in package.namelist():
@@ -172,6 +229,16 @@ def validate_document(path: Path, required_text: tuple[str, ...] | None = None) 
                     errors.append(
                         f"{path}: {missing_descriptions} diagrammi senza descrizione alternativa"
                     )
+            try:
+                errors.extend(document_image_errors(path, expected_diagrams))
+            except (
+                OSError,
+                KeyError,
+                ValueError,
+                zipfile.BadZipFile,
+                ElementTree.ParseError,
+            ) as error:
+                errors.append(f"{path}: impossibile verificare le immagini dei diagrammi: {error}")
     return errors
 
 
