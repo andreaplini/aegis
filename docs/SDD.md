@@ -66,6 +66,7 @@ Questo documento descrive l’architettura software proposta per Aegis e dettagl
 |---|---|
 | [RAD — Documento di Analisi dei Requisiti](RAD.md) | Requisiti, attori, casi d’uso e vincoli. |
 | [Template RAD/SDD convertito](template.md) | Struttura accademica di riferimento. |
+| [ADR-0001 — Baseline Java e Jakarta EE](adr/ADR-0001-runtime-baseline.md) | Proposta non approvata per la baseline runtime; include le fonti ufficiali consultate. |
 | Specifica OpenAPI | Da generare e versionare insieme all’API. |
 | Documentazione Jakarta EE e PostGIS | Riferimenti tecnici da associare alle versioni selezionate. |
 
@@ -83,7 +84,7 @@ Non è stato fornito un sistema software esistente. Il progetto è greenfield. D
 
 Aegis è una web app responsive per consultare l’accessibilità di luoghi e servizi di trasporto, pianificare spostamenti e inviare segnalazioni. Le viste server-side usano Jakarta Faces e Facelets; le API REST usano Jakarta REST. La persistenza geografica usa PostgreSQL con PostGIS. Le immagini sono archiviate in object storage e le sincronizzazioni e attività lente sono svolte da worker.
 
-La versione Jakarta EE e il runtime compatibile saranno selezionati in base ai requisiti di distribuzione e alle dipendenze del progetto. La decisione non è ancora convalidata. Provider di routing, fonti di trasporto, canali di notifica e servizi gestiti restano sostituibili e da selezionare.
+La versione Jakarta EE e il runtime compatibile saranno selezionati in base ai requisiti di distribuzione e alle dipendenze del progetto. La proposta [ADR-0001](adr/ADR-0001-runtime-baseline.md) è in attesa di approvazione. Provider di routing, fonti di trasporto, canali di notifica e servizi gestiti restano sostituibili e da selezionare.
 
 Il browser riceve HTML per le viste e JSON per le API. La mappa usa una libreria cartografica client-side, ma i dati cartografici e di accessibilità provengono dall’API. La consultazione può essere pubblica; invio delle segnalazioni e moderazione applicano le policy di identità e ruolo ancora da definire.
 
