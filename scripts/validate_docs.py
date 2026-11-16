@@ -717,17 +717,17 @@ def validate_report_submission_contract() -> list[str]:
     if len(use_case) != 2 or "ReportSubmission" not in use_case[1].split("###### UC-04:", 1)[0]:
         errors.append("docs/RAD.md: UC-03 deve descrivere la prenotazione della richiesta")
 
-    class_diagrams = re.findall(r"```mermaid\s*\n(.*?)\n```", rad, re.DOTALL)
+    mermaid_diagrams = re.findall(r"```mermaid\s*\n(.*?)\n```", rad, re.DOTALL)
     if not any(
         "class ReportSubmission {" in diagram
         and "ReportSubmission \"1\" --> \"0..*\" ReportAttachment" in diagram
-        for diagram in class_diagrams
+        for diagram in mermaid_diagrams
     ):
         errors.append(
             "docs/RAD.md: il diagramma delle classi deve collegare la prenotazione agli allegati"
         )
 
-    sequence_diagrams = [diagram for diagram in class_diagrams if "sequenceDiagram" in diagram]
+    sequence_diagrams = [diagram for diagram in mermaid_diagrams if "sequenceDiagram" in diagram]
     create_report_diagram = next(
         (diagram for diagram in sequence_diagrams if "POST segnalazione con chiave" in diagram),
         "",
@@ -1312,7 +1312,8 @@ def main() -> int:
 
     print(
         "Documentazione valida: link, ancore, struttura, milestone, requisiti, casi d’uso, "
-        "diagramma dei casi, glossari, runbook, ADR, tracciabilità, descrizioni accessibili e stile del nome "
+        "diagramma dei casi, glossari, runbook, ADR, idempotenza, tracciabilità, "
+        "descrizioni accessibili e stile del nome "
         f"verificati in {len(files)} file Markdown."
     )
     return 0
