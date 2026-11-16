@@ -20,6 +20,7 @@ Gli sprint sono ordinati per dipendenza e non assegnano date o durate non concor
 | DOC-06 | Accessibilità, usabilità, sicurezza e privacy | RAD e SDD | Requisiti e metodi di verifica documentati; nessun esito di test o punteggio inventato; decisioni non convalidate registrate. | Applicato |
 | DOC-07 | Operatività e rilascio | RAD e SDD | Sincronizzazione, freschezza, monitoraggio, backup, incidenti, ambienti e processo di rilascio descritti con valori irrisolti marcati. | Applicato |
 | DOC-08 | Revisione editoriale e consegna documentale | Tutti gli artefatti elencati | Struttura, collegamenti, terminologia e tracciabilità verificati; fonti e supporti documentali sono in `docs/`, mentre le esportazioni generate sono escluse dal versionamento. | Applicato |
+| DOC-09 | Analisi della sicurezza d'uso | SDD e template SDD | Pericoli dovuti a dati incerti, percorsi non verificati, sincronizzazioni e presentazione degli avvisi descritti con danno, controllo e prova richiesta; nessun rischio dichiarato validato senza evidenza. | Applicato |
 
 ## Applicazione degli sprint
 
@@ -33,6 +34,7 @@ Gli sprint sono ordinati per dipendenza e non assegnano date o durate non concor
 | DOC-06 | Esplicitati ascensori, rampe, accessi e annunci come caratteristiche consultabili. Uniformata la regola per cui dati assenti o scaduti sono sconosciuti. Il RAD mantiene metodo, misure individuali e aggregate, analisi, interviste e valutazione ISO senza risultati fittizi. |
 | DOC-07 | Descritti ambienti separati, obiettivi di produzione, pipeline, compatibilità delle migrazioni, metriche e allarmi e requisiti per prove di ripristino e procedure incidenti. Runbook, soglie, responsabili e fornitori non concordati restano aperti. |
 | DOC-08 | Controllati struttura, tracciabilità tra requisiti e architettura, collegamenti Markdown, coerenza del glossario e formattazione delle modifiche. Riferimento Word e materiali estratti sono mantenuti in `docs/template/`; generazione e pubblicazione degli export sono automatizzate. Le verifiche non dichiarano completate prove funzionali, accessibilità o ripristino. |
+| DOC-09 | Aggiunta in SDD e nel template una valutazione iniziale dei pericoli d'uso separata dalle minacce informatiche. Sono esplicitati i danni potenziali, i controlli progettati e le evidenze da raccogliere prima del pilota. |
 
 ## Decisioni documentali ancora aperte
 

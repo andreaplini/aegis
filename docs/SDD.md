@@ -241,6 +241,19 @@ La seguente analisi è iniziale e descrive controlli richiesti, non controlli gi
 | Injection o consumo eccessivo di risorse | Compromissione dei dati o indisponibilità di API e database. | Usare query parametrizzate, validare input, limitare dimensioni e frequenza delle richieste e rendere le operazioni ripetibili in sicurezza. Le soglie sono da definire. | Analisi statica, prove di input ostile e carico con soglie concordate. |
 | Divulgazione di dati personali o segreti | Violazione di riservatezza attraverso log, backup, configurazione o risposta API. | Minimizzare i dati, escludere segreti e identificativi dai log, limitare accessi e definire conservazione e cancellazione prima del lancio. Configurazione e segreti sono separati dal codice. | Revisione di log e permessi, controlli di segreti in CI e prove di accesso, conservazione e cancellazione. |
 
+#### 3.5.5 SICUREZZA D'USO E PERICOLI OPERATIVI
+
+Questa analisi riguarda i danni che possono derivare dall'uso delle informazioni del servizio. È distinta dall'analisi delle minacce informatiche. I controlli descritti sono requisiti di progetto e non risultano implementati o validati. La valutazione del rischio residuo richiede area pilota, fonti e profili d'uso approvati.
+
+| Pericolo | Possibile danno | Controllo progettato | Evidenza richiesta |
+|---|---|---|---|
+| Una caratteristica di accessibilità assente, scaduta o incoerente viene interpretata come disponibile. | La persona sceglie un luogo o un tratto che non può utilizzare. | Propagare lo stato sconosciuto senza convertirlo in accessibile; mostrare fonte e validità quando disponibili; escludere il dato incerto dalle dichiarazioni di compatibilità. | Test end-to-end per dato assente, scaduto, incoerente e aggiornamento fallito; revisione dei testi con persone del profilo pilota. |
+| Un percorso include un tratto non verificato o un fallback del provider. | La persona incontra una barriera o non riesce a completare il tragitto. | Etichettare i tratti non verificati; rendere visibili le limitazioni e l'origine del percorso; fornire un esito esplicito quando non è possibile stabilire la compatibilità. | Prove con provider indisponibile, dati parziali e profili approvati; verifica dell'equivalenza tra mappa e descrizione testuale. |
+| Una sincronizzazione incompleta o duplicata pubblica uno stato non coerente. | La persona pianifica sulla base di informazioni obsolete o contraddittorie. | Applicare importazioni idempotenti e aggiornamenti atomici; mantenere provenienza e tempi; rendere osservabili esito e ritardo della sincronizzazione; non promuovere dati parziali a stato verificato. | Prove di retry, interruzione a metà importazione, duplicati e ripristino; confronto tra fonte e dati pubblicati. |
+| Un avviso o un errore non è percepibile o comprensibile con la modalità d'interazione usata. | La persona non nota l'incertezza o non riesce a scegliere un'alternativa. | Esporre avvisi nel contenuto e nella struttura accessibile, senza affidarsi al solo colore, alla sola mappa o a notifiche temporanee; mantenere il messaggio disponibile nella vista. | Verifica con tastiera e tecnologie assistive, prove con utenti e controllo che gli stati equivalenti siano disponibili in forma testuale. |
+
+Gli esiti delle verifiche, le limitazioni note e l'accettazione del rischio residuo devono essere registrati prima del pilota. I criteri di accettazione e i profili coinvolti dipendono dalle decisioni OPEN-02, OPEN-03 e OPEN-06.
+
 ### 3.6 DECISIONI SUL FLUSSO DI CONTROLLO GLOBALE
 
 Le viste Facelets e le risorse Jakarta REST costituiscono adattatori. Validano la forma degli input e invocano casi d’uso applicativi. I casi d’uso applicano le regole di dominio, coordinano porte e transazioni e restituiscono risultati tipizzati. Gli adattatori convertono i risultati in viste o DTO HTTP. Le chiamate di rete lente sono eseguite fuori dalle transazioni di database quando possibile.
