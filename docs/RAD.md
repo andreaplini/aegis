@@ -99,7 +99,7 @@ I criteri descrivono risultati osservabili ricavati dai flussi dei casi d’uso 
 | FR-04 | Una richiesta valida restituisce zero o più percorsi alternativi con tempi, cambi e stato di verifica secondo il contratto del provider e i profili approvati in OPEN-03. |
 | FR-05 | Ogni tratto del percorso distingue barriere note, compatibilità nota e stato non verificato. Un risultato del provider non dimostra da solo l’accessibilità secondo OPEN-03. |
 | FR-06 | La selezione di un luogo mostra dettaglio, caratteristiche note, fonte e validità secondo OPEN-02. Dati assenti o scaduti risultano sconosciuti. |
-| FR-07 | L’invio valido persiste segnalazione ed evento iniziale. Un errore non lascia una segnalazione parziale. La foto facoltativa resta privata finché non supera i controlli OPEN-15 ed è collegata alla segnalazione. Consenso e ciclo di vita seguono OPEN-05. Un errore tra storage e database lascia l’upload recuperabile o eliminabile secondo OPEN-08 e OPEN-15. |
+| FR-07 | L’invio valido persiste segnalazione ed evento iniziale. Un errore non lascia una segnalazione parziale. Ripetere la stessa richiesta con la stessa chiave di idempotenza non crea report, eventi, allegati o notifiche duplicati. Riutilizzare la chiave con un payload diverso è rifiutato senza nuovi effetti. La foto facoltativa resta privata finché non supera i controlli OPEN-15 ed è collegata alla segnalazione. Consenso e ciclo di vita seguono OPEN-05. Un errore tra storage e database lascia l’upload recuperabile o eliminabile secondo OPEN-08 e OPEN-15. Ambito, durata e replay sicuro dell’esito seguono OPEN-04, OPEN-05 e OPEN-08. |
 | FR-08 | La creazione riuscita restituisce un codice di tracking. La consultazione mostra solo lo stato consentito dalla policy di accesso da approvare in OPEN-04. |
 | FR-09 | Solo una transizione presente nella matrice approvata in OPEN-12 aggiorna stato ed evento nella stessa transazione. Una transizione non ammessa non modifica i dati. Ruoli e attribuzione dell’attore seguono OPEN-04 e OPEN-05. |
 | FR-10 | Solo una generazione completa e validata secondo il contratto della fonte OPEN-14 viene pubblicata. Versione, timestamp, controlli ed esito sono registrati. Un errore mantiene i dati validi precedenti. Fonti e responsabili devono essere approvati in OPEN-01. |
@@ -290,7 +290,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | Condizioni d’uscita | Segnalazione ed evento iniziale persistiti. Codice di tracking restituito. In caso di errore non rimane una segnalazione parziale. Se una notifica prevista fallisce, il fallimento non annulla la segnalazione e resta osservabile e recuperabile secondo la policy da definire in OPEN-08. |
 | Requisiti qualitativi | Il modulo è accessibile. I dati identificativi sono minimizzati e separati dalla segnalazione. La foto non è pubblicata prima dei controlli previsti. |
 | Flusso degli eventi | Il segnalatore inserisce luogo, categoria, descrizione e data. Facoltativamente allega una foto. Il sistema valida i campi e controlla l’upload. Il sistema registra segnalazione ed evento iniziale e restituisce il codice di tracking. Dopo il completamento del caso, pianifica l’eventuale notifica secondo consenso e policy. Se il canale fallisce, registra l’esito per il recupero previsto in OPEN-08. |
-| Flussi alternativi e di errore | Input non valido, autorizzazione negata o limite superato: il sistema rifiuta la richiesta senza persistenza parziale secondo OPEN-04 e OPEN-15. File non valido, scansione fallita o scanner indisponibile: il file resta privato e viene rifiutato, messo in quarantena o eliminato secondo OPEN-15 e OPEN-05. Scrittura interrotta in object storage o errore database dopo la scansione: report ed evento non restano parziali e l’upload non diventa pubblico. L’intento durevole consente retry o pulizia idempotente secondo OPEN-08 e OPEN-15. Notifica fallita o con esito ambiguo: la segnalazione resta registrata, l’esito non è presentato come consegna confermata e il recupero segue OPEN-08. |
+| Flussi alternativi e di errore | Input non valido, autorizzazione negata o limite superato: il sistema rifiuta la richiesta senza persistenza parziale secondo OPEN-04 e OPEN-15. File non valido, scansione fallita o scanner indisponibile: il file resta privato e viene rifiutato, messo in quarantena o eliminato secondo OPEN-15 e OPEN-05. Scrittura interrotta in object storage o errore database dopo la scansione: report ed evento non restano parziali e l’upload non diventa pubblico. L’intento durevole consente retry o pulizia idempotente secondo OPEN-08 e OPEN-15. Commit riuscito ma risposta persa: un retry con la stessa chiave e lo stesso payload recupera l’operazione esistente senza ripetere gli effetti. La stessa chiave con payload diverso è rifiutata. Un’operazione ancora in corso non viene avviata in parallelo. Ambito della chiave, durata, risposta ripetibile e autorizzazione seguono OPEN-04, OPEN-05 e OPEN-08. Notifica fallita o con esito ambiguo: la segnalazione resta registrata, l’esito non è presentato come consegna confermata e il recupero segue OPEN-08. |
 
 ###### UC-04: Seguire segnalazione
 
@@ -542,32 +542,47 @@ sequenceDiagram
   participant W as NotificationWorker
   participant N as NotificationPort
   S->>API: POST segnalazione
-  API->>UC: input e policy per la validazione applicativa
-  opt Foto allegata
-    UC->>Attach: Registra intento e chiave opaca privata
-    Attach-->>UC: UploadId e riferimento durevole
-    UC->>Upload: Scrive in area privata e richiede scansione
-    alt Scansione superata
-      Upload-->>UC: Oggetto privato validato
-    else File rifiutato o scanner indisponibile
-      Upload-->>UC: Esito negativo o non disponibile
-      UC->>Attach: Registra esito e lavoro di pulizia secondo policy
-      break Upload non accettabile secondo OPEN-15
-        UC-->>API: Rifiuto senza persistenza del report
-        API-->>S: Upload non accettato
+  API->>UC: input, policy e chiave di idempotenza
+  UC->>Repo: Verifica chiave e impronta del payload
+  alt Retry di richiesta completata con lo stesso payload
+    Repo-->>UC: Esito dell’operazione esistente
+    UC-->>API: Esito ripetibile secondo OPEN-04 e OPEN-05
+    API-->>S: Esito originario consentito
+  else Chiave associata a payload diverso
+    Repo-->>UC: Conflitto
+    UC-->>API: Rifiuto senza nuovi effetti
+    API-->>S: Chiave già utilizzata
+  else Operazione in corso
+    Repo-->>UC: Stato pendente
+    UC-->>API: Stato senza avviare effetti concorrenti
+    API-->>S: Operazione in corso secondo OPEN-08
+  else Nuovo invio o ripresa recuperabile
+    opt Foto allegata
+      UC->>Attach: Registra intento, chiave idempotente e chiave opaca privata
+      Attach-->>UC: UploadId e riferimento durevole
+      UC->>Upload: Scrive in area privata e richiede scansione
+      alt Scansione superata
+        Upload-->>UC: Oggetto privato validato
+      else File rifiutato o scanner indisponibile
+        Upload-->>UC: Esito negativo o non disponibile
+        UC->>Attach: Registra esito e lavoro di pulizia secondo policy
+        break Upload non accettabile secondo OPEN-15
+          UC-->>API: Rifiuto senza persistenza del report
+          API-->>S: Upload non accettato
+        end
       end
     end
-  end
-  alt Input validi, eventuale upload verificato e commit riuscito
-    UC->>Repo: salva Report + ReportEvent + riferimento allegato + intenzione autorizzata
-    Repo-->>UC: commit completato
-    UC-->>API: tracking code e stato
-    API-->>S: conferma invio
-  else Validazione o transazione database fallite
-    UC-->>API: Rifiuto senza persistenza parziale
-    API-->>S: Errore comprensibile
-    opt Intento upload presente senza report collegato
-      UC->>Attach: Mantiene il lavoro privato per retry o pulizia
+    alt Input validi, eventuale upload verificato e commit riuscito
+      UC->>Repo: salva chiave + impronta + Report + ReportEvent + riferimento allegato + intenzione autorizzata
+      Repo-->>UC: commit completato
+      UC-->>API: tracking code e stato
+      API-->>S: conferma invio
+    else Validazione o transazione database fallite
+      UC-->>API: Rifiuto senza persistenza parziale del report
+      API-->>S: Errore comprensibile
+      opt Intento upload presente senza report collegato
+        UC->>Attach: Mantiene il lavoro privato per retry o pulizia
+      end
     end
   end
   opt Intenzione di notifica presente
@@ -836,6 +851,7 @@ Il profilo visivo non è disponibile perché i punteggi non sono stati raccolti.
 | Codice di tracking | Codice non enumerabile usato per consultare lo stato di una segnalazione. |
 | Moderazione | Processo di valutazione e decisione su una segnalazione. |
 | Duplicato | Segnalazione riferita a un caso già registrato e collegata senza cancellare la cronologia. |
+| Chiave di idempotenza | Identificativo di una richiesta usato per riconoscere i retry. Ambito, durata e autorizzazione del replay seguono OPEN-04, OPEN-05 e OPEN-08. |
 | Role | Ruolo applicativo assegnato a un account. Valori e permessi sono da approvare secondo OPEN-04. |
 | Stato della segnalazione | Fase corrente di un report. Valori, transizioni e condizioni sono da approvare in OPEN-12. |
 | p95 | Valore sotto il quale ricade il 95 per cento delle misurazioni osservate. Popolazione e finestra temporale vanno definite nel protocollo. |

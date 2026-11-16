@@ -199,9 +199,9 @@ La persistenza relazionale proposta usa PostgreSQL e PostGIS. Le migrazioni dovr
 | `data_source` | Fonte autorizzata, responsabile, configurazione di aggiornamento, regola di validità e riferimento alla generazione attiva. Schema e modalità di gestione da convalidare secondo OPEN-01 e OPEN-14. |
 | `transit_line` | Linee importate e relativi riferimenti alla fonte. |
 | `transit_stop` | Fermate, geometrie e relazioni con le linee e la fonte. |
-| `report` | Geometria o luogo, categoria, descrizione, stato e date. Dati identificativi separati. |
+| `report` | Geometria o luogo, categoria, descrizione, stato e date. Chiave di idempotenza e impronta del payload per riconoscere retry e rifiutare il riuso con contenuto diverso. Ambito, durata e protezione seguono OPEN-04, OPEN-05 e OPEN-08. Dati identificativi separati. |
 | `report_event` | Eventi append-only con autore, data, decisione e riferimento a eventuale duplicato. |
-| `report_attachment` | Intento durevole di upload, chiave opaca di un oggetto privato, esiti di validazione e scansione, stato di associazione al report e lavoro di recupero o pulizia. Stati, accessi e conservazione seguono OPEN-05 e OPEN-15. |
+| `report_attachment` | Intento durevole di upload correlato alla chiave idempotente, chiave opaca di un oggetto privato, esiti di validazione e scansione, stato di associazione al report e lavoro di recupero o pulizia. Stati, accessi e conservazione seguono OPEN-05, OPEN-08 e OPEN-15. |
 | `notification_outbox` | Intenzioni di notifica registrate nella stessa transazione del report e dell’evento iniziale oppure della transizione e dell’evento di moderazione. Stato, tentativi e riferimenti tecnici necessari al recupero. Destinatario, contenuto, accesso e conservazione dipendono dalle policy OPEN-04, OPEN-05 e OPEN-08. |
 | `user_account` | Riferimento d’identità e ruoli con accesso limitato. |
 | `source_sync` | Fonte, versione, timestamp, esito, controlli di qualità, generazione pubblicata, generazione precedente e stato del lavoro durevole di pulizia cache. |
@@ -335,7 +335,7 @@ Una segnalazione che descrive un caso già registrato può essere unita al repor
 
 #### 3.7.4 INVII RIPETUTI E DUPLICAZIONE DEI DATI IMPORTATI
 
-Retry della creazione e sincronizzazioni ripetute non devono creare segnalazioni o dati di trasporto duplicati. Il sistema usa idempotenza o deduplicazione e rende osservabile l’esito. Un codice di tracking inesistente o non valido non permette di enumerare segnalazioni.
+Retry della creazione e sincronizzazioni ripetute non devono creare segnalazioni o dati di trasporto duplicati. Per l’invio, una chiave idempotente è associata all’impronta del payload. La ripetizione della stessa chiave e dello stesso payload recupera una sola operazione e non duplica report, evento, allegato o intenzione di notifica. Il riuso della chiave con payload diverso è rifiutato senza effetti. Una richiesta ancora in corso non viene eseguita in parallelo. Ambito, durata, recupero del risultato e autorizzazione del replay seguono OPEN-04, OPEN-05 e OPEN-08. Le sincronizzazioni applicano le chiavi stabili e le regole OPEN-14. Un codice di tracking inesistente o non valido non permette di enumerare segnalazioni.
 
 #### 3.7.5 CARICAMENTO LENTO O ASSENZA DI RETE
 
@@ -343,7 +343,7 @@ Le viste mostrano stati di caricamento e un errore accessibile quando rete, API 
 
 #### 3.7.6 INPUT INCOMPLETI O INVALIDI
 
-Richieste di percorso, moduli e identificativi sono validati prima di produrre effetti. In caso di input incompleto o non valido il sistema restituisce errori comprensibili e non persiste modifiche parziali. Un upload non valido o con scansione fallita viene rifiutato o messo in quarantena e non è reso pubblico. Se la scrittura object storage o la transazione report falliscono, l’intento durevole mantiene l’oggetto privato e consente retry o pulizia idempotente secondo OPEN-08 e OPEN-15.
+Richieste di percorso, moduli e identificativi sono validati prima di produrre effetti. In caso di input incompleto o non valido il sistema restituisce errori comprensibili e non persiste modifiche parziali. Un upload non valido o con scansione fallita viene rifiutato o messo in quarantena e non è reso pubblico. Se la scrittura object storage o la transazione report falliscono, l’intento durevole mantiene l’oggetto privato e consente retry o pulizia idempotente secondo OPEN-08 e OPEN-15. Se il commit riesce ma la risposta si perde, la chiave consente di recuperare l’esito della stessa operazione senza ripeterne gli effetti. La risposta ripetuta non rivela il codice di tracking a un soggetto non autorizzato secondo OPEN-04 e OPEN-05.
 
 #### 3.7.7 PERMESSI DI GEOLOCALIZZAZIONE NEGATI
 
@@ -369,7 +369,7 @@ Il caso d’uso `PlanRoute` valida origine, destinazione e vincoli, invoca `Rout
 
 ### 4.5 SEGNALAZIONI E MODERAZIONE
 
-`CreateReport` valida i dati e gestisce l’eventuale upload tramite intento durevole, storage privato e scansione. Quando l’immagine supera i controlli, la stessa transazione database persiste segnalazione, evento iniziale, collegamento a `report_attachment` e intenzione autorizzata di notifica. La transazione non comprende object storage. Se fallisce, l’intento lascia l’oggetto privato e consente retry o pulizia secondo OPEN-05, OPEN-08 e OPEN-15. `TrackReport` restituisce soltanto lo stato consentito al possessore del codice. `ModerateReport` verifica identità, ruolo, esistenza del report e transizione ammessa dalla matrice OPEN-12. Aggiorna lo stato e aggiunge un evento append-only nella stessa transazione, registrando anche l’intenzione autorizzata di notifica. La proposta [ADR-0011](adr/ADR-0011-report-moderation-state-machine.md) raccoglie le dimensioni della matrice ancora da approvare. Un worker elabora l’outbox dopo il commit. Un errore di invio non annulla segnalazione, codice di tracking o transizione già registrati. Il sistema non garantisce consegna esattamente una volta. Esito, tentativi, riconciliazione e recupero seguono la policy OPEN-08. Stati, transizioni, ruoli, motivazioni ed effetti della moderazione devono essere approvati in OPEN-12 prima dell’implementazione. I dettagli identificativi sono esclusi dalla risposta pubblica.
+`CreateReport` valida i dati e gestisce l’eventuale upload tramite intento durevole, storage privato e scansione. La richiesta porta una chiave di idempotenza associata all’impronta del payload. La chiave impedisce effetti duplicati sui retry e il suo riuso con contenuto diverso è rifiutato. Ambito, durata, coordinamento dei retry concorrenti e recupero autorizzato dell’esito restano da approvare in OPEN-04, OPEN-05 e OPEN-08. Quando l’immagine supera i controlli, la stessa transazione database persiste segnalazione, evento iniziale, collegamento a `report_attachment` e intenzione autorizzata di notifica. La transazione non comprende object storage. Se fallisce, l’intento lascia l’oggetto privato e consente retry o pulizia secondo OPEN-05, OPEN-08 e OPEN-15. Se il commit riesce ma la risposta si perde, un retry recupera l’esito della stessa operazione senza ripetere report, evento, allegato o notifica. Il recupero del codice di tracking è subordinato alla policy di autorizzazione. `TrackReport` restituisce soltanto lo stato consentito al possessore del codice. `ModerateReport` verifica identità, ruolo, esistenza del report e transizione ammessa dalla matrice OPEN-12. Aggiorna lo stato e aggiunge un evento append-only nella stessa transazione, registrando anche l’intenzione autorizzata di notifica. La proposta [ADR-0011](adr/ADR-0011-report-moderation-state-machine.md) raccoglie le dimensioni della matrice ancora da approvare. Un worker elabora l’outbox dopo il commit. Un errore di invio non annulla segnalazione, codice di tracking o transizione già registrati. Il sistema non garantisce consegna esattamente una volta. Esito, tentativi, riconciliazione e recupero seguono la policy OPEN-08. Stati, transizioni, ruoli, motivazioni ed effetti della moderazione devono essere approvati in OPEN-12 prima dell’implementazione. I dettagli identificativi sono esclusi dalla risposta pubblica.
 
 ### 4.6 GEOLOCALIZZAZIONE, SINCRONIZZAZIONE E NOTIFICHE
 
@@ -401,6 +401,7 @@ I termini di cache e generazione descrivono invarianti del comportamento progett
 | PostGIS | Estensione PostgreSQL per dati e interrogazioni geospaziali. |
 | Pubblicazione atomica | Cambio della generazione attiva e registrazione del lavoro di pulizia nella stessa transazione. |
 | Pulizia cache | Rimozione ripetibile delle chiavi riferite a generazioni superate. La correttezza delle letture non dipende dal completamento della rimozione. |
+| Chiave di idempotenza | Identificativo che riconosce i retry della stessa richiesta e impedisce effetti duplicati. Ambito, durata e replay sicuro seguono OPEN-04, OPEN-05 e OPEN-08. |
 | ReportAttachment | Intento durevole e riferimento privato di un allegato. Il ciclo di vita consente riconciliazione tra database e object storage. Stati e conservazione dipendono da OPEN-05, OPEN-08 e OPEN-15. |
 | AttachmentState | Stato del ciclo di upload, scansione, associazione o pulizia. Valori e transizioni devono essere definiti secondo OPEN-05 e OPEN-15. |
 | ReportEvent | Evento immutabile che registra una transizione o decisione su una segnalazione. |
