@@ -2,6 +2,10 @@
 
 Monorepo per la piattaforma di mobilità urbana accessibile.
 
+## Stato del repository
+
+Il repository contiene la baseline documentale e l'esportazione automatizzata di RAD e SDD. Il prodotto applicativo non è ancora implementato: `src/` non contiene moduli e non è presente una build applicativa. Requisiti e architettura descrivono il sistema proposto e restano da convalidare nei punti elencati in [RAD e SDD](docs/MILESTONES.md).
+
 ## Struttura
 
 | Percorso | Contenuto |
@@ -21,5 +25,7 @@ Installare Pandoc e lanciare:
 ```sh
 make docs
 ```
+
+La generazione esegue prima `make check-docs`, che verifica i collegamenti locali e le ancore ai titoli. Il controllo può essere lanciato separatamente e non richiede Pandoc.
 
 L'esportazione usa `docs/template/template.docx` come riferimento di stile. Pandoc converte Markdown in DOCX; MarkItDown svolge la direzione opposta, da documenti sorgente a Markdown.

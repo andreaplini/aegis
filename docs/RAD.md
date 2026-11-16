@@ -10,7 +10,7 @@
 | Candidati | Da compilare |
 | Anno accademico | Da confermare |
 
-Bozza aggiornata il 15 novembre 2026. I requisiti sono da convalidare con persone con disabilità, enti di trasporto e responsabili delle fonti dati.
+Bozza aggiornata il 16 novembre 2026. I requisiti sono da convalidare con persone con disabilità, enti di trasporto e responsabili delle fonti dati. Il prodotto non è ancora implementato; decisioni e prove mancanti sono tracciate nella [roadmap](MILESTONES.md).
 
 ## SOMMARIO
 

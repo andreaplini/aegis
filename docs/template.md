@@ -4,6 +4,8 @@ Trascrizione strutturata del [documento Word originale](template/template.docx),
 
 Per la struttura dei documenti basati sugli esempi accademici, usare i modelli anonimizzati [RAD](template/RAD.md) e [SDD](template/SDD.md). Questa trascrizione resta il riferimento del template Word generico.
 
+Per registrare decisioni architetturali approvate o proposte, usare il [modello ADR](template/ADR.md). Un ADR non sostituisce i requisiti RAD né la descrizione architetturale SDD.
+
 ## Documento di Analisi dei Requisiti (RAD)
 
 ### 1. Introduzione

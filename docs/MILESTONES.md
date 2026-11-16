@@ -1,10 +1,10 @@
-# Milestone documentali Aegis
+# Roadmap documentale e ingegneristica Aegis
 
 ## Ambito
 
-La roadmap riguarda esclusivamente i documenti del progetto. Non pianifica né dichiara completati codice, infrastruttura, prototipi, prove con utenti o attività operative. Gli esiti di attività non svolte restano esplicitamente da raccogliere. Questo è l’unico file di milestone e roadmap del progetto.
+Questo è il file di riferimento per milestone documentali e di ingegneria del prodotto. Gli stati dei milestone DOC descrivono il completamento editoriale; gli stati ENG descrivono il lavoro sul prodotto e sulle evidenze necessarie. Nessun milestone editoriale implica che codice, infrastruttura, prototipi, prove con utenti o attività operative siano stati completati.
 
-Gli artefatti governati sono `docs/RAD.md`, `docs/SDD.md`, `docs/template/RAD.md`, `docs/template/SDD.md`, `docs/template.md`, il riferimento Word `docs/template/template.docx`, i materiali estratti in `docs/template/assets/` e le informazioni documentali in `README.md`.
+Gli artefatti governati sono `docs/RAD.md`, `docs/SDD.md`, i modelli in `docs/template/`, il riferimento Word `docs/template/template.docx`, i materiali estratti in `docs/template/assets/`, gli ADR che saranno approvati e le informazioni documentali in `README.md`.
 
 ## Roadmap
 
@@ -52,3 +52,27 @@ Questi elementi non impediscono di completare la stesura, ma devono essere risol
 ## Criterio di completamento della roadmap
 
 La roadmap documentale è applicata quando tutti gli sprint hanno raggiunto il criterio di uscita e gli artefatti sono coerenti tra loro. La documentazione resta una bozza finché le decisioni aperte non hanno un responsabile e un’evidenza di chiusura. I test con utenti, le verifiche tecniche, il ripristino dei backup e le misure operative sono attività future e non sono dichiarati svolti in questo piano.
+
+## Baseline ingegneristica
+
+Alla revisione del 16 novembre 2026, `src/` contiene solo `.gitkeep` e `config/data/` è vuota. Non sono presenti build applicativa, moduli software, ambienti container o test applicativi. L'unica build automatizzata genera i documenti DOCX; l'ultima esecuzione osservata della GitHub Action per questo scopo è riuscita sul commit `7ff2376`. Questa baseline separa il funzionamento della documentazione dallo stato del prodotto.
+
+## Milestone di ingegneria del prodotto
+
+Le fasi sono ordinate per dipendenza. “Pianificato” indica che il lavoro non è dimostrato nel repository. Ogni passaggio richiede evidenze verificabili versionate o collegate; un requisito non concordato resta aperto e non va implementato per supposizione.
+
+| ID | Milestone | Prerequisiti | Criteri di uscita ed evidenze | Stato |
+|---|---|---|---|---|
+| ENG-01 | Convalidare ambito, requisiti e responsabilità | OPEN-01, OPEN-02, OPEN-04, OPEN-05, OPEN-06 | Area pilota, attori, fonti e responsabilità approvati; regole di identità, privacy e accessibilità convalidate; requisiti RAD aggiornati con esito e approvazione tracciabili. | Pianificato |
+| ENG-02 | Chiudere le decisioni architetturali | ENG-01; OPEN-03, OPEN-07, OPEN-08 | Decisioni su runtime Java/Jakarta EE, provider, routing, freschezza, prestazioni, disponibilità, ripristino, notifiche e distribuzione registrate come ADR con alternative, conseguenze e responsabili. SDD e vincoli aggiornati. | Pianificato |
+| ENG-03 | Creare fondamenta di build e sviluppo ripetibile | ENG-02 | Build applicativa ripetibile, convenzioni package e moduli, configurazione per ambiente senza segreti versionati, migrazioni iniziali, ambiente locale riproducibile e istruzioni README; CI esegue build e verifiche automatiche. | Pianificato |
+| ENG-04 | Consegnare la prima vertical slice di luoghi e accessibilità | ENG-03; fonti approvate | Importazione idempotente di una fonte concordata, query e API con provenienza e validità, stato sconosciuto per dato assente/scaduto, persistenza e test automatizzati; requisiti e moduli tracciati a codice e prove. | Pianificato |
+| ENG-05 | Consegnare pianificazione e consultazione accessibili | ENG-04; provider e profili convalidati | Flussi di consultazione e percorso implementati dietro porte sostituibili; alternative testuali, tastiera e tecnologie assistive verificate; errori e risultati incerti documentati; prove automatizzate e sessioni con utenti registrate. | Pianificato |
+| ENG-06 | Consegnare segnalazioni, tracking e moderazione | ENG-03; policy OPEN-04 e OPEN-05 approvate | Creazione atomica, codice di tracking non enumerabile, upload controllato, autorizzazione server-side, transizioni esplicite e storico append-only; test funzionali, autorizzativi e di abuso. | Pianificato |
+| ENG-07 | Stabilire il quality gate di rilascio | ENG-03–ENG-06 | CI applica formattazione, compilazione, test, analisi dipendenze e vulnerabilità, controlli statici e scansione immagini/container secondo strumenti approvati; report e soglie sono versionati, senza risultati simulati. | Pianificato |
+| ENG-08 | Provare operabilità e recupero | ENG-03; OPEN-07 e OPEN-08 | Ambienti separati e configurati; log, metriche e allarmi verificati; backup ripristinato in prova; runbook per incidenti, migrazioni e rollback revisionati; obiettivi operativi misurati e approvati. | Pianificato |
+| ENG-09 | Autorizzare il pilota e il rilascio | ENG-01–ENG-08 | Criteri di accettazione RAD superati, rischio residuo approvato, fonti e operatori autorizzati, accessibilità e privacy revisionate, monitoraggio attivo e piano di supporto assegnato; verbale di go/no-go e versione rilasciata. | Pianificato |
+
+## Regole di avanzamento
+
+Ogni requisito funzionale deve collegarsi a uno o più casi d'uso, componenti e prove. Ogni requisito non funzionale deve avere un metodo di verifica, un risultato osservato e il responsabile dell'accettazione prima del rilascio. Le decisioni architetturali che cambiano requisiti o qualità aggiornano RAD, SDD e relativi ADR nello stesso cambiamento. Un milestone passa a “Applicato” solo quando le evidenze indicate sono consultabili; il piano non assegna date o soglie non concordate.

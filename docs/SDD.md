@@ -10,7 +10,7 @@
 | Candidati | Da compilare |
 | Anno accademico | Da confermare |
 
-Bozza aggiornata il 15 novembre 2026. L’architettura è iniziale; runtime Jakarta EE, fonti dati, area pilota e servizi gestiti sono da convalidare.
+Bozza aggiornata il 16 novembre 2026. L’architettura è iniziale e descrive il sistema proposto; il prodotto non è ancora implementato. Runtime Jakarta EE, fonti dati, area pilota e servizi gestiti sono da convalidare secondo la [roadmap](MILESTONES.md).
 
 ## SOMMARIO
 
