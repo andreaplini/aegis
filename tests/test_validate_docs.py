@@ -249,6 +249,46 @@ class MarkdownValidationTests(unittest.TestCase):
 
             self.assertTrue(any("oggetti duplicati nella sezione" in error for error in errors))
 
+    def test_entity_catalog_must_be_represented_in_class_diagram(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            docs.mkdir()
+            rad = docs / "RAD.md"
+            rad.write_text(
+                "##### Oggetti entity dei casi d’uso\n\n"
+                "| Oggetto | Responsabilità |\n|---|---|\n"
+                "| `Place` | Luogo. |\n| `Report` | Segnalazione. |\n\n"
+                "```mermaid\nclassDiagram\n  class Place {\n  }\n```\n",
+                encoding="utf-8",
+            )
+
+            with patch.object(validate_docs, "ROOT", root):
+                errors = validate_docs.validate_entity_class_diagram()
+
+            self.assertTrue(any("entity non rappresentate" in error for error in errors))
+
+    def test_typed_entity_attributes_require_class_relationships(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            docs.mkdir()
+            rad = docs / "RAD.md"
+            rad.write_text(
+                "##### Oggetti entity dei casi d’uso\n\n"
+                "| Oggetto | Responsabilità |\n|---|---|\n"
+                "| `Place` | Luogo. |\n| `Report` | Segnalazione. |\n\n"
+                "```mermaid\nclassDiagram\n"
+                "  class Place {\n    String name\n  }\n"
+                "  class Report {\n    Place place\n  }\n```\n",
+                encoding="utf-8",
+            )
+
+            with patch.object(validate_docs, "ROOT", root):
+                errors = validate_docs.validate_entity_class_diagram()
+
+            self.assertTrue(any("relazioni assenti per attributi entity tipizzati" in error for error in errors))
+
     def test_adrs_require_traceable_metadata_options_and_verification(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

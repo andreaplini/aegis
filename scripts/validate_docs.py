@@ -593,6 +593,93 @@ def validate_model_object_tables() -> list[str]:
     return errors
 
 
+def validate_entity_class_diagram() -> list[str]:
+    path = ROOT / "docs/RAD.md"
+    text = path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    entity_heading = "##### Oggetti entity dei casi d’uso"
+    heading_indices = [index for index, line in enumerate(lines) if line.strip() == entity_heading]
+    if len(heading_indices) != 1:
+        return ["docs/RAD.md: catalogo entity non trovato o duplicato"]
+
+    start = heading_indices[0] + 1
+    end = next(
+        (
+            index
+            for index in range(start, len(lines))
+            if re.match(r"^#{1,5}\s", lines[index])
+        ),
+        len(lines),
+    )
+    entities = {
+        identifier
+        for line in lines[start:end]
+        if line.startswith("|")
+        for identifier in re.findall(r"`([A-Za-z][A-Za-z0-9]*)`", line.split("|", 2)[1])
+    }
+
+    diagrams = re.findall(r"```mermaid\s*\n(.*?)\n```", text, re.DOTALL)
+    class_diagrams = [
+        diagram
+        for diagram in diagrams
+        if re.search(r"^\s*classDiagram\s*$", diagram, re.MULTILINE)
+    ]
+    if len(class_diagrams) != 1:
+        return ["docs/RAD.md: deve contenere un solo diagramma delle classi"]
+
+    declared = set(
+        re.findall(
+            r"^\s*class\s+([A-Za-z][A-Za-z0-9]*)\s*\{",
+            class_diagrams[0],
+            re.MULTILINE,
+        )
+    )
+    missing = sorted(entities - declared)
+    if missing:
+        return [
+            "docs/RAD.md: entity non rappresentate nel diagramma delle classi: "
+            + ", ".join(missing)
+        ]
+
+    diagram_lines = class_diagrams[0].splitlines()
+    relationships = {
+        frozenset((match.group(1), match.group(2)))
+        for line in diagram_lines
+        if (
+            match := re.match(
+                r'^\s*(\w+)(?:\s+"[^"]+")?\s+-->\s+(?:"[^"]+"\s+)?(\w+)',
+                line,
+            )
+        )
+    }
+    missing_relationships: set[tuple[str, str]] = set()
+    current_class: str | None = None
+    for line in diagram_lines:
+        class_match = re.match(r"^\s*class\s+(\w+)\s*\{", line)
+        if class_match:
+            current_class = class_match.group(1)
+            continue
+        if line.strip() == "}":
+            current_class = None
+            continue
+        if current_class is None:
+            continue
+        field_match = re.match(r"^\s+(\w+(?:\[\])?)\s+\w+\s*$", line)
+        if not field_match:
+            continue
+        field_type = field_match.group(1).removesuffix("[]")
+        if (
+            field_type in declared
+            and frozenset((current_class, field_type)) not in relationships
+        ):
+            missing_relationships.add((current_class, field_type))
+
+    if missing_relationships:
+        labels = sorted(f"{source} -> {target}" for source, target in missing_relationships)
+        return ["docs/RAD.md: relazioni assenti per attributi entity tipizzati: " + ", ".join(labels)]
+    return []
+
+
 def validate_runbook_revision_history() -> list[str]:
     path = ROOT / "docs/template/RUNBOOK.md"
     label = path.relative_to(ROOT).as_posix()
@@ -1133,6 +1220,7 @@ def main() -> int:
     errors.extend(validate_document_structure())
     errors.extend(validate_glossaries())
     errors.extend(validate_model_object_tables())
+    errors.extend(validate_entity_class_diagram())
     errors.extend(validate_runbook_revision_history())
     errors.extend(validate_runbook_operational_coverage())
     errors.extend(validate_non_functional_requirements())

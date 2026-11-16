@@ -404,10 +404,23 @@ classDiagram
     AttachmentState state
     Instant createdAt
   }
+  class AttachmentState {
+    <<enumeration>>
+  }
   class NotificationIntent {
     NotificationIntentId id
     NotificationAttemptState state
     Instant createdAt
+  }
+  class NotificationAttemptState {
+    <<enumeration>>
+  }
+  class UserAccount {
+    UserId id
+    Role[] roles
+  }
+  class Role {
+    <<enumeration>>
   }
   class DataSource {
     SourceId id
@@ -436,10 +449,18 @@ classDiagram
   TransitLine --> TransitStop
   Report --> ReportEvent
   Report "0..1" --> "0..*" ReportAttachment
+  Report "0..*" --> "0..1" Place : luogo
+  ReportEvent "0..*" --> "0..1" UserAccount : autore umano
+  UserAccount "0..*" --> "0..*" Role : ruoli
+  ReportAttachment "0..*" --> "1" AttachmentState : stato
+  NotificationIntent "0..*" --> "1" NotificationAttemptState : stato
   ReportEvent --> NotificationIntent
   Report --> GeoPoint
   Place --> GeoPoint
+  TransitStop --> GeoPoint
   AccessibilityFeature --> DataSource
+  TransitLine --> DataSource
+  TransitStop --> DataSource
   SourceSync --> DataSource
 ```
 
@@ -815,5 +836,6 @@ Il profilo visivo non è disponibile perché i punteggi non sono stati raccolti.
 | Codice di tracking | Codice non enumerabile usato per consultare lo stato di una segnalazione. |
 | Moderazione | Processo di valutazione e decisione su una segnalazione. |
 | Duplicato | Segnalazione riferita a un caso già registrato e collegata senza cancellare la cronologia. |
+| Role | Ruolo applicativo assegnato a un account. Valori e permessi sono da approvare secondo OPEN-04. |
 | Stato della segnalazione | Fase corrente di un report. Valori, transizioni e condizioni sono da approvare in OPEN-12. |
 | p95 | Valore sotto il quale ricade il 95 per cento delle misurazioni osservate. Popolazione e finestra temporale vanno definite nel protocollo. |

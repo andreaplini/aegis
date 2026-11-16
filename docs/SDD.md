@@ -404,6 +404,7 @@ I termini di cache e generazione descrivono invarianti del comportamento progett
 | ReportAttachment | Intento durevole e riferimento privato di un allegato. Il ciclo di vita consente riconciliazione tra database e object storage. Stati e conservazione dipendono da OPEN-05, OPEN-08 e OPEN-15. |
 | AttachmentState | Stato del ciclo di upload, scansione, associazione o pulizia. Valori e transizioni devono essere definiti secondo OPEN-05 e OPEN-15. |
 | ReportEvent | Evento immutabile che registra una transizione o decisione su una segnalazione. |
+| Role | Ruolo applicativo assegnato a un account. Valori e permessi sono da approvare secondo OPEN-04. |
 | Stato della segnalazione | Fase corrente del report. Valori e transizioni ammesse dipendono dalla matrice OPEN-12. |
 | RoutingProvider | Porta verso il servizio che calcola alternative di percorso. |
 | Snapshot consistente | Vista del repository che usa gli stessi riferimenti di generazione per selezionare i dati e la loro provenienza durante una lettura. |
