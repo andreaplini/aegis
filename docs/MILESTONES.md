@@ -66,7 +66,7 @@ La roadmap documentale è applicata quando tutti gli sprint hanno raggiunto il c
 
 ## Baseline ingegneristica
 
-Alla revisione del 16 novembre 2026, `src/` contiene solo `.gitkeep` e `config/data/` è vuota. Non sono presenti build applicativa, moduli software, ambienti container o test applicativi. L'unico target automatizzato produce e verifica i documenti DOCX con controlli documentali e test standard library. La GitHub Action ha generato e verificato entrambi gli export. Questa baseline separa il funzionamento della documentazione dallo stato del prodotto.
+Alla revisione del 16 novembre 2026, `src/` contiene solo `.gitkeep` e `config/data/` è vuota. Non sono presenti build applicativa, moduli software, ambienti container o test applicativi. Le automazioni disponibili riguardano la documentazione: `make check-docs` esegue i test standard library e il validatore, `make audit-doc-tools` controlla le dipendenze Node e `make docs` renderizza i diagrammi, genera e verifica gli export RAD e SDD. I workflow GitHub Actions separano la verifica documentale dalla generazione DOCX. Questa baseline distingue le automazioni documentali dallo stato del prodotto.
 
 ## Milestone di ingegneria del prodotto
 
