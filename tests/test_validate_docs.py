@@ -359,6 +359,48 @@ class MarkdownValidationTests(unittest.TestCase):
                 self.assertTrue(any("metadati mancanti o vuoti" in error for error in errors))
                 self.assertTrue(any("riga 1 incompleta" in error for error in errors))
 
+    def test_adr_verification_status_requires_a_link_for_observed_results(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            adr_directory = root / "docs/adr"
+            adr_directory.mkdir(parents=True)
+            adr = adr_directory / "ADR-0001.md"
+            adr.write_text(VALID_ADR, encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_adrs(), [])
+
+                adr.write_text(
+                    VALID_ADR.replace(
+                        "| Revisione | Approvazione | Da designare | In attesa |",
+                        "| Revisione | Approvazione | Da designare | Superato |",
+                    ),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_adrs()
+                self.assertTrue(
+                    any("senza riferimento consultabile" in error for error in errors)
+                )
+
+                adr.write_text(
+                    VALID_ADR.replace(
+                        "| Revisione | Approvazione | Da designare | In attesa |",
+                        "| Revisione | Approvazione | Da designare | Superato. [Evidenza](evidence.md) |",
+                    ),
+                    encoding="utf-8",
+                )
+                self.assertEqual(validate_docs.validate_adrs(), [])
+
+                adr.write_text(
+                    VALID_ADR.replace(
+                        "| Revisione | Approvazione | Da designare | In attesa |",
+                        "| Revisione | Approvazione | Da designare | Approvato |",
+                    ),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_adrs()
+                self.assertTrue(any("stato di verifica non valido" in error for error in errors))
+
     def test_eng02_must_reference_every_architectural_decision(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

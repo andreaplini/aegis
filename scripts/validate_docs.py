@@ -40,6 +40,7 @@ ENGINEERING_DEPENDENCY_PATTERN = re.compile(r"\bENG-(\d{2})(?:[–-]ENG-(\d{2}))
 ADR_FILENAME_PATTERN = re.compile(r"ADR-(\d{4})(?:-[a-z0-9-]+)?\.md$")
 ADR_STATUSES = {"Proposto", "Accettato", "Rifiutato", "Sostituito"}
 VERIFICATION_STATUSES = {"Non eseguito", "In corso", "Superato", "Non superato", "Bloccato"}
+ADR_VERIFICATION_STATUSES = VERIFICATION_STATUSES | {"In attesa"}
 
 
 def markdown_files() -> list[Path]:
@@ -411,6 +412,29 @@ def validate_adrs() -> list[str]:
                 if len(row) != len(expected_headers) or any(not cell for cell in row):
                     errors.append(
                         f"{label}: riga {row_number} incompleta nella sezione {heading[3:]}"
+                    )
+                    continue
+                if heading != "## Verifica e revisione":
+                    continue
+                result = row[3]
+                status = next(
+                    (
+                        candidate
+                        for candidate in sorted(ADR_VERIFICATION_STATUSES, key=len, reverse=True)
+                        if result == candidate
+                        or result.startswith(candidate + ".")
+                        or result.startswith(candidate + " ")
+                    ),
+                    None,
+                )
+                if status is None:
+                    errors.append(f"{label}: stato di verifica non valido nella riga {row_number}")
+                elif (
+                    status in {"In corso", "Superato", "Non superato", "Bloccato"}
+                    and not LINK_PATTERN.search(result)
+                ):
+                    errors.append(
+                        f"{label}: stato {status} senza riferimento consultabile nella riga {row_number}"
                     )
 
     duplicates = sorted(
@@ -1312,7 +1336,7 @@ def main() -> int:
 
     print(
         "Documentazione valida: link, ancore, struttura, milestone, requisiti, casi d’uso, "
-        "diagramma dei casi, glossari, runbook, ADR, idempotenza, tracciabilità, "
+        "diagramma dei casi, glossari, runbook, stati ed evidenze ADR, idempotenza, tracciabilità, "
         "descrizioni accessibili e stile del nome "
         f"verificati in {len(files)} file Markdown."
     )
