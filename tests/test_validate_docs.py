@@ -514,6 +514,15 @@ class MarkdownValidationTests(unittest.TestCase):
             with patch.object(validate_docs, "ROOT", root):
                 self.assertEqual(validate_docs.validate_traceability(), [])
                 sdd = docs / "SDD.md"
+                rad = docs / "RAD.md"
+                rad.write_text(
+                    VALID_RAD.replace("| FR-01 | Sistema |", "| FR-01 | Gestore fonte |"),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_traceability()
+                self.assertTrue(any("responsabili non presenti in UC-01" in error for error in errors))
+                rad.write_text(VALID_RAD, encoding="utf-8")
+
                 sdd.write_text(VALID_SDD.replace("| NFR-01 |", "|  |"), encoding="utf-8")
                 self.assertIn("NFR-01", validate_docs.validate_traceability()[0])
 
@@ -521,7 +530,6 @@ class MarkdownValidationTests(unittest.TestCase):
                 errors = validate_docs.validate_traceability()
                 self.assertTrue(any("non presenti nel RAD: NFR-99" in error for error in errors))
 
-                rad = docs / "RAD.md"
                 two_requirements = VALID_RAD.replace(
                     "### 3.3 REQUISITI NON FUNZIONALI",
                     "| FR-02 | Sistema | Pianificare un viaggio. | Must | UC-02 |\n"

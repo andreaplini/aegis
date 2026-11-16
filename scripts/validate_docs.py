@@ -177,6 +177,29 @@ def validate_traceability() -> list[str]:
         )
 
     rad_lines = rad_text.splitlines()
+    case_headings = [
+        (index, match.group(1))
+        for index, line in enumerate(rad_lines)
+        if (match := USE_CASE_HEADING_PATTERN.match(line))
+    ]
+    participants_by_case: dict[str, set[str]] = {}
+    for index, (start, case_id) in enumerate(case_headings):
+        end = case_headings[index + 1][0] if index + 1 < len(case_headings) else len(rad_lines)
+        participants = next(
+            (
+                match.group(2).strip()
+                for line in rad_lines[start + 1 : end]
+                if (match := CASE_FIELD_PATTERN.match(line))
+                and match.group(1).strip().casefold() == "attori partecipanti"
+            ),
+            "",
+        )
+        participants_by_case[case_id] = {
+            actor.strip().rstrip(".").casefold()
+            for actor in re.split(r",|\s+e\s+", participants)
+            if actor.strip()
+        }
+
     fr_start = "### 3.2 REQUISITI FUNZIONALI"
     fr_end = "### 3.3 REQUISITI NON FUNZIONALI"
     if fr_start not in rad_lines or fr_end not in rad_lines:
@@ -191,6 +214,18 @@ def validate_traceability() -> list[str]:
             continue
         requirement_id = cells[0]
         linked_cases = set(re.findall(r"UC-\d{2}", cells[4]))
+        responsible_actors = {
+            actor.strip().casefold()
+            for actor in re.split(r"\s+e\s+", cells[1])
+            if actor.strip()
+        }
+        for case_id in linked_cases:
+            absent_actors = sorted(responsible_actors - participants_by_case.get(case_id, set()))
+            if absent_actors:
+                errors.append(
+                    f"docs/RAD.md: {requirement_id} dichiara responsabili non presenti in {case_id}: "
+                    + ", ".join(absent_actors)
+                )
         mapped_cases: set[str] = set()
         for mapping in module_mappings.values():
             if requirement_id in mapping:

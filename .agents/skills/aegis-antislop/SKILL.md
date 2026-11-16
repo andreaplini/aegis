@@ -25,6 +25,7 @@ Use this skill whenever creating, reviewing, or revising aegis documentation, di
 ## Requirements and diagrams
 
 - Give each functional requirement an actor, observable action, priority, and defined use case. Define an acceptance criterion from the use-case flow and record the observed verification result with a link to evidence.
+- Ensure every responsible actor named by a functional requirement participates in each use case linked to that requirement.
 - Give each quality requirement an action, testable acceptance method, acceptance owner, observed result, and evidence reference. If governance has not appointed a person, record the accountable role and mark the appointment as pending. Mark unexecuted checks explicitly and never invent results.
 - Give each use case actors, preconditions, postconditions, quality constraints, normal flow, and relevant alternatives or errors.
 - Keep the overview diagram synchronized with the detailed cases. Show each use-case ID once, all participating human and external actors, and their associations.

@@ -75,13 +75,13 @@ Ogni requisito indica chi avvia o esegue l’azione, la priorità e i casi d’u
 | FR-01 | Sistema | Mostrare luoghi e informazioni di accessibilità per l’area richiesta. | Must | UC-02 |
 | FR-02 | Sistema | Mostrare caratteristiche quali ascensori, rampe, accessi e annunci con stato, fonte, aggiornamento e validità. | Must | UC-01, UC-02 |
 | FR-03 | Sistema | Classificare come sconosciuti i dati assenti o scaduti, senza inferire accessibilità. | Must | UC-01, UC-02 |
-| FR-04 | Utente e sistema | Acquisire origine, destinazione ed esigenze. Calcolare e restituire percorsi alternativi. | Must | UC-01 |
+| FR-04 | Viaggiatore e sistema | Acquisire origine, destinazione ed esigenze. Calcolare e restituire percorsi alternativi. | Must | UC-01 |
 | FR-05 | Sistema | Distinguere nei percorsi barriere note, tratti compatibili e tratti non verificati. | Must | UC-01 |
-| FR-06 | Utente e sistema | Consentire la selezione di un luogo e mostrare dettagli di accessibilità e provenienza. | Must | UC-02 |
+| FR-06 | Viaggiatore e sistema | Consentire la selezione di un luogo e mostrare dettagli di accessibilità e provenienza. | Must | UC-02 |
 | FR-07 | Segnalatore | Inserire luogo, categoria, descrizione e data. Allegare facoltativamente una foto. | Must | UC-03 |
 | FR-08 | Sistema | Generare e restituire un codice di tracking per consultare lo stato della segnalazione. | Must | UC-03, UC-04 |
 | FR-09 | Moderatore e sistema | Consentire conferma, rifiuto, risoluzione o unione di duplicati. Registrare ogni decisione. | Must | UC-05 |
-| FR-10 | Adattatore dati | Importare dati ufficiali e registrare versione, esito e timestamp della sincronizzazione. | Should | UC-06 |
+| FR-10 | Sistema | Importare dati ufficiali e registrare versione, esito e timestamp della sincronizzazione. | Should | UC-06 |
 | FR-11 | Sistema | Invalidare la cache dell’area interessata quando riceve un aggiornamento urgente. | Should | UC-06 |
 | FR-12 | Sistema | Inviare notifiche secondo preferenze, autorizzazioni e consensi configurati. | Could | UC-03, UC-05, UC-06 |
 | FR-13 | Sistema | Autenticare gli utenti e verificare i ruoli per le operazioni riservate, mantenendo pubblica la consultazione. | Must | UC-03, UC-05, UC-06 |
