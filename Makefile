@@ -13,7 +13,8 @@ help:
 check-docs:
 	python3 scripts/validate_docs.py
 
-docs: check-docs $(OUTPUT_DIR)/rad-is.docx $(OUTPUT_DIR)/sdd-is.docx
+docs: check-docs
+	$(MAKE) --no-print-directory $(OUTPUT_DIR)/rad-is.docx $(OUTPUT_DIR)/sdd-is.docx
 
 $(OUTPUT_DIR)/rad-is.docx: docs/RAD.md docs/template/template.docx
 	mkdir -p "$(OUTPUT_DIR)"

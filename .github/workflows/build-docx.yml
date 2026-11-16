@@ -29,11 +29,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7.0.1
 
-      - name: Installa Pandoc
-        uses: pandoc/actions/setup@v1
-
       - name: Verifica i link della documentazione
         run: make check-docs
+
+      - name: Installa Pandoc
+        uses: pandoc/actions/setup@v1
 
       - name: Genera i DOCX
         run: |
