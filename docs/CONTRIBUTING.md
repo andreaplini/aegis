@@ -6,7 +6,7 @@ Il repository contiene la documentazione RAD/SDD e l’esportazione DOCX. L’ap
 
 ## Flusso di lavoro
 
-1. Aprire o aggiornare un’attività descrivendo problema, attore, risultato atteso, criteri di accettazione e requisiti collegati.
+1. Aprire o aggiornare un’attività descrivendo problema, attore, risultato atteso, criteri di accettazione e requisiti collegati. È possibile copiare il [modello di issue](template/ISSUE.md).
 2. Lavorare su un branch dedicato e aprire una pull request verso `main`. Non riscrivere la cronologia condivisa e non inserire segreti o dati personali nel repository o nelle issue.
 3. Aggiornare RAD per modifiche di requisito o comportamento; aggiornare SDD per modifiche architetturali o operative. Registrare le decisioni architetturali in un ADR, mantenendo esplicito lo stato di approvazione.
 4. Collegare ogni requisito funzionale interessato a casi d’uso, moduli e verifiche. Specificare come vengono verificate accessibilità, privacy e sicurezza quando la modifica le influenza.

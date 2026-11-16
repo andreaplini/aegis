@@ -8,6 +8,8 @@ Per registrare decisioni architetturali approvate o proposte, usare il [modello 
 
 Per procedure di distribuzione, ripristino e gestione degli incidenti, usare il [modello di runbook operativo](template/RUNBOOK.md). Le procedure vanno completate e provate nell’ambiente di riferimento prima di essere considerate operative.
 
+Per segnalare problemi o richieste di funzionalità nel repository, si può copiare il [modello di issue](template/ISSUE.md). Non usarlo per pubblicare segreti, dati personali o dettagli di vulnerabilità.
+
 ## Documento di Analisi dei Requisiti (RAD)
 
 ### 1. Introduzione
