@@ -73,6 +73,9 @@ Questo documento descrive l’architettura software proposta per aegis e dettagl
 | [ADR-0005: Contratto di operabilità e ripristino](adr/ADR-0005-operability-and-recovery-contract.md) | Proposta non approvata per segnali operativi, recupero dei worker e prove di ripristino. |
 | [ADR-0006: Ciclo di vita dei dati e semantica dell’audit](adr/ADR-0006-data-lifecycle-and-audit-semantics.md) | Proposta non approvata per minimizzazione, correzione, cancellazione e coerenza dell’audit. |
 | [ADR-0007: Governance del branch main](adr/ADR-0007-main-branch-governance.md) | Proposta non approvata per pull request, check obbligatorio e protezioni del branch predefinito. |
+| [ADR-0008: Licenza del repository e contributi](adr/ADR-0008-repository-license-and-contributions.md) | Proposta non approvata per licenza e regole dei contributi esterni. |
+| [ADR-0009: Scansione dei segreti e verifiche di validità](adr/ADR-0009-secret-scanning-eligibility-and-validity.md) | Proposta non approvata per eleggibilità e configurazione delle protezioni aggiuntive dei segreti. |
+| [ADR-0010: Baseline di valutazione dell’accessibilità](adr/ADR-0010-accessibility-evaluation-baseline.md) | Proposta non approvata per il target WCAG e i metodi di verifica. |
 | Specifica OpenAPI | Da generare e versionare insieme all’API. |
 | Documentazione Jakarta EE e PostGIS | Riferimenti tecnici da associare alle versioni selezionate. |
 

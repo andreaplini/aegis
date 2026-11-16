@@ -133,7 +133,7 @@ Registrare l’esito effettivamente osservato e un collegamento consultabile all
 |---|---|---|---|---|
 | NFR-01 | Accessibilità | Consentire di completare i flussi essenziali da tastiera e con screen reader. | Verificare compiti approvati, navigazione, focus, etichette e annunci con tastiera e tecnologie assistive. | Referente accessibilità, da designare |
 | NFR-02 | Accessibilità | Fornire una vista testuale equivalente alle informazioni presentate sulla mappa. | Confrontare per le stesse richieste luoghi, percorsi e stati disponibili nella mappa e nella vista testuale. | Referente accessibilità, da designare |
-| NFR-03 | Accessibilità | Verificare contrasto e fruibilità con zoom. | Verificare i criteri dello standard e del livello di conformità da concordare. Finché OPEN-06 resta aperto il requisito non è valutabile. | Referente accessibilità, da designare |
+| NFR-03 | Accessibilità | Verificare contrasto e fruibilità con zoom. | Verificare i criteri dello standard e del livello da approvare in OPEN-06. Rivedere la proposta [ADR-0010](adr/ADR-0010-accessibility-evaluation-baseline.md). Finché OPEN-06 resta aperto il requisito non è valutabile. | Referente accessibilità, da designare |
 | NFR-04 | Privacy | Minimizzare i dati personali e separare identità e segnalazioni pubbliche. | Prima del lancio approvare finalità, accessi, conservazione e cancellazione. Verificare autorizzazioni, scadenza e cancellazione con prove sui dati. | Responsabile privacy, da designare |
 | NFR-05 | Sicurezza | Proteggere le comunicazioni con TLS e le funzioni riservate con ruoli. | Verificare TLS sugli endpoint esposti e rifiuto lato server delle operazioni riservate per ruoli non autorizzati. | Responsabile sicurezza, da designare |
 | NFR-06 | Sicurezza | Applicare rate limiting, validazione server-side e protezione da injection agli endpoint. | Provare input malformati e injection. Verificare il rifiuto senza effetti parziali e il comportamento del rate limiting rispetto alle soglie approvate. | Responsabile sicurezza, da designare |
@@ -663,7 +663,7 @@ Raccomandazioni non disponibili prima delle prove. Saranno ordinate per priorit�
 
 ### 4.3 VALUTAZIONE DELL’USABILITÀ SECONDO ISO 9241-110
 
-La valutazione potrà essere condotta sul prototipo usando come riferimento [ISO 9241-110:2020](https://www.iso.org/standard/75258.html), indicata da ISO come edizione corrente e confermata nel 2025. L’adozione dello standard, il protocollo, i partecipanti, i risultati e i limiti restano da concordare secondo OPEN-06. Non sono stati assegnati punteggi.
+La valutazione potrà essere condotta sul prototipo usando come riferimento [ISO 9241-110:2020](https://www.iso.org/standard/75258.html), indicata da ISO come edizione corrente e confermata nel 2025. ISO 9241-110 tratta la valutazione dell’usabilità e non sostituisce un target per l’accessibilità web. La proposta di baseline WCAG è descritta in [ADR-0010](adr/ADR-0010-accessibility-evaluation-baseline.md). L’adozione degli standard, il protocollo, i partecipanti, i risultati e i limiti restano da concordare secondo OPEN-06. Non sono stati assegnati punteggi.
 
 #### 4.3.1 DETTAGLIO PUNTEGGI ASSEGNATI
 
