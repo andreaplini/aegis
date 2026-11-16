@@ -94,15 +94,15 @@ La tabella collega i requisiti del [RAD](RAD.md#32-requisiti-funzionali) ai modu
 
 | Modulo | Responsabilità | Requisiti funzionali e casi d’uso | Requisiti di qualità |
 |---|---|---|---|
-| Places | Gestire luoghi, fermate e stazioni e fornire ricerche geospaziali. | FR-01, FR-06. UC-02 | NFR-08, NFR-11, NFR-14 |
-| Accessibility | Gestire caratteristiche, stato, fonte, timestamp e validità. | FR-02, FR-03. UC-01, UC-02 | NFR-08, NFR-14 |
-| Routing | Validare richieste, invocare il provider e mostrare l’incertezza dei tratti. | FR-04, FR-05. UC-01 | NFR-11, NFR-14 |
-| Reports | Creare segnalazioni e consentire il tracking con dati minimizzati. | FR-07, FR-08. UC-03, UC-04 | NFR-04, NFR-07 |
-| Moderation | Applicare autorizzazioni e transizioni. Conservare la cronologia append-only. | FR-09. UC-05 | NFR-04, NFR-05, NFR-06 |
-| Identity | Gestire autenticazione, ruoli e separazione dei dati identificativi. | FR-13. UC-03, UC-05, UC-06 | NFR-04, NFR-05, NFR-06 |
-| Integrations | Implementare adattatori per fonti di trasporto, routing, notifiche e storage. | FR-10, FR-12. UC-03, UC-05, UC-06 | NFR-07, NFR-12, NFR-16 |
-| Worker | Eseguire sincronizzazioni schedulate e attività asincrone con retry idempotenti. | FR-10, FR-11, FR-12. UC-06 | NFR-09, NFR-10, NFR-14 |
-| Web | Rendere viste Facelets accessibili, mappa, alternative testuali, moduli e pannello di moderazione. | FR-01–FR-09, FR-13. UC-01–UC-05 | NFR-01, NFR-02, NFR-03, NFR-13 |
+| Places | Gestire luoghi, fermate e stazioni e fornire ricerche geospaziali. | FR-01, FR-06, UC-02 | NFR-08, NFR-11, NFR-14 |
+| Accessibility | Gestire caratteristiche, stato, fonte, timestamp e validità. | FR-02, FR-03, UC-01, UC-02 | NFR-08, NFR-14 |
+| Routing | Validare richieste, invocare il provider e mostrare l’incertezza dei tratti. | FR-04, FR-05, UC-01 | NFR-11, NFR-14 |
+| Reports | Creare segnalazioni e consentire il tracking con dati minimizzati. | FR-07, FR-08, UC-03, UC-04 | NFR-04, NFR-07 |
+| Moderation | Applicare le autorizzazioni e validare le transizioni conservando la cronologia append-only. | FR-09, UC-05 | NFR-04, NFR-05, NFR-06 |
+| Identity | Gestire autenticazione, ruoli e separazione dei dati identificativi. | FR-13, UC-03, UC-05, UC-06 | NFR-04, NFR-05, NFR-06 |
+| Integrations | Implementare adattatori per fonti di trasporto, routing, notifiche e storage. | FR-10, FR-12, UC-03, UC-05, UC-06 | NFR-07, NFR-12, NFR-16 |
+| Worker | Eseguire sincronizzazioni schedulate e attività asincrone con retry idempotenti. | FR-10, FR-11, FR-12, UC-06 | NFR-09, NFR-10, NFR-14 |
+| Web | Fornire viste accessibili in Facelets con mappa, alternative testuali, moduli e pannello di moderazione. | FR-01–FR-09, FR-13, UC-01–UC-05 | NFR-01, NFR-02, NFR-03, NFR-13 |
 | Runtime e Operations | Gestire configurazione, distribuzione, osservabilità, migrazioni e ripristino. | Nessun caso d’uso diretto | NFR-05, NFR-09, NFR-10, NFR-12, NFR-15, NFR-16 |
 
 NFR-15 è trasversale: separazione tra dominio, casi d’uso e adattatori e documentazione delle interfacce si applicano a tutti i moduli, non solo a Runtime e Operations.
