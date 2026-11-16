@@ -104,7 +104,7 @@ I criteri descrivono risultati osservabili ricavati dai flussi dei casi d’uso 
 | FR-09 | Una transizione ammessa aggiorna stato ed evento nella stessa transazione. Una transizione non valida non modifica i dati. |
 | FR-10 | Solo una generazione completa e validata viene pubblicata. Versione, timestamp, controlli ed esito sono registrati. Un errore mantiene i dati validi precedenti. |
 | FR-11 | Dopo la pubblicazione di un aggiornamento urgente viene invalidata la cache dell’area interessata. L’operazione resta recuperabile in caso di interruzione. |
-| FR-12 | Una notifica è inviata solo quando preferenze, autorizzazioni e consensi configurati la consentono. Canali e policy restano da definire. |
+| FR-12 | Una notifica è pianificata solo quando preferenze, autorizzazioni e consensi configurati la consentono. Un errore del canale non annulla il caso d’uso già completato e resta osservabile e recuperabile secondo la policy da definire in OPEN-08. Canali e policy restano da definire. |
 | FR-13 | La consultazione pubblica non richiede autenticazione. Le operazioni riservate sono rifiutate lato server quando identità o ruolo non sono autorizzati. |
 
 #### REGISTRO DELLE VERIFICHE FR
@@ -285,9 +285,9 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 |---|---|
 | Attori partecipanti | Segnalatore, sistema, servizio di storage e scansione, canale di notifica. |
 | Condizioni d’ingresso | Campi obbligatori validi. Autorizzazione, rate limit, consenso e requisiti dell’eventuale upload conformi alla policy definita. |
-| Condizioni d’uscita | Segnalazione ed evento iniziale persistiti. Codice di tracking restituito. In caso di errore non rimane una segnalazione parziale. |
+| Condizioni d’uscita | Segnalazione ed evento iniziale persistiti. Codice di tracking restituito. In caso di errore non rimane una segnalazione parziale. Se una notifica prevista fallisce, il fallimento non annulla la segnalazione e resta osservabile e recuperabile secondo la policy da definire in OPEN-08. |
 | Requisiti qualitativi | Il modulo è accessibile. I dati identificativi sono minimizzati e separati dalla segnalazione. La foto non è pubblicata prima dei controlli previsti. |
-| Flusso degli eventi | Il segnalatore inserisce luogo, categoria, descrizione e data. Facoltativamente allega una foto. Il sistema valida i campi e controlla l’upload. Il sistema registra segnalazione ed evento iniziale. Restituisce il codice di tracking e invia eventuali notifiche solo secondo consenso e policy. |
+| Flusso degli eventi | Il segnalatore inserisce luogo, categoria, descrizione e data. Facoltativamente allega una foto. Il sistema valida i campi e controlla l’upload. Il sistema registra segnalazione ed evento iniziale e restituisce il codice di tracking. Dopo il completamento del caso, pianifica l’eventuale notifica secondo consenso e policy. Se il canale fallisce, registra l’esito per il recupero previsto in OPEN-08. |
 
 ###### UC-04: Seguire segnalazione
 
@@ -305,9 +305,9 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 |---|---|
 | Attori partecipanti | Moderatore, sistema, canale di notifica. |
 | Condizioni d’ingresso | Moderatore autenticato e autorizzato. Report esistente. Transizione ammessa. Motivazione presente quando richiesta. |
-| Condizioni d’uscita | Stato ed evento append-only aggiornati nella stessa transazione, con attore e timestamp. Una transizione non valida non modifica i dati. |
+| Condizioni d’uscita | Stato ed evento append-only aggiornati nella stessa transazione, con attore e timestamp. Una transizione non valida non modifica i dati. Se una notifica prevista fallisce, il fallimento non annulla la transizione registrata e resta osservabile e recuperabile secondo la policy da definire in OPEN-08. |
 | Requisiti qualitativi | Ogni decisione è tracciabile. Gli eventi precedenti restano consultabili e non sono sovrascritti. |
-| Flusso degli eventi | Il moderatore apre il report. Il sistema mostra i dati e la cronologia autorizzati. Il moderatore sceglie conferma, rifiuto, risoluzione o unione e inserisce la motivazione richiesta. Il sistema valida la transizione e registra stato ed evento nella stessa transazione. Invia eventuali notifiche solo secondo consenso e policy. |
+| Flusso degli eventi | Il moderatore apre il report. Il sistema mostra i dati e la cronologia autorizzati. Il moderatore sceglie conferma, rifiuto, risoluzione o unione e inserisce la motivazione richiesta. Il sistema valida la transizione e registra stato ed evento nella stessa transazione. Dopo il completamento del caso, pianifica l’eventuale notifica secondo consenso e policy. Se il canale fallisce, registra l’esito per il recupero previsto in OPEN-08. |
 
 ###### UC-06: Aggiornare una fonte
 
