@@ -363,29 +363,36 @@ La ricerca consente di usare coordinate quando disponibili e un inserimento test
 
 ## GLOSSARIO
 
+I termini di cache e generazione descrivono invarianti del comportamento progettato. La rappresentazione fisica e la tecnologia di cache restano da selezionare.
+
 | Termine | Definizione |
 |---|---|
 | Adattatore | Componente che collega una porta applicativa a un sistema esterno o a un dettaglio tecnico. |
-| Generazione attiva | Insieme completo e validato dei dati di una fonte selezionato dal repository per le letture correnti. |
-| Dato sconosciuto | Dato assente, scaduto o non valido che non consente di determinare l’accessibilità. |
+| Cache | Memoria temporanea di risultati di lettura. Un dato in cache è selezionabile solo se la chiave corrisponde alle generazioni richieste. |
+| Chiave cache versionata | Chiave composta dal vettore delle generazioni, dall’area e dai parametri normalizzati della query. |
 | DataSource | Fonte autorizzata con responsabile e regole di aggiornamento e validità. |
+| Dato sconosciuto | Dato assente, scaduto o non valido che non consente di determinare l’accessibilità. |
 | DTO | Oggetto di trasferimento usato ai confini applicativi e distinto dal modello di dominio. |
 | Facelets | Tecnologia di viste XHTML usata da Jakarta Faces. |
 | Feature di accessibilità | Caratteristica dichiarata di un luogo, corredata di stato e provenienza. |
+| Generazione attiva | Insieme completo e validato dei dati di una fonte selezionato dal repository per le letture correnti. |
+| Generazione candidata | Insieme di dati importato e validato in isolamento prima della sua eventuale pubblicazione. |
 | GeoPoint | Value object immutabile per coordinate valide con riferimento spaziale esplicito. |
-| Snapshot consistente | Vista del repository che usa gli stessi riferimenti di generazione per selezionare i dati e la loro provenienza durante una lettura. |
 | Jakarta EE | Piattaforma Enterprise Java di riferimento per runtime, API web e servizi applicativi. |
 | Jakarta Faces | API Jakarta EE per viste server-side basate su componenti. |
 | Jakarta REST | API Jakarta EE per l’esposizione di risorse HTTP. |
 | NotificationPort | Porta applicativa per l’invio di notifiche tramite un adattatore sostituibile. |
 | Porta | Interfaccia applicativa che descrive una dipendenza richiesta da un caso d’uso. |
 | PostGIS | Estensione PostgreSQL per dati e interrogazioni geospaziali. |
+| Pubblicazione atomica | Cambio della generazione attiva e registrazione del lavoro di pulizia nella stessa transazione. |
+| Pulizia cache | Rimozione ripetibile delle chiavi riferite a generazioni superate. La correttezza delle letture non dipende dal completamento della rimozione. |
 | ReportEvent | Evento immutabile che registra una transizione o decisione su una segnalazione. |
 | RoutingProvider | Porta verso il servizio che calcola alternative di percorso. |
+| Snapshot consistente | Vista del repository che usa gli stessi riferimenti di generazione per selezionare i dati e la loro provenienza durante una lettura. |
 | SourceSync | Registrazione dell’esito, della versione e dei controlli di una sincronizzazione. |
 | SRID | Identificatore del riferimento spaziale di una geometria. |
 | Tracking code | Codice non enumerabile usato per consultare lo stato consentito di una segnalazione. |
 | TransitDataProvider | Porta verso una fonte di dati di trasporto. |
-| Vettore delle generazioni | Insieme dei riferimenti alle generazioni attive delle fonti coinvolte in una query. Identifica la versione dei dati usata per costruire la chiave cache. |
 | Value object | Oggetto immutabile definito dal valore e dalle proprie invarianti. |
+| Vettore delle generazioni | Insieme dei riferimenti alle generazioni attive delle fonti coinvolte in una query. Identifica la versione dei dati usata per costruire la chiave cache. |
 | Worker | Processo asincrono che esegue sincronizzazioni o attività lente fuori dalle richieste interattive. |

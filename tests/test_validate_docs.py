@@ -100,6 +100,43 @@ Non approvata.
 
 
 class MarkdownValidationTests(unittest.TestCase):
+    def test_glossaries_require_complete_unique_entries(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            docs.mkdir()
+            valid = (
+                "# Documento\n\n"
+                "## GLOSSARIO\n\n"
+                "| Termine | Definizione |\n"
+                "|---|---|\n"
+                "| Cache | Memoria temporanea di lettura. |\n"
+                "| Worker | Processo asincrono. |\n"
+            )
+            for document in ("RAD.md", "SDD.md"):
+                (docs / document).write_text(valid, encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_glossaries(), [])
+                sdd = docs / "SDD.md"
+                sdd.write_text(
+                    valid.replace("| Worker | Processo asincrono. |\n", "| Cache | Definizione alternativa. |\n"),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_glossaries()
+                self.assertTrue(any("termini duplicati nel glossario" in error for error in errors))
+
+                sdd.write_text(
+                    valid.replace("| Worker | Processo asincrono. |\n", "| Cache | |\n"),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_glossaries()
+                self.assertTrue(any("voce 2 del glossario incompleta" in error for error in errors))
+
+                sdd.write_text(valid.replace("## GLOSSARIO\n", "## DEFINIZIONI\n"), encoding="utf-8")
+                errors = validate_docs.validate_glossaries()
+                self.assertTrue(any("deve contenere un solo glossario" in error for error in errors))
+
     def test_adrs_require_traceable_metadata_options_and_verification(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

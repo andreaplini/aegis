@@ -17,6 +17,7 @@ Use this skill whenever creating, reviewing, or revising aegis documentation, di
 - Remove filler, promotion, vague praise, repeated context, and empty transitions.
 - Keep detail that defines behavior, failure modes, invariants, boundaries, or verification.
 - Use consistent names for requirements, actors, components, states, and data. Define acronyms once.
+- Define domain and architecture terms in the document glossary when they affect behavior, data contracts, or failure handling.
 - Keep one authoritative source for each decision. Link to it when summarizing elsewhere.
 - Preserve supplied hierarchy, numbering, and source quotations. Do not rewrite user-owned material without authorization.
 - Keep Markdown free of semicolons. Write the project name exactly as `aegis`.

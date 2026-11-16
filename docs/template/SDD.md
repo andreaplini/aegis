@@ -218,6 +218,8 @@ Descrivere ricerca per coordinate e testo, geocodifica, distanze e comportamento
 
 ## GLOSSARIO
 
+Definire i termini di dominio e architettura che determinano comportamento, contratti dei dati o gestione degli errori. Usare una voce per termine e mantenere le definizioni coerenti con requisiti, diagrammi e flussi.
+
 | Termine | Definizione |
 |---|---|
 | Da compilare | Significato nel contesto del sistema |

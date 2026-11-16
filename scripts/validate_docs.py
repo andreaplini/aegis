@@ -416,6 +416,48 @@ def validate_document_structure() -> list[str]:
     return errors
 
 
+def validate_glossaries() -> list[str]:
+    errors: list[str] = []
+    expected_header = ["Termine", "Definizione"]
+
+    for document in ("RAD.md", "SDD.md"):
+        label = f"docs/{document}"
+        lines = (ROOT / label).read_text(encoding="utf-8").splitlines()
+        headings = [index for index, line in enumerate(lines) if line.strip() == "## GLOSSARIO"]
+        if len(headings) != 1:
+            errors.append(f"{label}: deve contenere un solo glossario")
+            continue
+
+        start = headings[0] + 1
+        end = next(
+            (index for index in range(start, len(lines)) if re.match(r"^#{1,2}\s", lines[index])),
+            len(lines),
+        )
+        section = lines[start:end]
+        table_rows = [line for line in section if line.strip().startswith("|")]
+        if len(table_rows) < 3:
+            errors.append(f"{label}: tabella del glossario priva di definizioni")
+            continue
+
+        header = [cell.strip() for cell in table_rows[0].strip().strip("|").split("|")]
+        if header != expected_header:
+            errors.append(f"{label}: intestazione del glossario non conforme")
+
+        terms: list[str] = []
+        for row_number, row in enumerate(table_rows[2:], start=1):
+            cells = [cell.strip() for cell in row.strip().strip("|").split("|")]
+            if len(cells) != 2 or any(not cell for cell in cells):
+                errors.append(f"{label}: voce {row_number} del glossario incompleta")
+                continue
+            terms.append(cells[0].casefold())
+
+        duplicates = sorted(term for term, count in Counter(terms).items() if count > 1)
+        if duplicates:
+            errors.append(f"{label}: termini duplicati nel glossario: {', '.join(duplicates)}")
+
+    return errors
+
+
 def validate_non_functional_requirements() -> list[str]:
     path = ROOT / "docs/RAD.md"
     lines = path.read_text(encoding="utf-8").splitlines()
@@ -686,6 +728,7 @@ def main() -> int:
     errors.extend(validate_project_style())
     errors.extend(validate_mermaid_descriptions())
     errors.extend(validate_document_structure())
+    errors.extend(validate_glossaries())
     errors.extend(validate_non_functional_requirements())
 
     if errors:
@@ -694,7 +737,7 @@ def main() -> int:
 
     print(
         "Documentazione valida: link, ancore, struttura, milestone, requisiti, casi d’uso, "
-        "diagramma dei casi, ADR, tracciabilità, descrizioni accessibili e stile del nome "
+        "diagramma dei casi, glossari, ADR, tracciabilità, descrizioni accessibili e stile del nome "
         f"verificati in {len(files)} file Markdown."
     )
     return 0
