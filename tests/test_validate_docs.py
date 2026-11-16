@@ -230,6 +230,25 @@ class MarkdownValidationTests(unittest.TestCase):
                 errors = validate_docs.validate_glossaries()
                 self.assertTrue(any("deve contenere un solo glossario" in error for error in errors))
 
+    def test_model_object_tables_reject_duplicate_entities(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            docs.mkdir()
+            rad = docs / "RAD.md"
+            rad.write_text(
+                "##### Oggetti entity dei casi d’uso\n\n"
+                "| Oggetto | Responsabilità |\n|---|---|\n"
+                "| `ReportAttachment` | Conserva l’intento. |\n"
+                "| `ReportAttachment` | Conserva il riferimento. |\n",
+                encoding="utf-8",
+            )
+
+            with patch.object(validate_docs, "ROOT", root):
+                errors = validate_docs.validate_model_object_tables()
+
+            self.assertTrue(any("oggetti duplicati nella sezione" in error for error in errors))
+
     def test_adrs_require_traceable_metadata_options_and_verification(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

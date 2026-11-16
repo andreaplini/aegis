@@ -554,6 +554,45 @@ def validate_glossaries() -> list[str]:
     return errors
 
 
+def validate_model_object_tables() -> list[str]:
+    path = ROOT / "docs/RAD.md"
+    lines = path.read_text(encoding="utf-8").splitlines()
+    headings = [
+        (index, line.removeprefix("##### ").strip())
+        for index, line in enumerate(lines)
+        if line.startswith("##### Oggetti ")
+    ]
+    errors: list[str] = []
+
+    for start, title in headings:
+        end = next(
+            (
+                index
+                for index in range(start + 1, len(lines))
+                if re.match(r"^#{1,5}\s", lines[index])
+            ),
+            len(lines),
+        )
+        identifiers: list[str] = []
+        for line in lines[start + 1 : end]:
+            if not line.startswith("|"):
+                continue
+            cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+            if len(cells) < 2 or cells[0] == "Oggetto" or set(cells[0]) <= {"-", ":", " "}:
+                continue
+            identifiers.append(cells[0].casefold())
+
+        duplicates = sorted(
+            identifier for identifier, count in Counter(identifiers).items() if count > 1
+        )
+        if duplicates:
+            errors.append(
+                f"docs/RAD.md: oggetti duplicati nella sezione {title}: {', '.join(duplicates)}"
+            )
+
+    return errors
+
+
 def validate_runbook_revision_history() -> list[str]:
     path = ROOT / "docs/template/RUNBOOK.md"
     label = path.relative_to(ROOT).as_posix()
@@ -1093,6 +1132,7 @@ def main() -> int:
     errors.extend(validate_mermaid_descriptions())
     errors.extend(validate_document_structure())
     errors.extend(validate_glossaries())
+    errors.extend(validate_model_object_tables())
     errors.extend(validate_runbook_revision_history())
     errors.extend(validate_runbook_operational_coverage())
     errors.extend(validate_non_functional_requirements())

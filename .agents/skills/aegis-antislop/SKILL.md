@@ -30,6 +30,7 @@ Use this skill whenever creating, reviewing, or revising aegis documentation, di
 - Give each use case actors, preconditions, postconditions, quality constraints, normal flow, and relevant alternatives or errors.
 - Keep the overview diagram synchronized with the detailed cases. Show each use-case ID once, all participating human and external actors, and their associations.
 - Ensure diagram labels, descriptions, flows, failure behavior, and requirements agree.
+- Keep entity, boundary, and control catalogs free of duplicate identifiers and consistent with their diagrams and SDD counterparts.
 - State how missing, stale, contradictory, partial, or unavailable data is represented and handled.
 - For workflows crossing transaction boundaries, identify each authoritative store, the state exposed after partial failure, and the idempotent recovery or compensation path. Do not imply atomicity across systems that do not share a transaction.
 

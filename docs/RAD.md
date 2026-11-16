@@ -334,9 +334,8 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | `Place` | Rappresenta luogo, fermata o stazione con identificativo, nome, tipo e geometria. |
 | `AccessibilityFeature` | Rappresenta una caratteristica con stato esplicito, fonte, timestamp e validità, associata a un luogo. |
 | `Report` | Rappresenta luogo/geometria, categoria, descrizione, stato, date e riferimento protetto per tracking. |
-| `ReportAttachment` | Registra l’intento durevole di upload, il riferimento privato all’oggetto, l’esito dei controlli e l’eventuale collegamento al report. Stati e conservazione seguono OPEN-05 e OPEN-15. |
+| `ReportAttachment` | Registra l’intento durevole di upload, il riferimento privato all’oggetto, l’esito dei controlli e l’eventuale collegamento autorizzato al report. La pubblicazione richiede una scansione valida. Stati e conservazione seguono OPEN-05 e OPEN-15. |
 | `ReportEvent` | Registra in modo append-only attore, timestamp, decisione e riferimento a un eventuale duplicato. |
-| `ReportAttachment` | Registra l’intento durevole e il riferimento privato di un allegato. La pubblicazione richiede scansione valida e collegamento autorizzato al report. Stati e conservazione seguono OPEN-05 e OPEN-15. |
 | `AttachmentState` | Stato del ciclo di upload, scansione, associazione o pulizia. Valori e transizioni sono da approvare secondo OPEN-05 e OPEN-15. |
 | `NotificationIntent` | Rappresenta un’intenzione di notifica autorizzata, collegata all’evento che l’ha generata e con esito tecnico registrabile. |
 | `NotificationAttemptState` | Stato tecnico di un tentativo di notifica. Valori e transizioni sono da definire secondo OPEN-08. |
