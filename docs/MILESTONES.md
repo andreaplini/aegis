@@ -54,6 +54,7 @@ Questi elementi non impediscono di completare la stesura, ma devono essere risol
 | OPEN-08 | Runtime Java/Jakarta EE, provider gestiti, canali di notifica, dimensionamento e procedure di incidente. | Responsabile tecnico e operativo | Decisioni approvate, configurazioni per ambiente e procedure revisionate. |
 | OPEN-09 | Protezione di `main`, review e status check obbligatori e policy di merge. | Proprietario del repository e maintainer | Ruleset configurato e verificato. Controlli richiesti, responsabilità di review e policy di merge pubblicati. |
 | OPEN-10 | Licenza del repository pubblico e termini per i contributi esterni. | Proprietario del repository | Decisione approvata e licenza o termini pubblicati nel repository prima di accettare contributi esterni. |
+| OPEN-11 | Valutare se abilitare o mantenere disattivati il rilevamento dei pattern non provider e la verifica di validità dei segreti. | Proprietario del repository e responsabile sicurezza da designare | Decisione motivata, configurazione verificata nelle impostazioni GitHub e stato aggiornato in `docs/CONTRIBUTING.md`. |
 
 ## Criterio di completamento della roadmap
 
