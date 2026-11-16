@@ -26,6 +26,9 @@ REQUIRED_TEXT = {
     ),
 }
 PRODUCT_NAME_PATTERN = re.compile(r"\baegis\b", re.IGNORECASE)
+STORY_PART_PATTERN = re.compile(
+    r"^word/(?:document|header\d+|footer\d+|footnotes|endnotes|comments)\.xml$"
+)
 
 
 def document_text(path: Path) -> str:
@@ -59,11 +62,18 @@ def document_text(path: Path) -> str:
         if document.tag != f"{WORD_NAMESPACE}document" or document.find(f"{WORD_NAMESPACE}body") is None:
             raise ValueError("struttura del documento principale non valida")
 
+        story_parts = [
+            ElementTree.fromstring(package.read(name))
+            for name in package.namelist()
+            if name != "word/document.xml" and STORY_PART_PATTERN.fullmatch(name)
+        ]
+
     paragraphs: list[str] = []
-    for paragraph in document.iter(f"{WORD_NAMESPACE}p"):
-        paragraphs.append(
-            "".join(node.text or "" for node in paragraph.iter(f"{WORD_NAMESPACE}t"))
-        )
+    for story in (document, *story_parts):
+        for paragraph in story.iter(f"{WORD_NAMESPACE}p"):
+            paragraphs.append(
+                "".join(node.text or "" for node in paragraph.iter(f"{WORD_NAMESPACE}t"))
+            )
     return "\n".join(paragraphs)
 
 

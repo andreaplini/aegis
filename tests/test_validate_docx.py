@@ -18,7 +18,7 @@ WORD_NAMESPACE = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 ElementTree.register_namespace("w", WORD_NAMESPACE)
 
 
-def write_docx(path: Path, text: str) -> None:
+def write_docx(path: Path, text: str, story_parts: dict[str, str] | None = None) -> None:
     document = ElementTree.Element(f"{{{WORD_NAMESPACE}}}document")
     body = ElementTree.SubElement(document, f"{{{WORD_NAMESPACE}}}body")
     for line in text.splitlines():
@@ -54,6 +54,14 @@ def write_docx(path: Path, text: str) -> None:
         package.writestr("[Content_Types].xml", ElementTree.tostring(content_types))
         package.writestr("_rels/.rels", ElementTree.tostring(relationships))
         package.writestr("word/document.xml", ElementTree.tostring(document))
+        for part_name, part_text in (story_parts or {}).items():
+            story_kind = Path(part_name).stem.rstrip("0123456789")
+            story = ElementTree.Element(f"{{{WORD_NAMESPACE}}}{story_kind}")
+            paragraph = ElementTree.SubElement(story, f"{{{WORD_NAMESPACE}}}p")
+            run = ElementTree.SubElement(paragraph, f"{{{WORD_NAMESPACE}}}r")
+            node = ElementTree.SubElement(run, f"{{{WORD_NAMESPACE}}}t")
+            node.text = part_text
+            package.writestr(part_name, ElementTree.tostring(story))
 
 
 class DocxValidationTests(unittest.TestCase):
@@ -89,6 +97,21 @@ class DocxValidationTests(unittest.TestCase):
             errors = validate_docx.validate_document(path, ("Titolo documento",))
             self.assertTrue(any("esattamente aegis" in error for error in errors))
             self.assertTrue(any("trattino lungo" in error for error in errors))
+
+    def test_checks_header_and_note_text_for_name_and_punctuation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "rad-is.docx"
+            write_docx(
+                path,
+                "aegis\nTitolo documento",
+                {
+                    "word/header1.xml": " ".join(("aegis".capitalize(), "header")),
+                    "word/footnotes.xml": "nota" + chr(0x3B) + " finale",
+                },
+            )
+            errors = validate_docx.validate_document(path, ("Titolo documento",))
+            self.assertTrue(any("esattamente aegis" in error for error in errors))
+            self.assertTrue(any("punto e virgola" in error for error in errors))
 
     def test_rejects_semicolon_punctuation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
