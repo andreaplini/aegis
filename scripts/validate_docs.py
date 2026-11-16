@@ -21,7 +21,12 @@ CASE_FIELD_PATTERN = re.compile(r"^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|")
 
 
 def markdown_files() -> list[Path]:
-    return [ROOT / "README.md", *sorted((ROOT / "docs").rglob("*.md"))]
+    return [
+        ROOT / "README.md",
+        ROOT / "AGENTS.md",
+        *sorted((ROOT / ".agents/skills").rglob("*.md")),
+        *sorted((ROOT / "docs").rglob("*.md")),
+    ]
 
 
 def without_fenced_code(text: str) -> str:
@@ -112,6 +117,24 @@ def validate_traceability() -> list[str]:
     return [f"docs/SDD.md: requisiti o casi d’uso RAD non mappati a un modulo: {', '.join(missing)}"]
 
 
+def validate_project_style() -> list[str]:
+    errors: list[str] = []
+    for source in markdown_files():
+        content = source.read_text(encoding="utf-8")
+        label = source.relative_to(ROOT)
+        if chr(0x2014) in content:
+            errors.append(f"{label}: usare punteggiatura semplice, senza trattino lungo")
+        if any(match.group(0) != "aegis" for match in re.finditer(r"\baegis\b", content, re.IGNORECASE)):
+            errors.append(f"{label}: il nome del prodotto deve essere scritto esattamente aegis")
+
+    project_pattern = re.compile(r"^\|\s*Progetto\s*\|\s*aegis\s*\|\s*$", re.MULTILINE)
+    for name in ("docs/RAD.md", "docs/SDD.md"):
+        content = (ROOT / name).read_text(encoding="utf-8")
+        if not project_pattern.search(content):
+            errors.append(f"{name}: il campo Progetto deve contenere esattamente aegis")
+    return errors
+
+
 def validate_use_case_specs() -> list[str]:
     rad_path = ROOT / "docs/RAD.md"
     lines = rad_path.read_text(encoding="utf-8").splitlines()
@@ -175,12 +198,13 @@ def main() -> int:
                 errors.append(error)
     errors.extend(validate_traceability())
     errors.extend(validate_use_case_specs())
+    errors.extend(validate_project_style())
 
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1
 
-    print(f"Documentazione valida: link, ancore, requisiti, casi d’uso e tracciabilità RAD/SDD verificati in {len(files)} file Markdown.")
+    print(f"Documentazione valida: link, ancore, requisiti, casi d’uso, tracciabilità e stile del nome verificati in {len(files)} file Markdown.")
     return 0
 
 

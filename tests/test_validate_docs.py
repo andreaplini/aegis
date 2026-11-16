@@ -118,6 +118,36 @@ class MarkdownValidationTests(unittest.TestCase):
                 errors = validate_docs.validate_use_case_specs()
                 self.assertTrue(any("UC-02" in error for error in errors))
 
+    def test_project_name_and_punctuation_are_canonical(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            skill = root / ".agents/skills/sample"
+            docs.mkdir()
+            skill.mkdir(parents=True)
+            (root / "README.md").write_text("# aegis\n", encoding="utf-8")
+            (root / "AGENTS.md").write_text("## Skill aegis\n", encoding="utf-8")
+            (skill / "SKILL.md").write_text("# aegis\n", encoding="utf-8")
+            for name in ("RAD.md", "SDD.md"):
+                (docs / name).write_text("| Progetto | aegis |\n", encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_project_style(), [])
+
+                readme = root / "README.md"
+                readme.write_text("# " + chr(65) + "egis\n", encoding="utf-8")
+                errors = validate_docs.validate_project_style()
+                self.assertTrue(any("README.md" in error for error in errors))
+
+                readme.write_text("# aegis " + chr(0x2014) + " piattaforma\n", encoding="utf-8")
+                errors = validate_docs.validate_project_style()
+                self.assertTrue(any("trattino lungo" in error for error in errors))
+
+                readme.write_text("# aegis\n", encoding="utf-8")
+                (docs / "SDD.md").write_text("| Progetto | aegis mobility |\n", encoding="utf-8")
+                errors = validate_docs.validate_project_style()
+                self.assertTrue(any("campo Progetto" in error for error in errors))
+
 
 if __name__ == "__main__":
     unittest.main()
