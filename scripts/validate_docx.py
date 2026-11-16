@@ -11,6 +11,7 @@ from xml.etree import ElementTree
 
 
 WORD_NAMESPACE = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+DRAWING_NAMESPACE = "{http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing}"
 CONTENT_TYPES_NAMESPACE = "{http://schemas.openxmlformats.org/package/2006/content-types}"
 PACKAGE_RELATIONSHIPS_NAMESPACE = "{http://schemas.openxmlformats.org/package/2006/relationships}"
 OFFICE_DOCUMENT_RELATIONSHIP = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"
@@ -25,7 +26,9 @@ REQUIRED_TEXT = {
         "Sicurezza d'uso e pericoli operativi",
     ),
 }
+REQUIRED_DIAGRAM_COUNTS = {"rad-is.docx": 8, "sdd-is.docx": 1}
 PRODUCT_NAME_PATTERN = re.compile(r"\baegis\b", re.IGNORECASE)
+MERMAID_SOURCE_PATTERN = re.compile(r"(?m)^\s*(?:flowchart\s|graph\s|sequenceDiagram\b|classDiagram\b)")
 STORY_PART_PATTERN = re.compile(
     r"^word/(?:document|header\d+|footer\d+|footnotes|endnotes|comments)\.xml$"
 )
@@ -77,6 +80,21 @@ def document_text(path: Path) -> str:
     return "\n".join(paragraphs)
 
 
+def document_diagram_count(path: Path) -> int:
+    with zipfile.ZipFile(path) as package:
+        document = ElementTree.fromstring(package.read("word/document.xml"))
+    return sum(1 for _ in document.iter(f"{WORD_NAMESPACE}drawing"))
+
+
+def document_diagram_descriptions(path: Path) -> list[str]:
+    with zipfile.ZipFile(path) as package:
+        document = ElementTree.fromstring(package.read("word/document.xml"))
+    return [
+        node.get("descr", "").strip()
+        for node in document.iter(f"{DRAWING_NAMESPACE}docPr")
+    ]
+
+
 def validate_document(path: Path, required_text: tuple[str, ...] | None = None) -> list[str]:
     expected = required_text or REQUIRED_TEXT.get(path.name)
     if expected is None:
@@ -98,6 +116,34 @@ def validate_document(path: Path, required_text: tuple[str, ...] | None = None) 
         errors.append(f"{path}: usare punteggiatura semplice, senza trattino lungo")
     if ";" in text:
         errors.append(f"{path}: evitare il punto e virgola nel documento esportato")
+    if MERMAID_SOURCE_PATTERN.search(text):
+        errors.append(f"{path}: codice Mermaid non convertito in diagramma")
+    if required_text is None and path.name in REQUIRED_DIAGRAM_COUNTS:
+        try:
+            actual_diagrams = document_diagram_count(path)
+        except (OSError, KeyError, ValueError, zipfile.BadZipFile, ElementTree.ParseError) as error:
+            errors.append(f"{path}: impossibile contare i diagrammi DOCX: {error}")
+        else:
+            expected_diagrams = REQUIRED_DIAGRAM_COUNTS[path.name]
+            if actual_diagrams != expected_diagrams:
+                errors.append(
+                    f"{path}: attesi {expected_diagrams} diagrammi, trovati {actual_diagrams}"
+                )
+            try:
+                descriptions = document_diagram_descriptions(path)
+            except (OSError, KeyError, ValueError, zipfile.BadZipFile, ElementTree.ParseError) as error:
+                errors.append(f"{path}: impossibile leggere le descrizioni dei diagrammi: {error}")
+            else:
+                if len(descriptions) != actual_diagrams:
+                    errors.append(
+                        f"{path}: {len(descriptions)} descrizioni alternative per "
+                        f"{actual_diagrams} diagrammi"
+                    )
+                missing_descriptions = sum(not description for description in descriptions)
+                if missing_descriptions:
+                    errors.append(
+                        f"{path}: {missing_descriptions} diagrammi senza descrizione alternativa"
+                    )
     return errors
 
 
@@ -112,7 +158,7 @@ def main(argv: list[str]) -> int:
         print("\n".join(errors), file=sys.stderr)
         return 1
 
-    print("DOCX validi: archivio, contenuto, nome aegis e punteggiatura verificati.")
+    print("DOCX validi: archivio, contenuto, nome aegis, punteggiatura e diagrammi verificati.")
     return 0
 
 

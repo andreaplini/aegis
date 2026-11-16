@@ -15,10 +15,17 @@ import validate_docx
 
 
 WORD_NAMESPACE = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+DRAWING_NAMESPACE = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
 ElementTree.register_namespace("w", WORD_NAMESPACE)
 
 
-def write_docx(path: Path, text: str, story_parts: dict[str, str] | None = None) -> None:
+def write_docx(
+    path: Path,
+    text: str,
+    story_parts: dict[str, str] | None = None,
+    diagram_count: int = 0,
+    diagram_descriptions: list[str] | None = None,
+) -> None:
     document = ElementTree.Element(f"{{{WORD_NAMESPACE}}}document")
     body = ElementTree.SubElement(document, f"{{{WORD_NAMESPACE}}}body")
     for line in text.splitlines():
@@ -26,6 +33,21 @@ def write_docx(path: Path, text: str, story_parts: dict[str, str] | None = None)
         run = ElementTree.SubElement(paragraph, f"{{{WORD_NAMESPACE}}}r")
         node = ElementTree.SubElement(run, f"{{{WORD_NAMESPACE}}}t")
         node.text = line
+    for index in range(diagram_count):
+        paragraph = ElementTree.SubElement(body, f"{{{WORD_NAMESPACE}}}p")
+        run = ElementTree.SubElement(paragraph, f"{{{WORD_NAMESPACE}}}r")
+        drawing = ElementTree.SubElement(run, f"{{{WORD_NAMESPACE}}}drawing")
+        inline = ElementTree.SubElement(drawing, f"{{{DRAWING_NAMESPACE}}}inline")
+        description = (
+            diagram_descriptions[index]
+            if diagram_descriptions is not None
+            else f"Descrizione diagramma {index + 1}"
+        )
+        ElementTree.SubElement(
+            inline,
+            f"{{{DRAWING_NAMESPACE}}}docPr",
+            {"id": str(index + 1), "name": f"Diagramma {index + 1}", "descr": description},
+        )
 
     with zipfile.ZipFile(path, "w") as package:
         content_types = ElementTree.Element(
@@ -65,6 +87,22 @@ def write_docx(path: Path, text: str, story_parts: dict[str, str] | None = None)
 
 
 class DocxValidationTests(unittest.TestCase):
+    def test_requires_rendered_diagrams_without_mermaid_source(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "rad-is.docx"
+            required = "aegis\nDocumento di Analisi dei Requisiti\nSOMMARIO\nUC-01"
+            write_docx(path, required + "\nsequenceDiagram")
+            errors = validate_docx.validate_document(path)
+            self.assertTrue(any("codice Mermaid non convertito" in error for error in errors))
+            self.assertTrue(any("attesi 8 diagrammi, trovati 0" in error for error in errors))
+
+            write_docx(path, required, diagram_count=8)
+            self.assertEqual(validate_docx.validate_document(path), [])
+
+            write_docx(path, required, diagram_count=8, diagram_descriptions=[""] * 8)
+            errors = validate_docx.validate_document(path)
+            self.assertTrue(any("diagrammi senza descrizione alternativa" in error for error in errors))
+
     def test_valid_archive_and_required_content(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "rad-is.docx"

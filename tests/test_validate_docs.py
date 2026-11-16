@@ -51,6 +51,13 @@ VALID_SDD = """# SDD
 
 
 class MarkdownValidationTests(unittest.TestCase):
+    def test_mermaid_diagrams_require_accessible_descriptions(self) -> None:
+        valid = "```mermaid\nflowchart LR\n  accDescr: Diagramma accessibile.\n  A-->B\n```\n"
+        invalid = "```mermaid\nflowchart LR\n  A-->B\n```\n"
+        self.assertEqual(validate_docs.mermaid_description_errors("docs/RAD.md", valid), [])
+        errors = validate_docs.mermaid_description_errors("docs/RAD.md", invalid)
+        self.assertTrue(any("senza descrizione accessibile" in error for error in errors))
+
     def test_functional_requirements_have_complete_unique_fields(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

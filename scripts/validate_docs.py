@@ -20,6 +20,7 @@ FUNCTIONAL_REQUIREMENT_ROW_PATTERN = re.compile(r"^\|\s*(FR-\d{2})\s*\|")
 NON_FUNCTIONAL_REQUIREMENT_ROW_PATTERN = re.compile(r"^\|\s*(NFR-\d{2})\s*\|")
 CASE_FIELD_PATTERN = re.compile(r"^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|")
 NUMBERED_SECTION_PATTERN = re.compile(r"^(#{2,6})\s+(\d+(?:\.\d+)+)(?:\s|$)", re.MULTILINE)
+MERMAID_BLOCK_PATTERN = re.compile(r"```mermaid\s*\n(.*?)\n```", re.DOTALL)
 
 
 def markdown_files() -> list[Path]:
@@ -183,6 +184,22 @@ def validate_project_style() -> list[str]:
         content = (ROOT / name).read_text(encoding="utf-8")
         if not project_pattern.search(content):
             errors.append(f"{name}: il campo Progetto deve contenere esattamente aegis")
+    return errors
+
+
+def mermaid_description_errors(label: str, content: str) -> list[str]:
+    errors = []
+    for index, match in enumerate(MERMAID_BLOCK_PATTERN.finditer(content), start=1):
+        if not re.search(r"^\s*accDescr:\s*\S", match.group(1), re.MULTILINE):
+            errors.append(f"{label}: diagramma Mermaid {index} senza descrizione accessibile accDescr")
+    return errors
+
+
+def validate_mermaid_descriptions() -> list[str]:
+    errors: list[str] = []
+    for name in ("docs/RAD.md", "docs/SDD.md"):
+        path = ROOT / name
+        errors.extend(mermaid_description_errors(name, path.read_text(encoding="utf-8")))
     return errors
 
 
@@ -362,6 +379,7 @@ def main() -> int:
     errors.extend(validate_functional_requirements())
     errors.extend(validate_use_case_specs())
     errors.extend(validate_project_style())
+    errors.extend(validate_mermaid_descriptions())
     errors.extend(validate_document_structure())
     errors.extend(validate_non_functional_requirements())
 

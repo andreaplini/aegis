@@ -25,14 +25,20 @@ Per bug e richieste, consultare le [issue aperte](https://github.com/kairosci/ae
 
 ## Esportazione DOCX
 
-Installare la versione Pandoc indicata in `config/tool-versions.env` e lanciare:
+Installare Node.js 22.13 o successivo, Pandoc nella versione indicata in `config/tool-versions.env`, quindi predisporre Mermaid CLI e Chromium headless:
+
+```sh
+make install-doc-tools
+```
+
+Generare e verificare gli export con:
 
 ```sh
 make docs
 ```
 
-La generazione esegue prima `make check-docs`, che verifica test del validatore, collegamenti e ancore locali, struttura dei modelli, completezza e unicità dei requisiti, tracciabilità RAD/SDD, casi d'uso e stile del progetto. Dopo la conversione controlla integrità, contenuto, nome e punteggiatura nei DOCX. `make check-docs` può essere lanciato separatamente e non richiede Pandoc.
+La generazione esegue prima `make check-docs`, che verifica test del validatore, collegamenti e ancore locali, struttura dei modelli, completezza e unicità dei requisiti, tracciabilità RAD/SDD, casi d'uso e stile del progetto. Mermaid CLI converte i diagrammi in immagini accessibili nella directory di build. Pandoc incorpora immagini e testo nei DOCX. Il validatore controlla integrità, contenuto, nome, punteggiatura e presenza dei diagrammi negli export. `make check-docs` può essere lanciato separatamente e non richiede Node.js o Pandoc.
 
-`make docs` verifica anche che la versione locale di Pandoc corrisponda a quella configurata, così lo stesso convertitore viene usato localmente e in CI.
+`make docs` verifica che Pandoc corrisponda alla versione configurata e Mermaid CLI alla versione dichiarata nel lockfile. La stessa toolchain viene usata localmente e in CI.
 
 L'esportazione usa `docs/template/template.docx` come riferimento di stile. Pandoc converte Markdown in DOCX. MarkItDown svolge la direzione opposta, da documenti sorgente a Markdown.

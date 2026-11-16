@@ -145,12 +145,17 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 Il diagramma mostra gli attori esterni e i casi d’uso principali di consultazione, pianificazione, segnalazione, moderazione e sincronizzazione.
 
 ```mermaid
-flowchart LR
-  V[Viaggiatore]
-  S[Segnalatore]
-  M[Moderatore]
-  G[Gestore fonte]
-  subgraph aegis
+flowchart TB
+  accDescr: Attori esterni collegati ai sei casi d'uso principali.
+  subgraph ACTORS[Attori]
+    direction LR
+    V[Viaggiatore]
+    S[Segnalatore]
+    M[Moderatore]
+    G[Gestore fonte]
+  end
+  subgraph SYSTEM[aegis]
+    direction LR
     P((Pianificare viaggio))
     L((Consultare luogo))
     R((Inviare segnalazione))
@@ -283,6 +288,7 @@ Il diagramma riassume le associazioni concettuali tra luoghi, caratteristiche di
 
 ```mermaid
 classDiagram
+  accDescr: Relazioni concettuali tra luoghi, caratteristiche, segnalazioni, eventi e fonti.
   class Place {
     PlaceId id
     String name
@@ -348,6 +354,7 @@ Il diagramma descrive la richiesta di alternative, l’integrazione del provider
 
 ```mermaid
 sequenceDiagram
+  accDescr: Il viaggiatore invia la richiesta e riceve percorsi con l'incertezza evidenziata.
   actor V as Viaggiatore
   participant UI as Interfaccia web
   participant API as API percorsi
@@ -369,6 +376,7 @@ Il diagramma descrive il recupero dei dati di accessibilità e la valutazione de
 
 ```mermaid
 sequenceDiagram
+  accDescr: Il sistema recupera luogo e caratteristiche, poi restituisce stato, fonte e validità.
   actor V as Viaggiatore
   participant UI as Interfaccia web
   participant API as API luoghi
@@ -390,6 +398,7 @@ Il diagramma mostra lo scambio tra segnalatore, API, caso d’uso e repository d
 
 ```mermaid
 sequenceDiagram
+  accDescr: L'API valida i dati e crea segnalazione ed evento in modo atomico.
   actor S as Segnalatore
   participant API as Reports API
   participant UC as CreateReport
@@ -410,6 +419,7 @@ Il diagramma descrive la consultazione dello stato tramite codice senza esporre 
 
 ```mermaid
 sequenceDiagram
+  accDescr: Il codice di tracking consente la consultazione dello stato autorizzato.
   actor S as Segnalatore
   participant UI as Interfaccia web
   participant API as API tracking
@@ -431,6 +441,7 @@ Il diagramma descrive la verifica della transizione e la registrazione atomica d
 
 ```mermaid
 sequenceDiagram
+  accDescr: La moderazione valida la transizione e registra stato ed evento nella stessa operazione.
   actor M as Moderatore
   participant UI as Pannello moderazione
   participant API as API moderazione
@@ -454,6 +465,7 @@ Il diagramma descrive acquisizione, controlli, persistenza dell’esito e invali
 
 ```mermaid
 sequenceDiagram
+  accDescr: Il worker importa i dati, registra l'esito e invalida la cache se urgente.
   actor G as Gestore fonte
   participant W as Worker
   participant P as TransitDataProvider

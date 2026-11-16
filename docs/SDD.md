@@ -117,6 +117,7 @@ Il diagramma mostra il browser e il runtime Jakarta EE, i moduli applicativi, le
 
 ```mermaid
 flowchart TB
+  accDescr: Browser e runtime si collegano ai moduli, alla persistenza e ai provider esterni tramite adattatori.
   Browser[Browser: Facelets, HTML, JavaScript accessibile]
   Runtime[Runtime Jakarta EE]
   Faces[Jakarta Faces e Facelets]

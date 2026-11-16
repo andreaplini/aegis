@@ -20,13 +20,13 @@ Per modifiche Markdown eseguire:
 make check-docs
 ```
 
-Il comando esegue i test del validatore e controlla percorsi e ancore locali, struttura numerata, campi FR/NFR, priorità e unicità dei requisiti, campi dei casi d’uso e tracciabilità tra RAD e moduli SDD. Verifica che gli ID architetturali esistano nel RAD e che i casi d’uso restino associati ai rispettivi requisiti funzionali. Per verificare anche l’esportazione installare la versione Pandoc indicata in `config/tool-versions.env` ed eseguire:
+Il comando esegue i test del validatore e controlla percorsi e ancore locali, struttura numerata, campi FR/NFR, priorità e unicità dei requisiti, campi dei casi d’uso e tracciabilità tra RAD e moduli SDD. Verifica che gli ID architetturali esistano nel RAD e che i casi d’uso restino associati ai rispettivi requisiti funzionali. Per verificare anche l’esportazione installare Node.js 22.13 o successivo e Pandoc nella versione indicata in `config/tool-versions.env`. Installare i pacchetti Mermaid bloccati dal lockfile con `make install-doc-tools`, quindi eseguire:
 
 ```sh
 make docs
 ```
 
-I DOCX generati si trovano in `build/docs/` e non vanno aggiunti al repository. `make docs` verifica anche integrità del pacchetto, contenuto essenziale, nome e punteggiatura degli export. Per modifiche applicative, eseguire i controlli della build e i test definiti quando ENG-03 introdurrà una build applicativa. Al momento tali comandi non esistono.
+I DOCX generati si trovano in `build/docs/` e non vanno aggiunti al repository. `make docs` verifica integrità del pacchetto, contenuto essenziale, nome, punteggiatura e diagrammi renderizzati negli export. Per modifiche applicative, eseguire i controlli della build e i test definiti quando ENG-03 introdurrà una build applicativa. Al momento tali comandi non esistono.
 
 ## Criteri di revisione
 
