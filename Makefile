@@ -6,6 +6,7 @@ MERMAID ?= config/documentation/node_modules/.bin/mmdc
 PUPPETEER ?= config/documentation/node_modules/.bin/puppeteer
 PUPPETEER_CONFIG ?=
 OUTPUT_DIR ?= build/docs
+DOCX_TOOL_INPUTS = Makefile config/tool-versions.env config/documentation/package.json config/documentation/package-lock.json
 
 .DEFAULT_GOAL := help
 .PHONY: help install-doc-tools check-docs check-pandoc check-mermaid render-docs docs
@@ -59,8 +60,8 @@ docs: check-docs check-pandoc
 	$(MAKE) --no-print-directory $(OUTPUT_DIR)/rad-is.docx $(OUTPUT_DIR)/sdd-is.docx
 	python3 scripts/validate_docx.py "$(OUTPUT_DIR)/rad-is.docx" "$(OUTPUT_DIR)/sdd-is.docx"
 
-$(OUTPUT_DIR)/rad-is.docx: docs/RAD.md docs/template/template.docx scripts/validate_docx.py config/documentation/package-lock.json | render-docs
+$(OUTPUT_DIR)/rad-is.docx: docs/RAD.md docs/template/template.docx scripts/validate_docx.py $(DOCX_TOOL_INPUTS) | render-docs
 	$(PANDOC) --from=gfm --to=docx --standalone --reference-doc=docs/template/template.docx --resource-path=".:$(OUTPUT_DIR)" "$(OUTPUT_DIR)/rad-rendered.md" --output="$@"
 
-$(OUTPUT_DIR)/sdd-is.docx: docs/SDD.md docs/template/template.docx scripts/validate_docx.py config/documentation/package-lock.json | render-docs
+$(OUTPUT_DIR)/sdd-is.docx: docs/SDD.md docs/template/template.docx scripts/validate_docx.py $(DOCX_TOOL_INPUTS) | render-docs
 	$(PANDOC) --from=gfm --to=docx --standalone --reference-doc=docs/template/template.docx --resource-path=".:$(OUTPUT_DIR)" "$(OUTPUT_DIR)/sdd-rendered.md" --output="$@"
