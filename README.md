@@ -21,7 +21,7 @@ La documentazione e tutti i relativi template e materiali di supporto risiedono 
 
 ## Segnalazioni
 
-Per bug e richieste, consultare le [issue aperte](https://github.com/kairosci/aegis/issues) prima di inviarne una nuova. Per segnalare una vulnerabilità, non aprire un'issue pubblica: usare la funzione privata nella scheda Security del repository. Prima di condividere log o esempi, rimuovere credenziali, token, dati personali e codici di tracking.
+Per bug e richieste, consultare le [issue aperte](https://github.com/kairosci/aegis/issues) prima di inviarne una nuova. Per le vulnerabilità seguire la [politica di sicurezza](docs/SECURITY.md) e usare il report privato GitHub. Prima di condividere log o esempi, rimuovere credenziali, token, dati personali e codici di tracking.
 
 ## Esportazione DOCX
 
