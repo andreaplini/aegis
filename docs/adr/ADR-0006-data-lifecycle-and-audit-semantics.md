@@ -10,7 +10,7 @@
 | Data | 16 novembre 2026 |
 | Responsabile | Responsabile privacy, da designare |
 | Revisori | Responsabile tecnico, responsabile dati e responsabile operativo, da designare |
-| Requisiti correlati | FR-07, FR-09, NFR-04, NFR-09, NFR-10, UC-03, UC-04, UC-05, OPEN-04, OPEN-05, OPEN-08, ENG-02, ENG-06 ed ENG-08 |
+| Requisiti correlati | FR-07, FR-09, NFR-04, NFR-09, NFR-10, UC-03, UC-04, UC-05, OPEN-04, OPEN-05, OPEN-08, OPEN-12, ENG-02, ENG-06 ed ENG-08 |
 
 ## Contesto e problema
 

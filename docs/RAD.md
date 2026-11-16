@@ -101,7 +101,7 @@ I criteri descrivono risultati osservabili ricavati dai flussi dei casi d’uso 
 | FR-06 | La selezione di un luogo mostra dettaglio, caratteristiche note, fonte e validità. Dati assenti o scaduti risultano sconosciuti. |
 | FR-07 | L’invio valido persiste segnalazione ed evento iniziale. Un errore non lascia una segnalazione parziale. La foto facoltativa resta non pubblicata finché non supera i controlli previsti. |
 | FR-08 | La creazione riuscita restituisce un codice di tracking. La consultazione mostra solo lo stato consentito dalla policy di accesso da approvare in OPEN-04. |
-| FR-09 | Una transizione ammessa aggiorna stato ed evento nella stessa transazione. Una transizione non valida non modifica i dati. |
+| FR-09 | Solo una transizione presente nella matrice approvata in OPEN-12 aggiorna stato ed evento nella stessa transazione. Una transizione non ammessa non modifica i dati. |
 | FR-10 | Solo una generazione completa e validata viene pubblicata. Versione, timestamp, controlli ed esito sono registrati. Un errore mantiene i dati validi precedenti. |
 | FR-11 | Dopo la pubblicazione di un aggiornamento urgente viene invalidata la cache dell’area interessata. L’operazione resta recuperabile in caso di interruzione. |
 | FR-12 | L’intenzione di notifica è registrata solo quando preferenze, autorizzazioni e consensi configurati la consentono. La consegna avviene in modo asincrono. Un errore del canale non annulla il caso d’uso già completato e resta osservabile e recuperabile secondo la policy da definire in OPEN-08. Un esito ambiguo non è presentato come consegna confermata. Retry e gestione dei possibili duplicati seguono la policy da approvare. Canali e policy restano da definire. |
@@ -304,7 +304,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | Campo | Specifica |
 |---|---|
 | Attori partecipanti | Moderatore, sistema, canale di notifica. |
-| Condizioni d’ingresso | Moderatore autenticato e autorizzato. Report esistente. Transizione ammessa. Motivazione presente quando richiesta. |
+| Condizioni d’ingresso | Moderatore autenticato e autorizzato secondo OPEN-04. Report esistente. La matrice di transizione di OPEN-12 è approvata e consente l’azione richiesta. Motivazione presente quando richiesta dalla matrice. |
 | Condizioni d’uscita | Stato ed evento append-only aggiornati nella stessa transazione, con attore e timestamp. Una transizione non valida non modifica i dati. Se una notifica prevista fallisce, il fallimento non annulla la transizione registrata e resta osservabile e recuperabile secondo la policy da definire in OPEN-08. |
 | Requisiti qualitativi | Ogni decisione è tracciabile. Gli eventi precedenti restano consultabili e non sono sovrascritti. |
 | Flusso degli eventi | Il moderatore apre il report. Il sistema mostra i dati e la cronologia autorizzati. Il moderatore sceglie conferma, rifiuto, risoluzione o unione e inserisce la motivazione richiesta. Il sistema valida la transizione e registra stato ed evento nella stessa transazione. Dopo il completamento del caso, pianifica l’eventuale notifica secondo consenso e policy. Se il canale fallisce, registra l’esito per il recupero previsto in OPEN-08. |
@@ -737,4 +737,5 @@ Il profilo visivo non è disponibile perché i punteggi non sono stati raccolti.
 | Codice di tracking | Codice non enumerabile usato per consultare lo stato di una segnalazione. |
 | Moderazione | Processo di valutazione e decisione su una segnalazione. |
 | Duplicato | Segnalazione riferita a un caso già registrato e collegata senza cancellare la cronologia. |
+| Stato della segnalazione | Fase corrente di un report. Valori, transizioni e condizioni sono da approvare in OPEN-12. |
 | p95 | Valore sotto il quale ricade il 95 per cento delle misurazioni osservate. Popolazione e finestra temporale vanno definite nel protocollo. |

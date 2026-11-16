@@ -366,7 +366,7 @@ Il caso d’uso `PlanRoute` valida origine, destinazione e vincoli, invoca `Rout
 
 ### 4.5 SEGNALAZIONI E MODERAZIONE
 
-`CreateReport` valida i dati, gestisce l’eventuale upload attraverso il flusso di scansione e persiste segnalazione, evento iniziale e intenzione autorizzata di notifica nella stessa transazione. `TrackReport` restituisce soltanto lo stato consentito al possessore del codice. `ModerateReport` verifica identità, ruolo, esistenza del report e transizione ammessa. Aggiorna lo stato e aggiunge un evento append-only nella stessa transazione, registrando anche l’intenzione autorizzata di notifica. Un worker elabora l’outbox dopo il commit. Un errore di invio non annulla segnalazione, codice di tracking o transizione già registrati. Il sistema non garantisce consegna esattamente una volta. Esito, tentativi, riconciliazione e recupero seguono la policy OPEN-08. Conferma, rifiuto, risoluzione e unione dei duplicati devono essere rappresentati dalla macchina a stati di dominio da definire. I dettagli identificativi sono esclusi dalla risposta pubblica.
+`CreateReport` valida i dati, gestisce l’eventuale upload attraverso il flusso di scansione e persiste segnalazione, evento iniziale e intenzione autorizzata di notifica nella stessa transazione. `TrackReport` restituisce soltanto lo stato consentito al possessore del codice. `ModerateReport` verifica identità, ruolo, esistenza del report e transizione ammessa dalla matrice OPEN-12. Aggiorna lo stato e aggiunge un evento append-only nella stessa transazione, registrando anche l’intenzione autorizzata di notifica. Un worker elabora l’outbox dopo il commit. Un errore di invio non annulla segnalazione, codice di tracking o transizione già registrati. Il sistema non garantisce consegna esattamente una volta. Esito, tentativi, riconciliazione e recupero seguono la policy OPEN-08. Stati, transizioni, ruoli, motivazioni ed effetti della moderazione devono essere approvati in OPEN-12 prima dell’implementazione. I dettagli identificativi sono esclusi dalla risposta pubblica.
 
 ### 4.6 GEOLOCALIZZAZIONE, SINCRONIZZAZIONE E NOTIFICHE
 
@@ -399,6 +399,7 @@ I termini di cache e generazione descrivono invarianti del comportamento progett
 | Pubblicazione atomica | Cambio della generazione attiva e registrazione del lavoro di pulizia nella stessa transazione. |
 | Pulizia cache | Rimozione ripetibile delle chiavi riferite a generazioni superate. La correttezza delle letture non dipende dal completamento della rimozione. |
 | ReportEvent | Evento immutabile che registra una transizione o decisione su una segnalazione. |
+| Stato della segnalazione | Fase corrente del report. Valori e transizioni ammesse dipendono dalla matrice OPEN-12. |
 | RoutingProvider | Porta verso il servizio che calcola alternative di percorso. |
 | Snapshot consistente | Vista del repository che usa gli stessi riferimenti di generazione per selezionare i dati e la loro provenienza durante una lettura. |
 | SourceSync | Registrazione dell’esito, della versione e dei controlli di una sincronizzazione. |
