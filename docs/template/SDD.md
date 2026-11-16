@@ -86,6 +86,8 @@ Descrivere entità o collezioni, attributi, vincoli, relazioni, indici e migrazi
 |---|---|---|
 | Da definire | Da descrivere | Da documentare |
 
+Inserire una matrice per categorie di dati, uso, accesso, conservazione e cancellazione. Includere identità, contenuti utente, allegati, tracking, audit, log e copie. Distinguere dati identificativi e contenuti pubblici. Esplicitare i conflitti tra cronologia append-only e cancellazione senza fissare tempi o policy non approvati.
+
 #### 3.4.2 ARCHIVIAZIONE DEI FILE
 
 Descrivere archiviazione, accesso, scansione, pubblicazione, scadenza e cancellazione dei file. Specificare il comportamento in caso di errore.

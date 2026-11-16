@@ -195,6 +195,28 @@ La persistenza relazionale proposta usa PostgreSQL e PostGIS. Le migrazioni dovr
 | `user_account` | Riferimento d’identità e ruoli con accesso limitato. |
 | `source_sync` | Fonte, versione, timestamp, esito, controlli di qualità e riferimento alla generazione candidata o pubblicata. |
 
+La matrice seguente descrive il trattamento progettato. Non definisce basi giuridiche, consensi o tempi di conservazione. Finalità, accessi, scadenze e cancellazione devono essere approvati secondo OPEN-04 e OPEN-05 prima dell’implementazione.
+
+| Categoria | Dati previsti e uso | Accesso progettato |
+|---|---|---|
+| Identità e ruoli | Riferimento al provider d’identità e ruoli applicativi per autenticare e autorizzare le funzioni riservate. Il provider non è selezionato. | Identity e operazioni amministrative autorizzate. |
+| Segnalazione | Luogo, categoria, descrizione, data e stato per moderare e comunicare informazioni sulle barriere. Testo e posizione possono identificare una persona. | Moderatori autorizzati e viste pubbliche limitate ai campi approvati. |
+| Eventi di moderazione | Riferimento all’autore, data, decisione e segnalazione per mantenere la cronologia append-only. | Moderatori e ruoli operativi autorizzati. |
+| Credenziale di tracking | Codice restituito al segnalatore per consultare lo stato consentito. Memorizzazione e scadenza non sono definite. | Possessore autorizzato secondo OPEN-04. Il codice non va registrato nei log. |
+| Immagine allegata | File, metadati necessari e stato della scansione per documentare una barriera e supportare la moderazione. | Accesso limitato prima della scansione. Pubblicazione secondo policy approvata. |
+| Log operativi | Eventi tecnici e identificativi necessari per diagnosi, sicurezza e misurazione operativa. | Personale operativo autorizzato. |
+
+| Categoria | Decisioni di ciclo di vita |
+|---|---|
+| Identità e ruoli | Definire identificativi persistiti, finalità, accessi, revoca e cancellazione secondo OPEN-04 e OPEN-05. |
+| Segnalazione | Definire campi pubblici, minimizzazione, correzione, scadenza e cancellazione secondo OPEN-05. |
+| Eventi di moderazione | Definire pseudonimizzazione e rimozione o anonimizzazione dei riferimenti personali senza invalidare la cronologia. Approvare la regola in OPEN-05. |
+| Credenziale di tracking | Definire memorizzazione, revoca, scadenza e cancellazione secondo OPEN-04 e OPEN-05. |
+| Immagine allegata | Definire consenso, rimozione dei metadati non necessari, conservazione, revoca e cancellazione secondo OPEN-05. |
+| Log operativi | Escludere descrizioni personali, credenziali e codici di tracking. Definire accesso, durata e cancellazione secondo OPEN-05 e OPEN-08. |
+
+La separazione tra identità, contenuto e cronologia è un confine architetturale, non una garanzia di anonimato. Descrizioni, coordinate, immagini e riferimenti agli autori possono identificare una persona. La regola di cancellazione deve includere database, object storage, indici, cache, log e copie di backup e deve preservare una semantica di audit approvata.
+
 Le relazioni sono protette da chiavi esterne e vincoli. Le ricerche geografiche usano indici spaziali. Ulteriori indici sono definiti in base alle query validate. Le coordinate di dominio sono rappresentate da `GeoPoint`, value object immutabile con controlli di validità.
 
 La politica di backup, la conservazione delle copie e gli obiettivi di ripristino sono da definire con il responsabile operativo. Le procedure di ripristino devono essere provate prima del lancio e dopo modifiche rilevanti all’infrastruttura.
