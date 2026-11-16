@@ -11,6 +11,7 @@ help:
 	  'Set PANDOC=/path/to/pandoc to select a Pandoc executable'
 
 check-docs:
+	python3 -m unittest discover -s tests
 	python3 scripts/validate_docs.py
 
 docs: check-docs
