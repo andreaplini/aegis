@@ -58,8 +58,8 @@ Verifica di sola lettura del repository `kairosci/aegis` il 16 novembre 2026:
 | Dependabot security updates | Abilitati |
 | Aggiornamenti Dependabot | GitHub Actions e strumenti Node documentali, controllo settimanale |
 | Secret scanning e push protection | Abilitati |
-| Rilevamento di pattern non provider | Disabilitato |
-| Verifica di validità dei segreti rilevati | Disabilitata |
+| Rilevamento di pattern non provider | Disabilitato. Eleggibilità dell’account da verificare secondo ADR-0009. |
+| Verifica di validità dei segreti rilevati | Disabilitata. L’invio dei segreti agli issuer e l’eleggibilità sono da approvare secondo ADR-0009. |
 | Segnalazione privata delle vulnerabilità GitHub | Abilitata |
 | Collegamento al report privato nel flusso issue | Configurato in `.github/ISSUE_TEMPLATE/config.yml` |
 | Release | Nessuna release pubblicata |
@@ -79,4 +79,4 @@ La verifica delle impostazioni GitHub è stata eseguita in sola lettura il 16 no
 | Segnalazione privata delle vulnerabilità | `GET /repos/kairosci/aegis/private-vulnerability-reporting` | `enabled: true`. |
 | Configurazione versionata | [.github/dependabot.yml](../.github/dependabot.yml) e [.github/ISSUE_TEMPLATE/config.yml](../.github/ISSUE_TEMPLATE/config.yml) | Aggiornamenti settimanali documentati e collegamento al report privato configurato. |
 
-Questi risultati descrivono lo stato osservato in quella data e non sostituiscono la decisione del proprietario su OPEN-09, OPEN-10 e OPEN-11.
+Questi risultati descrivono lo stato osservato in quella data e non sostituiscono la decisione del proprietario su OPEN-09, OPEN-10 e OPEN-11. Per i limiti di eleggibilità e gli effetti delle due impostazioni aggiuntive, consultare la proposta [ADR-0009](adr/ADR-0009-secret-scanning-eligibility-and-validity.md).
