@@ -44,6 +44,30 @@ VALID_SDD = """# SDD
 
 
 class MarkdownValidationTests(unittest.TestCase):
+    def test_non_functional_requirements_have_action_and_verification_criterion(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            docs.mkdir()
+            rad = docs / "RAD.md"
+            rad.write_text(
+                "### 3.3 REQUISITI NON FUNZIONALI\n"
+                "| ID | Qualità | Azione richiesta | Criterio di verifica |\n"
+                "|---|---|---|---|\n"
+                "| NFR-01 | Accessibilità | Usare la tastiera | Verificare il flusso |\n"
+                "### 3.4 VINCOLI\n",
+                encoding="utf-8",
+            )
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_non_functional_requirements(), [])
+                rad.write_text(
+                    rad.read_text(encoding="utf-8").replace("| Verificare il flusso |", "|  |"),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_non_functional_requirements()
+                self.assertTrue(any("criterio di verifica" in error for error in errors))
+
     def test_fenced_code_is_ignored_when_scanning_links(self) -> None:
         text = """[valid](docs.md)
 ```md

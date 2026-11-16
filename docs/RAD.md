@@ -86,24 +86,24 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 
 ### 3.3 REQUISITI NON FUNZIONALI
 
-| ID | Qualità | Azione richiesta | Criterio/nota |
+| ID | Qualità | Azione richiesta | Criterio di verifica |
 |---|---|---|---|
-| NFR-01 | Accessibilità | Consentire di completare i flussi essenziali da tastiera e con screen reader. | Verificare navigazione, focus, etichette e annunci. |
-| NFR-02 | Accessibilità | Fornire una vista testuale equivalente alle informazioni presentate sulla mappa. | Luoghi, percorsi e stati consultabili senza mappa. |
-| NFR-03 | Accessibilità | Verificare contrasto e fruibilità con zoom. | Standard e livello di conformità da concordare. |
-| NFR-04 | Privacy | Minimizzare i dati personali e separare identità e segnalazioni pubbliche. | Definire finalità, accessi, conservazione e cancellazione prima del lancio. |
-| NFR-05 | Sicurezza | Proteggere le comunicazioni con TLS e le funzioni riservate con ruoli. | Autorizzare ogni operazione moderativa lato server. |
-| NFR-06 | Sicurezza | Applicare rate limiting, validazione server-side e protezione da injection agli endpoint. | Rifiutare input non validi senza effetti parziali. |
-| NFR-07 | Sicurezza | Controllare gli upload per tipo, dimensione e contenuto prima dell’uso o pubblicazione. | Applicare scansione e accesso controllato. |
-| NFR-08 | Affidabilità dati | Esporre provenienza e freschezza e applicare scadenze per fonte e tipo di dato. | Dati scaduti o assenti devono risultare sconosciuti. |
-| NFR-09 | Operatività | Produrre log strutturati senza dati sensibili e metriche operative. | Monitorare disponibilità, latenza, sincronizzazioni e coda moderazione. |
-| NFR-10 | Continuità | Configurare allarmi e backup automatici e svolgere prove di ripristino. | Definire obiettivi di ripristino prima del lancio. |
-| NFR-11 | Performance | Misurare e mantenere entro soglie concordate la latenza API e il caricamento delle viste principali. | Definire target p95, concorrenza e dataset del pilota; misurare in staging e produzione. |
-| NFR-12 | Compatibilità | Versionare le API e applicare migrazioni compatibili con le versioni applicative in distribuzione. | Supportare rilasci progressivi. |
-| NFR-13 | Usabilità | Rendere i flussi principali comprensibili e coerenti, con feedback sul completamento delle operazioni. | Valutare con compiti osservabili e sessioni con gli utenti; esiti da raccogliere. |
-| NFR-14 | Scalabilità | Dimensionare API, database, worker e indici spaziali in base alla crescita di utenti, luoghi e richieste. | Definire carico, dataset e obiettivi prima del pilota; verificare con misure di carico. |
-| NFR-15 | Manutenibilità | Mantenere separati dominio, casi d’uso e adattatori e documentare le interfacce e le procedure operative. | Verificare con revisione architetturale, build ripetibile e aggiornamento documentale. |
-| NFR-16 | Portabilità | Distribuire API e worker in container e mantenere la configurazione specifica dell’ambiente esterna al codice. | Avviare gli stessi artefatti negli ambienti previsti usando configurazioni distinte. |
+| NFR-01 | Accessibilità | Consentire di completare i flussi essenziali da tastiera e con screen reader. | Verificare compiti approvati, navigazione, focus, etichette e annunci con tastiera e tecnologie assistive. |
+| NFR-02 | Accessibilità | Fornire una vista testuale equivalente alle informazioni presentate sulla mappa. | Confrontare per le stesse richieste luoghi, percorsi e stati disponibili nella mappa e nella vista testuale. |
+| NFR-03 | Accessibilità | Verificare contrasto e fruibilità con zoom. | Verificare i criteri dello standard e del livello di conformità da concordare; finché OPEN-06 resta aperto il requisito non è valutabile. |
+| NFR-04 | Privacy | Minimizzare i dati personali e separare identità e segnalazioni pubbliche. | Prima del lancio approvare finalità, accessi, conservazione e cancellazione; verificare autorizzazioni, scadenza e cancellazione con prove sui dati. |
+| NFR-05 | Sicurezza | Proteggere le comunicazioni con TLS e le funzioni riservate con ruoli. | Verificare TLS sugli endpoint esposti e rifiuto lato server delle operazioni riservate per ruoli non autorizzati. |
+| NFR-06 | Sicurezza | Applicare rate limiting, validazione server-side e protezione da injection agli endpoint. | Provare input malformati e injection; verificare il rifiuto senza effetti parziali e il comportamento del rate limiting rispetto alle soglie approvate. |
+| NFR-07 | Sicurezza | Controllare gli upload per tipo, dimensione e contenuto prima dell’uso o pubblicazione. | Provare file ammessi, non validi e con scansione fallita; verificare rifiuto o quarantena e accesso controllato ai file. |
+| NFR-08 | Affidabilità dati | Esporre provenienza e freschezza e applicare scadenze per fonte e tipo di dato. | Verificare fonte, timestamp e validità; testare dati assenti, scaduti e incoerenti e confermare che risultino sconosciuti. |
+| NFR-09 | Operatività | Produrre log strutturati senza dati sensibili e metriche operative. | In ambiente concordato verificare log e metriche di disponibilità, latenza, sincronizzazioni e coda di moderazione; controllare che log e allarmi non espongano dati sensibili. |
+| NFR-10 | Continuità | Configurare allarmi e backup automatici e svolgere prove di ripristino. | Eseguire e registrare una prova di ripristino e verificare l’integrità dei dati; approvare gli obiettivi di ripristino prima del lancio. |
+| NFR-11 | Performance | Misurare e mantenere entro soglie concordate la latenza API e il caricamento delle viste principali. | Misurare p95 in staging con concorrenza e dataset approvati; il requisito non è valutabile finché target e carico non sono concordati. |
+| NFR-12 | Compatibilità | Versionare le API e applicare migrazioni compatibili con le versioni applicative in distribuzione. | Verificare in prova di rilascio che le versioni applicative attive durante la migrazione possano completare le operazioni previste. |
+| NFR-13 | Usabilità | Rendere i flussi principali comprensibili e coerenti, con feedback sul completamento delle operazioni. | Svolgere sessioni con compiti e criteri approvati, registrare misure e problemi osservati e riportare gli esiti nel RAD. |
+| NFR-14 | Scalabilità | Dimensionare API, database, worker e indici spaziali in base alla crescita di utenti, luoghi e richieste. | Eseguire prove di carico con dataset e profilo concordati; confrontare i risultati con gli obiettivi approvati prima del pilota. |
+| NFR-15 | Manutenibilità | Mantenere separati dominio, casi d’uso e adattatori e documentare le interfacce e le procedure operative. | Effettuare revisione architetturale e verificare build ripetibile, test e documentazione delle interfacce e procedure. |
+| NFR-16 | Portabilità | Distribuire API e worker in container e mantenere la configurazione specifica dell’ambiente esterna al codice. | Avviare la stessa versione degli artefatti negli ambienti approvati e verificare le funzioni essenziali con test smoke e configurazioni distinte. |
 
 ### 3.4 VINCOLI
 

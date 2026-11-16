@@ -14,7 +14,7 @@ Gli sprint sono ordinati per dipendenza e non assegnano date o durate non concor
 |---|---|---|---|---|
 | DOC-01 | Ricognizione della base documentale e dei vincoli | RAD, SDD, template, README | Inventario dei documenti esistenti; ambito documentale distinto da sviluppo e validazione sul campo. | Applicato |
 | DOC-02 | Modelli anonimizzati e struttura accademica | Template RAD e SDD | Gerarchia completa dei modelli, campi riutilizzabili, nessun dato personale o risultato specifico dell’esempio. | Applicato |
-| DOC-03 | Requisiti e confini del prodotto | RAD | Requisiti funzionali e non funzionali in tabelle con attore o sistema, azione, priorità e criterio osservabile; incertezze dichiarate. | Applicato |
+| DOC-03 | Requisiti e confini del prodotto | RAD | Requisiti funzionali e non funzionali in tabelle con azione, priorità e verifica osservabile; incertezze e soglie non approvate dichiarate. | Applicato |
 | DOC-04 | Casi d’uso e tracciabilità | RAD | Attori, precondizioni e postcondizioni per ciascun caso; requisiti funzionali collegati ai casi d’uso, inclusa sincronizzazione. | Applicato |
 | DOC-05 | Architettura e dati | SDD | Moduli, mappatura di distribuzione, persistenza, fonti, integrazioni, flussi, condizioni limite e servizi coerenti con i requisiti. | Applicato |
 | DOC-06 | Accessibilità, usabilità, sicurezza e privacy | RAD e SDD | Requisiti e metodi di verifica documentati; nessun esito di test o punteggio inventato; decisioni non convalidate registrate. | Applicato |
@@ -29,7 +29,7 @@ Gli sprint sono ordinati per dipendenza e non assegnano date o durate non concor
 |---|---|
 | DOC-01 | Conservata la trascrizione del template Word esistente come artefatto distinto e chiarito in `docs/template.md` dove si trovano i modelli specifici. Aggiornata la descrizione documentale in `README.md`. |
 | DOC-02 | Creati i modelli RAD e SDD in `docs/template/`, mantenendo la gerarchia richiesta e sostituendo nomi, dati personali, servizi specifici e risultati del caso di esempio con campi o istruzioni generiche. |
-| DOC-03 | Mantenute le tabelle FR e NFR del RAD. Ogni requisito funzionale ha un responsabile dell’azione, un’azione esplicita, una priorità e un collegamento al caso d’uso. I requisiti non funzionali riportano azione e criterio; performance è inclusa senza inventare soglie. |
+| DOC-03 | Mantenute le tabelle FR e NFR del RAD. Ogni requisito funzionale ha un responsabile dell’azione, un’azione esplicita, una priorità e un collegamento al caso d’uso. Ogni NFR specifica azione e criterio di verifica; performance e altre soglie restano non valutabili finché i target non sono approvati. Il validatore impedisce righe NFR prive di azione o criterio. |
 | DOC-04 | Verificati attori, precondizioni e postcondizioni delle schede. Aggiunto `UC-06` per sincronizzazione e collegati i requisiti funzionali ai casi d’uso. Inclusi lo scenario e il diagramma di sequenza della sincronizzazione. |
 | DOC-05 | Collegati moduli SDD e requisiti/casi d’uso; esplicitati catalogo delle fonti, cache geografica, provider di geocodifica, persistenza e adattatori. Le scelte non ancora approvate restano da convalidare. |
 | DOC-06 | Esplicitati ascensori, rampe, accessi e annunci come caratteristiche consultabili. Uniformata la regola per cui dati assenti o scaduti sono sconosciuti. Il RAD mantiene metodo, misure individuali e aggregate, analisi, interviste e valutazione ISO senza risultati fittizi. |

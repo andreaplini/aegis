@@ -17,6 +17,7 @@ FENCE_PATTERN = re.compile(r"^\s*(`{3,}|~{3,})")
 TRACE_ID_PATTERN = re.compile(r"\b(?:FR|NFR|UC)-\d{2}\b")
 USE_CASE_HEADING_PATTERN = re.compile(r"^######\s+(UC-\d{2})\b")
 FUNCTIONAL_REQUIREMENT_ROW_PATTERN = re.compile(r"^\|\s*(FR-\d{2})\s*\|")
+NON_FUNCTIONAL_REQUIREMENT_ROW_PATTERN = re.compile(r"^\|\s*(NFR-\d{2})\s*\|")
 CASE_FIELD_PATTERN = re.compile(r"^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|")
 NUMBERED_SECTION_PATTERN = re.compile(r"^(#{2,6})\s+(\d+(?:\.\d+)+)(?:\s|$)", re.MULTILINE)
 
@@ -161,6 +162,47 @@ def validate_document_structure() -> list[str]:
     return errors
 
 
+def validate_non_functional_requirements() -> list[str]:
+    path = ROOT / "docs/RAD.md"
+    lines = path.read_text(encoding="utf-8").splitlines()
+    section_start = "### 3.3 REQUISITI NON FUNZIONALI"
+    section_end = "### 3.4 VINCOLI"
+    if section_start not in lines or section_end not in lines:
+        return ["docs/RAD.md: sezione requisiti non funzionali non trovata"]
+
+    start = lines.index(section_start) + 1
+    end = lines.index(section_end)
+    section = lines[start:end]
+    expected_headers = ["ID", "Qualità", "Azione richiesta", "Criterio di verifica"]
+    header_line = next((line for line in section if line.startswith("| ID |")), None)
+    if header_line is None:
+        return ["docs/RAD.md: tabella NFR senza intestazione"]
+    headers = [cell.strip() for cell in header_line.strip().strip("|").split("|")]
+    errors: list[str] = []
+    if headers != expected_headers:
+        errors.append("docs/RAD.md: intestazione tabella NFR non conforme al modello")
+
+    ids: list[str] = []
+    for line in section:
+        if not NON_FUNCTIONAL_REQUIREMENT_ROW_PATTERN.match(line):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        requirement_id = cells[0]
+        ids.append(requirement_id)
+        if len(cells) != len(expected_headers):
+            errors.append(f"docs/RAD.md: {requirement_id} ha un numero di colonne non valido")
+            continue
+        if not cells[1] or not cells[2] or not cells[3]:
+            errors.append(f"docs/RAD.md: {requirement_id} deve avere qualità, azione e criterio di verifica")
+
+    if not ids:
+        errors.append("docs/RAD.md: tabella NFR senza requisiti")
+    duplicates = sorted({requirement_id for requirement_id in ids if ids.count(requirement_id) > 1})
+    if duplicates:
+        errors.append(f"docs/RAD.md: requisiti non funzionali duplicati: {', '.join(duplicates)}")
+    return errors
+
+
 def validate_use_case_specs() -> list[str]:
     rad_path = ROOT / "docs/RAD.md"
     lines = rad_path.read_text(encoding="utf-8").splitlines()
@@ -226,6 +268,7 @@ def main() -> int:
     errors.extend(validate_use_case_specs())
     errors.extend(validate_project_style())
     errors.extend(validate_document_structure())
+    errors.extend(validate_non_functional_requirements())
 
     if errors:
         print("\n".join(errors), file=sys.stderr)
