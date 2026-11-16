@@ -83,7 +83,7 @@ Ogni requisito indica chi avvia o esegue l’azione, la priorità e i casi d’u
 | FR-09 | Moderatore e sistema | Consentire conferma, rifiuto, risoluzione o unione di duplicati. Registrare ogni decisione. | Must | UC-05 |
 | FR-10 | Sistema | Importare dati ufficiali e registrare versione, esito e timestamp della sincronizzazione. | Should | UC-06 |
 | FR-11 | Sistema | Invalidare la cache dell’area interessata quando riceve un aggiornamento urgente. | Should | UC-06 |
-| FR-12 | Sistema | Inviare notifiche secondo preferenze, autorizzazioni e consensi configurati. | Could | UC-03, UC-05, UC-06 |
+| FR-12 | Sistema | Inviare notifiche secondo preferenze, autorizzazioni e consensi configurati. | Could | UC-03, UC-05 |
 | FR-13 | Sistema | Autenticare gli utenti e verificare i ruoli per le operazioni riservate, mantenendo pubblica la consultazione. | Must | UC-03, UC-05, UC-06 |
 
 
@@ -200,8 +200,8 @@ Registrare l’esito effettivamente osservato e un collegamento consultabile all
 |---|---|---|
 | Viaggio con esigenze selezionate | Viaggiatore, sistema, provider di routing | Il viaggiatore inserisce origine, destinazione ed esigenze. Il sistema richiede alternative al provider. Il sistema mostra tempi, cambi, barriere note e tratti non verificati. |
 | Verifica di una fermata | Viaggiatore, sistema | Il viaggiatore seleziona una fermata. Il sistema recupera le caratteristiche disponibili. Il sistema mostra stato, fonte e validità, indicando come sconosciuti i dati assenti o scaduti. |
-| Guasto temporaneo | Segnalatore, sistema, servizio di storage e scansione | Il segnalatore inserisce luogo, categoria, descrizione e data. Facoltativamente allega una foto. Il sistema registra la segnalazione e restituisce il codice di tracking. |
-| Moderazione di un duplicato | Moderatore, sistema | Il moderatore esamina una segnalazione e la collega al duplicato esistente. Il sistema registra la decisione e conserva la cronologia precedente. |
+| Guasto temporaneo | Segnalatore, sistema, servizio di storage e scansione, canale di notifica | Il segnalatore inserisce luogo, categoria, descrizione e data. Facoltativamente allega una foto. Il sistema registra la segnalazione e restituisce il codice di tracking. Se consentito dalla policy, il sistema invia una notifica tramite il canale configurato. |
+| Moderazione di un duplicato | Moderatore, sistema, canale di notifica | Il moderatore esamina una segnalazione e la collega al duplicato esistente. Il sistema registra la decisione e conserva la cronologia precedente. Se consentito dalla policy, il sistema invia una notifica tramite il canale configurato. |
 | Aggiornamento di una fonte | Gestore fonte, sistema, fonte dati autorizzata | Il gestore avvia o controlla una sincronizzazione. Il sistema acquisisce i dati dalla fonte, applica i controlli di qualità, pubblica solo una generazione valida e registra l’esito. |
 
 #### 3.5.3 MODELLI DEI CASI D’USO
@@ -212,7 +212,7 @@ Il confine di sistema separa i casi d’uso di `aegis` dagli attori e dai serviz
 
 ```mermaid
 flowchart TB
-  accDescr: I sei casi d'uso aegis e le associazioni con persone, provider di routing, fonti e servizi esterni.
+  accDescr: I sei casi d'uso aegis e le associazioni con persone, provider, fonti dati e servizi esterni di storage, scansione e notifica.
   subgraph ACTORS[Attori e servizi esterni]
     direction LR
     V[Viaggiatore]
@@ -222,6 +222,7 @@ flowchart TB
     R[Provider di routing]
     D[Fonte dati autorizzata]
     O[Servizio di storage e scansione]
+    N[Canale di notifica]
   end
   subgraph SYSTEM[aegis]
     direction LR
@@ -237,8 +238,10 @@ flowchart TB
   V --- UC02
   S --- UC03
   O --- UC03
+  N --- UC03
   S --- UC04
   M --- UC05
+  N --- UC05
   G --- UC06
   D --- UC06
 ```
@@ -280,7 +283,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 
 | Campo | Specifica |
 |---|---|
-| Attori partecipanti | Segnalatore, sistema, servizio di storage e scansione. |
+| Attori partecipanti | Segnalatore, sistema, servizio di storage e scansione, canale di notifica. |
 | Condizioni d’ingresso | Campi obbligatori validi. Autorizzazione, rate limit, consenso e requisiti dell’eventuale upload conformi alla policy definita. |
 | Condizioni d’uscita | Segnalazione ed evento iniziale persistiti. Codice di tracking restituito. In caso di errore non rimane una segnalazione parziale. |
 | Requisiti qualitativi | Il modulo è accessibile. I dati identificativi sono minimizzati e separati dalla segnalazione. La foto non è pubblicata prima dei controlli previsti. |
@@ -300,7 +303,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 
 | Campo | Specifica |
 |---|---|
-| Attori partecipanti | Moderatore, sistema. |
+| Attori partecipanti | Moderatore, sistema, canale di notifica. |
 | Condizioni d’ingresso | Moderatore autenticato e autorizzato. Report esistente. Transizione ammessa. Motivazione presente quando richiesta. |
 | Condizioni d’uscita | Stato ed evento append-only aggiornati nella stessa transazione, con attore e timestamp. Una transizione non valida non modifica i dati. |
 | Requisiti qualitativi | Ogni decisione è tracciabile. Gli eventi precedenti restano consultabili e non sono sovrascritti. |
