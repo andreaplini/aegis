@@ -44,10 +44,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      - name: Legge la versione degli strumenti
+        id: tool-versions
+        run: |
+          node_version="$(sed -n 's/^NODE_VERSION=//p' config/tool-versions.env)"
+          pandoc_version="$(sed -n 's/^PANDOC_VERSION=//p' config/tool-versions.env)"
+          if [[ ! "$node_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "NODE_VERSION deve contenere una versione numerica completa." >&2
+            exit 1
+          fi
+          if [[ ! "$pandoc_version" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+            echo "PANDOC_VERSION deve contenere una versione numerica valida." >&2
+            exit 1
+          fi
+          printf 'node=%s\n' "$node_version" >> "$GITHUB_OUTPUT"
+          printf 'pandoc=%s\n' "$pandoc_version" >> "$GITHUB_OUTPUT"
+
       - name: Configura Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24
+          node-version: ${{ steps.tool-versions.outputs.node }}
 
       - name: Installa gli strumenti Mermaid
         run: npm ci --prefix config/documentation
@@ -57,16 +73,6 @@ jobs:
 
       - name: Installa Chromium headless
         run: npm exec --prefix config/documentation -- puppeteer browsers install chrome-headless-shell
-
-      - name: Legge la versione degli strumenti
-        id: tool-versions
-        run: |
-          pandoc_version="$(sed -n 's/^PANDOC_VERSION=//p' config/tool-versions.env)"
-          if [[ ! "$pandoc_version" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
-            echo "PANDOC_VERSION deve contenere una versione numerica valida." >&2
-            exit 1
-          fi
-          printf 'pandoc=%s\n' "$pandoc_version" >> "$GITHUB_OUTPUT"
 
       - name: Installa Pandoc
         uses: pandoc/actions/setup@86321b6dd4675f5014c611e05088e10d4939e09e # v1

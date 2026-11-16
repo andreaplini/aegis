@@ -1,6 +1,6 @@
 include config/tool-versions.env
 
-export PANDOC_VERSION
+export NODE_VERSION PANDOC_VERSION
 PANDOC ?= pandoc
 MERMAID ?= config/documentation/node_modules/.bin/mmdc
 PUPPETEER ?= config/documentation/node_modules/.bin/puppeteer
@@ -9,7 +9,7 @@ OUTPUT_DIR ?= build/docs
 DOCX_TOOL_INPUTS = Makefile config/tool-versions.env config/documentation/package.json config/documentation/package-lock.json $(PUPPETEER_CONFIG)
 
 .DEFAULT_GOAL := help
-.PHONY: help install-doc-tools audit-doc-tools check-docs check-pandoc check-mermaid render-docs docs
+.PHONY: help install-doc-tools audit-doc-tools check-docs check-node check-pandoc check-mermaid render-docs docs
 
 help:
 	@printf '%s\n' \
@@ -17,19 +17,27 @@ help:
 	  'make install-doc-tools  Install pinned Node tools and Chromium for Mermaid exports' \
 	  'make audit-doc-tools  Check documentation tool dependencies for high severity vulnerabilities' \
 	  'make check-docs  Test and validate docs, structure, traceability, and style' \
+	  'make check-node Check local Node.js against config/tool-versions.env' \
 	  'make check-pandoc Check local Pandoc against config/tool-versions.env' \
 	  'Set PANDOC and MERMAID to select alternate executables'
 
-install-doc-tools:
+install-doc-tools: check-node
 	npm ci --prefix config/documentation
 	npm exec --prefix config/documentation -- puppeteer browsers install chrome-headless-shell
 
-audit-doc-tools:
+audit-doc-tools: check-node
 	npm audit --prefix config/documentation --audit-level=high
 
 check-docs:
 	python3 -m unittest discover -s tests
 	python3 scripts/validate_docs.py
+
+check-node:
+	@actual="$$(node --version | sed 's/^v//')"; \
+	if [ "$$actual" != "$(NODE_VERSION)" ]; then \
+	  printf 'Versione Node.js richiesta: %s. Versione trovata: %s.\n' "$(NODE_VERSION)" "$$actual" >&2; \
+	  exit 1; \
+	fi
 
 check-pandoc:
 	@version="$$($(PANDOC) --version | sed -n '1s/^pandoc //p')"; \
@@ -38,7 +46,7 @@ check-pandoc:
 	  exit 1; \
 	fi
 
-check-mermaid:
+check-mermaid: check-node
 	@expected="$$(node -p "require('./config/documentation/package.json').devDependencies['@mermaid-js/mermaid-cli']")"; \
 	if [ ! -x "$(MERMAID)" ]; then \
 	  printf 'Mermaid CLI non trovato. Eseguire npm ci --prefix config/documentation.\n' >&2; \
@@ -60,7 +68,7 @@ render-docs: check-mermaid
 	$(MERMAID) $(if $(PUPPETEER_CONFIG),--puppeteerConfigFile "$(PUPPETEER_CONFIG)") --input docs/RAD.md --output "$(OUTPUT_DIR)/rad-rendered.md" --outputFormat png --artefacts "$(OUTPUT_DIR)" --size 630 --jobs 1
 	$(MERMAID) $(if $(PUPPETEER_CONFIG),--puppeteerConfigFile "$(PUPPETEER_CONFIG)") --input docs/SDD.md --output "$(OUTPUT_DIR)/sdd-rendered.md" --outputFormat png --artefacts "$(OUTPUT_DIR)" --size 630 --jobs 1
 
-docs: check-docs check-pandoc
+docs: check-docs check-node check-pandoc
 	$(MAKE) --no-print-directory $(OUTPUT_DIR)/rad-is.docx $(OUTPUT_DIR)/sdd-is.docx
 	python3 scripts/validate_docx.py "$(OUTPUT_DIR)/rad-is.docx" "$(OUTPUT_DIR)/sdd-is.docx"
 

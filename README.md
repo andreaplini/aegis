@@ -11,7 +11,7 @@ Il repository contiene la baseline documentale e l'esportazione automatizzata di
 | Percorso | Contenuto |
 |---|---|
 | `docs/` | [RAD](docs/RAD.md), [SDD](docs/SDD.md), [modelli e riferimenti](docs/template.md), [roadmap](docs/MILESTONES.md) e [guida ai contributi](docs/CONTRIBUTING.md). |
-| `config/` | Configurazione condivisa della toolchain, inclusa la versione Pandoc. |
+| `config/` | Configurazione condivisa della toolchain documentale e dei dati del progetto. |
 | `config/data/` | Directory per i dati del progetto. Attualmente vuota. |
 | `src/` | Codice applicativo. |
 | `.agents/skills/` | Skill Codex specifiche del progetto. |
@@ -25,7 +25,7 @@ Per bug e richieste, consultare le [issue aperte](https://github.com/kairosci/ae
 
 ## Esportazione DOCX
 
-Installare Node.js 22.13 o successivo, Pandoc nella versione indicata in `config/tool-versions.env`, quindi predisporre Mermaid CLI e Chromium headless:
+Installare la versione Node.js e la versione Pandoc indicate in `config/tool-versions.env`, quindi predisporre Mermaid CLI e Chromium headless:
 
 ```sh
 make install-doc-tools
@@ -43,6 +43,6 @@ Mermaid CLI converte i diagrammi in immagini accessibili. Pandoc incorpora immag
 
 La CI esegue anche `make audit-doc-tools` sulle dipendenze degli strumenti documentali e blocca la generazione in presenza di vulnerabilità ad alta o critica gravità. Usa lo stesso target per ripetere il controllo in locale. Dependabot verifica settimanalmente gli aggiornamenti di Mermaid CLI e Puppeteer.
 
-`make docs` verifica che Pandoc corrisponda alla versione configurata e Mermaid CLI alla versione dichiarata nel lockfile. La stessa toolchain viene usata localmente e in CI.
+`make docs` verifica che Node.js e Pandoc corrispondano alle versioni configurate e Mermaid CLI alla versione dichiarata nel lockfile. La stessa toolchain viene usata localmente e in CI.
 
 L'esportazione usa `docs/template/template.docx` come riferimento di stile. Pandoc converte Markdown in DOCX. MarkItDown svolge la direzione opposta, da documenti sorgente a Markdown.
