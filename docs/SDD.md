@@ -187,13 +187,13 @@ La persistenza relazionale proposta usa PostgreSQL e PostGIS. Le migrazioni dovr
 |---|---|
 | `place` | Luogo, fermata o stazione con nome, tipo e geometria a SRID esplicito. |
 | `accessibility_feature` | Tipo, stato, fonte, validità e timestamp della caratteristica. Riferimento a `place`. |
-| `data_source` | Fonte autorizzata, responsabile, configurazione di aggiornamento e regola di validità. Schema e modalità di gestione da convalidare. |
+| `data_source` | Fonte autorizzata, responsabile, configurazione di aggiornamento, regola di validità e riferimento alla generazione attiva. Schema e modalità di gestione da convalidare. |
 | `transit_line` | Linee importate e relativi riferimenti alla fonte. |
 | `transit_stop` | Fermate, geometrie e relazioni con le linee e la fonte. |
 | `report` | Geometria o luogo, categoria, descrizione, stato e date. Dati identificativi separati. |
 | `report_event` | Eventi append-only con autore, data, decisione e riferimento a eventuale duplicato. |
 | `user_account` | Riferimento d’identità e ruoli con accesso limitato. |
-| `source_sync` | Fonte, versione, timestamp, esito, controlli di qualità e riferimento alla generazione candidata o pubblicata. |
+| `source_sync` | Fonte, versione, timestamp, esito, controlli di qualità, generazione pubblicata, generazione precedente e stato del lavoro durevole di pulizia cache. |
 
 La matrice seguente descrive il trattamento progettato. Non definisce basi giuridiche, consensi o tempi di conservazione. Finalità, accessi, scadenze e cancellazione devono essere approvati secondo OPEN-04 e OPEN-05 prima dell’implementazione.
 
@@ -229,13 +229,13 @@ Le foto sono conservate fuori dal database in object storage. Prima della pubbli
 
 #### 3.4.3 MECCANISMI DI SINCRONIZZAZIONE
 
-Worker asincroni importano dati di trasporto e accessibilità tramite adattatori isolati. Ogni esecuzione ha un identificativo e registra fonte, versione, timestamp, esito, controlli di qualità e riferimento alla generazione in `source_sync`. Retry e replay devono essere idempotenti. La deduplicazione usa le chiavi stabili definite dal contratto della fonte. Se la fonte non fornisce chiavi stabili, la regola di riconciliazione deve essere approvata prima di attivare l’importazione.
+Worker asincroni importano dati di trasporto e accessibilità tramite adattatori isolati. Ogni esecuzione ha un identificativo e registra fonte, versione, timestamp, esito, controlli di qualità e riferimento alla generazione in `source_sync`. La pubblicazione e la registrazione nello stesso record del lavoro di pulizia cache pendente avvengono nella stessa transazione. Il worker di pulizia recupera i lavori non completati da `source_sync`, registra esito ed eventuale errore e ripete l’operazione in modo idempotente secondo una politica di retry e backoff da definire in OPEN-08. Un arresto dopo il commit non perde quindi la richiesta di pulizia. Retry e replay dell’importazione devono essere idempotenti. La deduplicazione usa le chiavi stabili definite dal contratto della fonte. Se la fonte non fornisce chiavi stabili, la regola di riconciliazione deve essere approvata prima di attivare l’importazione.
 
 I dati acquisiti sono scritti in una generazione candidata isolata dalle letture pubbliche. Il worker valida contratto e schema, chiavi, completezza secondo le regole concordate per la fonte e coerenza dei dati. Solo una generazione che supera tutti i controlli può diventare attiva tramite un passaggio atomico. L’attivazione della generazione e la registrazione dell’esito pubblicato avvengono nella stessa transazione. Un errore lascia attiva la generazione pubblicata in precedenza e registra l’esito fallito senza esporre dati parziali. La rappresentazione fisica delle generazioni dipende dal contratto della fonte e dal volume, ma deve preservare isolamento, pubblicazione atomica e recuperabilità.
 
-Frequenza e validità sono definite per ciascuna fonte e tipologia durante la selezione dell’area pilota. I dati oltre la validità sono esposti come sconosciuti. Un aggiornamento urgente invalida la cache dell’area interessata e rende osservabile l’esito dell’invalidazione.
+Frequenza e validità sono definite per ciascuna fonte e tipologia durante la selezione dell’area pilota. I dati oltre la validità sono esposti come sconosciuti. Le chiavi della cache dei dati importati includono la fonte e l’identificativo della generazione attiva. Ogni lettura risolve la generazione attiva prima di accedere alla cache. Dopo il commit, le chiavi della generazione precedente non sono più selezionabili, anche se la pulizia fisica è ancora pendente. Una voce composta da più fonti include gli identificativi delle generazioni utilizzate. I risultati di routing composti non sono memorizzati in questa cache.
 
-L’invalidazione della cache avviene solo dopo il commit della generazione attiva. L’operazione è idempotente e un errore resta osservabile e ritentabile. L’ordinamento delle generazioni concorrenti segue la versione della fonte quando disponibile. In assenza di una versione confrontabile, gli aggiornamenti della stessa fonte sono serializzati secondo una regola da definire.
+Il worker elimina le chiavi delle generazioni non più attive dopo il commit. Un fallimento lascia il lavoro pendente e osservabile in `source_sync` per un tentativo successivo. La pulizia fisica è idempotente. La correttezza della lettura non dipende dalla sua conclusione, poiché una chiave obsoleta non corrisponde alla generazione attiva. Aggiornamenti urgenti rendono così non selezionabili i dati precedenti al commit. L’ordinamento delle generazioni concorrenti segue la versione della fonte quando disponibile. In assenza di una versione confrontabile, gli aggiornamenti della stessa fonte sono serializzati secondo una regola da definire.
 
 ### 3.5 CONTROLLO ACCESSI E SICUREZZA
 
@@ -297,7 +297,7 @@ Le API REST sono versionate e separate dal contratto delle viste. Un client cart
 
 #### 3.6.3 GESTIONE ASINCRONA ED EVENTI
 
-Le sincronizzazioni e le attività lente sono eseguite da worker. Le notifiche sono inviate tramite `NotificationPort` dopo il completamento del caso d’uso, con retry e deduplicazione da definire. Gli aggiornamenti urgenti invalidano la cache geograficamente coinvolta. Le chiamate a provider esterni non mantengono aperte transazioni database quando non necessario. Metriche e allarmi devono rendere osservabili disponibilità, latenza, ritardo delle fonti, errori di sincronizzazione e dimensione e anzianità della coda di moderazione. Soglie e obiettivi di servizio sono da concordare.
+Le sincronizzazioni e le attività lente sono eseguite da worker. La transazione di pubblicazione registra anche il lavoro pendente di pulizia cache. Un worker recupera i lavori incompleti da `source_sync` e ne registra l’esito. Le chiavi cache includono la generazione attiva, così un arresto del worker non rende leggibili dati di una generazione superata. La politica di retry, backoff e allarme per lavori pendenti è da definire secondo OPEN-08. Le notifiche sono inviate tramite `NotificationPort` dopo il completamento del caso d’uso, con retry e deduplicazione da definire. Le chiamate a provider esterni non mantengono aperte transazioni database quando non necessario. Metriche e allarmi devono rendere osservabili disponibilità, latenza, ritardo delle fonti, errori di sincronizzazione, lavori di pulizia pendenti e dimensione e anzianità della coda di moderazione. Soglie e obiettivi di servizio sono da concordare.
 
 #### 3.6.4 GESTIONE DEGLI ERRORI
 

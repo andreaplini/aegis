@@ -5,6 +5,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from unittest.mock import patch
 from xml.etree import ElementTree
 
 
@@ -140,20 +141,41 @@ class DocxValidationTests(unittest.TestCase):
             path = Path(directory) / "rad-is.docx"
             required = "aegis\nDocumento di Analisi dei Requisiti\nSOMMARIO\nUC-01"
             write_docx(path, required + "\nsequenceDiagram")
-            errors = validate_docx.validate_document(path)
+            errors = validate_docx.validate_document(path, expected_diagrams=8)
             self.assertTrue(any("codice Mermaid non convertito" in error for error in errors))
             self.assertTrue(any("attesi 8 diagrammi, trovati 0" in error for error in errors))
 
             write_docx(path, required, diagram_count=8)
-            self.assertEqual(validate_docx.validate_document(path), [])
+            self.assertEqual(validate_docx.validate_document(path, expected_diagrams=8), [])
 
             write_docx(path, required, diagram_count=8, include_diagram_images=False)
-            errors = validate_docx.validate_document(path)
+            errors = validate_docx.validate_document(path, expected_diagrams=8)
             self.assertTrue(any("immagine incorporata mancante" in error for error in errors))
 
             write_docx(path, required, diagram_count=8, diagram_descriptions=[""] * 8)
-            errors = validate_docx.validate_document(path)
+            errors = validate_docx.validate_document(path, expected_diagrams=8)
             self.assertTrue(any("diagrammi senza descrizione alternativa" in error for error in errors))
+
+    def test_diagram_validation_uses_the_current_markdown_source_count(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "RAD.md").write_text(
+                "```mermaid\nflowchart LR\nA-->B\n```\n"
+                "```mermaid\nsequenceDiagram\nA->>B: C\n```\n",
+                encoding="utf-8",
+            )
+            path = root / "rad-is.docx"
+            write_docx(
+                path,
+                "aegis\nDocumento di Analisi dei Requisiti\nSOMMARIO\nUC-01",
+                diagram_count=2,
+            )
+
+            with patch.object(validate_docx, "ROOT", root):
+                self.assertEqual(validate_docx.source_diagram_count("rad-is.docx"), 2)
+                self.assertEqual(validate_docx.validate_document(path), [])
 
     def test_valid_archive_and_required_content(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -216,7 +238,7 @@ class DocxValidationTests(unittest.TestCase):
                 diagram_count=8,
                 diagram_descriptions=descriptions,
             )
-            errors = validate_docx.validate_document(path)
+            errors = validate_docx.validate_document(path, expected_diagrams=8)
             self.assertTrue(any("esattamente aegis" in error for error in errors))
             self.assertTrue(any("trattino lungo" in error for error in errors))
             self.assertTrue(any("punto e virgola" in error for error in errors))

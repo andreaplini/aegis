@@ -32,12 +32,16 @@ REQUIRED_TEXT = {
         "Sicurezza d'uso e pericoli operativi",
     ),
 }
-REQUIRED_DIAGRAM_COUNTS = {"rad-is.docx": 8, "sdd-is.docx": 1}
+SOURCE_DOCUMENTS = {
+    "rad-is.docx": "docs/RAD.md",
+    "sdd-is.docx": "docs/SDD.md",
+}
 PRODUCT_NAME_PATTERN = re.compile(r"\baegis\b", re.IGNORECASE)
 MERMAID_SOURCE_PATTERN = re.compile(r"(?m)^\s*(?:flowchart\s|graph\s|sequenceDiagram\b|classDiagram\b)")
 STORY_PART_PATTERN = re.compile(
     r"^word/(?:document|header\d+|footer\d+|footnotes|endnotes|comments)\.xml$"
 )
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def document_text(path: Path) -> str:
@@ -117,6 +121,14 @@ def document_diagram_descriptions(path: Path) -> list[str]:
     ]
 
 
+def source_diagram_count(document_name: str) -> int:
+    source_name = SOURCE_DOCUMENTS.get(document_name)
+    if source_name is None:
+        raise ValueError(f"documento sorgente non riconosciuto per {document_name}")
+    source = (ROOT / source_name).read_text(encoding="utf-8")
+    return len(re.findall(r"(?m)^```mermaid\s*$", source))
+
+
 def document_image_errors(path: Path, expected_diagrams: int) -> list[str]:
     errors: list[str] = []
     with zipfile.ZipFile(path) as package:
@@ -187,7 +199,11 @@ def document_personal_metadata(path: Path) -> list[str]:
     ]
 
 
-def validate_document(path: Path, required_text: tuple[str, ...] | None = None) -> list[str]:
+def validate_document(
+    path: Path,
+    required_text: tuple[str, ...] | None = None,
+    expected_diagrams: int | None = None,
+) -> list[str]:
     expected = required_text or REQUIRED_TEXT.get(path.name)
     if expected is None:
         return [f"{path}: nome file DOCX non riconosciuto"]
@@ -219,13 +235,18 @@ def validate_document(path: Path, required_text: tuple[str, ...] | None = None) 
         errors.append(f"{path}: evitare il punto e virgola nel documento esportato")
     if MERMAID_SOURCE_PATTERN.search(text):
         errors.append(f"{path}: codice Mermaid non convertito in diagramma")
-    if required_text is None and path.name in REQUIRED_DIAGRAM_COUNTS:
+    if required_text is None and path.name in SOURCE_DOCUMENTS:
+        if expected_diagrams is None:
+            try:
+                expected_diagrams = source_diagram_count(path.name)
+            except (OSError, ValueError) as error:
+                errors.append(f"{path}: impossibile leggere il sorgente dei diagrammi: {error}")
+                return errors
         try:
             actual_diagrams = document_diagram_count(path)
         except (OSError, KeyError, ValueError, zipfile.BadZipFile, ElementTree.ParseError) as error:
             errors.append(f"{path}: impossibile contare i diagrammi DOCX: {error}")
         else:
-            expected_diagrams = REQUIRED_DIAGRAM_COUNTS[path.name]
             if actual_diagrams != expected_diagrams:
                 errors.append(
                     f"{path}: attesi {expected_diagrams} diagrammi, trovati {actual_diagrams}"

@@ -467,30 +467,55 @@ sequenceDiagram
 
 ##### Sincronizzazione di una fonte
 
-Il diagramma descrive l’acquisizione isolata, la validazione, la pubblicazione atomica e l’invalidazione della cache dopo un aggiornamento riuscito.
+I diagrammi separano acquisizione e pubblicazione dalla lettura e pulizia cache. La query usa solo la generazione attiva letta dal repository autorevole. Il lavoro di pulizia è registrato con la pubblicazione e un fallimento non rende selezionabili le chiavi della generazione precedente.
 
 ```mermaid
 sequenceDiagram
-  accDescr: Il worker valida una generazione candidata, la pubblica solo se completa e invalida la cache dopo il commit.
+  accDescr: Il worker importa i dati in isolamento, valida la generazione candidata e registra pubblicazione ed effetto cache pendente nella stessa transazione. Un errore mantiene la generazione attiva precedente.
   actor G as Gestore fonte
   participant W as Worker
   participant P as TransitDataProvider
   participant R as Repository
-  participant C as Cache geografica
   G->>W: Avvia o consulta sincronizzazione
   W->>P: Richiede aggiornamento
   P-->>W: Dati e versione
   W->>R: Scrive generazione candidata isolata
   W->>W: Valida schema, chiavi e qualità
   alt Validazione superata
-    W->>R: Attiva generazione e registra esito nella stessa transazione
-    opt Aggiornamento urgente
-      W->>C: Invalida area dopo il commit
-    end
+    W->>R: Transazione: attiva generazione, registra esito e pulizia pendente
   else Acquisizione o validazione fallita
     W->>R: Registra errore e conserva la generazione attiva
   end
   W-->>G: Esito operativo
+```
+
+```mermaid
+sequenceDiagram
+  accDescr: La query legge dal repository la generazione attiva e usa una chiave cache versionata. Il worker recupera la pulizia pendente e può ripeterla dopo un errore.
+  participant Q as Query luoghi
+  participant R as Repository
+  participant C as Cache geografica
+  participant W as Worker pulizia cache
+  Q->>R: Legge gli ID delle generazioni attive
+  R-->>Q: Fonte e generazione attiva
+  Q->>C: Cerca chiave per fonte, generazione e area
+  alt Cache valida
+    C-->>Q: Dati della generazione attiva
+  else Cache assente
+    Q->>R: Legge i dati della generazione attiva
+    R-->>Q: Dati e provenienza
+    Q->>C: Memorizza con la chiave versionata
+  end
+  loop Finché la pulizia è pendente
+    W->>R: Recupera la pulizia pendente
+    R-->>W: Fonte e generazione superata
+    W->>C: Elimina le chiavi della generazione superata
+    alt Pulizia completata
+      W->>R: Registra il completamento
+    else Cache non disponibile
+      W->>R: Registra errore e mantiene il lavoro pendente
+    end
+  end
 ```
 
 ## INTERFACCIA UTENTE

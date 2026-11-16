@@ -94,7 +94,7 @@ Descrivere archiviazione, accesso, scansione, pubblicazione, scadenza e cancella
 
 #### 3.4.3 MECCANISMI DI SINCRONIZZAZIONE
 
-Descrivere fonti, frequenze, versioni, controlli di qualità, idempotenza, retry, registrazione degli esiti e invalidazione delle cache.
+Descrivere fonti, frequenze, versioni, controlli di qualità, idempotenza, retry, registrazione degli esiti e invalidazione delle cache. Se un effetto esterno avviene dopo il commit, registrarne il lavoro durevole nella stessa transazione. Le chiavi cache devono rendere non selezionabili i dati di una generazione superata anche se la pulizia fisica fallisce. Documentare recupero, retry e prova dell’interruzione tra commit ed effetto.
 
 | Fonte o processo | Frequenza o trigger | Esito e controlli | Responsabile |
 |---|---|---|---|
