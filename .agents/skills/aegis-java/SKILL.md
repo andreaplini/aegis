@@ -1,11 +1,11 @@
 ---
 name: aegis-java
-description: Design or implement Aegis Java and Jakarta EE code, including domain rules, use cases, REST adapters, persistence, and integrations.
+description: Design or implement aegis Java and Jakarta EE code, including domain rules, use cases, REST adapters, persistence, and integrations.
 ---
 
-# Aegis Java and Jakarta EE backend
+# aegis Java and Jakarta EE backend
 
-Use when adding or changing Java code for the Aegis backend or workers.
+Use when adding or changing Java code for the aegis backend or workers.
 
 - Follow the Java LTS version and Jakarta EE platform version configured by the repository; do not upgrade either as a side effect of a feature.
 - Use Jakarta REST for HTTP resource adapters and the platform's dependency injection and persistence APIs where selected. Keep web resources thin; do not couple domain or application rules to Jakarta EE APIs.

@@ -1,9 +1,9 @@
 ---
 name: aegis-project
-description: Plan and implement changes that cross Aegis monorepo modules, build configuration, CI, or repository structure.
+description: Plan and implement changes that cross aegis monorepo modules, build configuration, CI, or repository structure.
 ---
 
-# Aegis project work
+# aegis project work
 
 Use this skill for cross-module planning, repository layout, dependency changes, build and CI work, and project-level decisions.
 

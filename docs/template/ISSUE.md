@@ -1,6 +1,6 @@
-# Segnalazione Aegis
+# Segnalazione aegis
 
-Prima di inviare, rimuovere credenziali, token, codici di tracking, dati personali e coordinate che identifichino persone. Non pubblicare dettagli di una vulnerabilità: usare il canale privato indicato dai maintainer. Il canale di disclosure Aegis è ancora da definire.
+Prima di inviare, rimuovere credenziali, token, codici di tracking, dati personali e coordinate che identifichino persone. Non pubblicare dettagli di una vulnerabilità: usare il canale privato indicato dai maintainer. Il canale di disclosure aegis è ancora da definire.
 
 ## Tipo
 

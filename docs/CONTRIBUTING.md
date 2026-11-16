@@ -1,4 +1,4 @@
-# Contribuire ad Aegis
+# Contribuire ad aegis
 
 ## Stato e ambito
 

@@ -4,7 +4,7 @@
 
 | Dato | Valore |
 |---|---|
-| Progetto | Aegis — mobilità urbana accessibile |
+| Progetto | aegis |
 | Corso | Da compilare |
 | Docenti | Da compilare |
 | Candidati | Da compilare |
@@ -150,7 +150,7 @@ flowchart LR
   S[Segnalatore]
   M[Moderatore]
   G[Gestore fonte]
-  subgraph Aegis
+  subgraph aegis
     P((Pianificare viaggio))
     L((Consultare luogo))
     R((Inviare segnalazione))
@@ -179,7 +179,7 @@ Il template richiede per ogni caso d’uso attori, condizioni d’ingresso e d�
 | UC-05 | Moderazione | Moderare una segnalazione | Moderatore | Conferma, respinge, risolve o unisce un duplicato conservando lo storico e attivando le notifiche consentite. |
 | UC-06 | Sincronizzazione | Aggiornare una fonte | Gestore fonte | Avvia o controlla l’importazione di dati e consulta l’esito dei controlli. |
 
-###### UC-01 — Pianificare viaggio
+###### UC-01: Pianificare viaggio
 
 | Campo | Specifica |
 |---|---|
@@ -189,7 +189,7 @@ Il template richiede per ogni caso d’uso attori, condizioni d’ingresso e d�
 | Requisiti qualitativi | Il sistema distingue barriere note, tratti compatibili e tratti non verificati e presenta alternative disponibili. |
 | Flusso degli eventi | Il viaggiatore inserisce origine, destinazione ed esigenze; il sistema valida la richiesta e la inoltra al provider; il provider restituisce le alternative; il sistema aggiunge stato di verifica e provenienza disponibili e mostra risultati e incertezze. |
 
-###### UC-02 — Consultare luogo
+###### UC-02: Consultare luogo
 
 | Campo | Specifica |
 |---|---|
@@ -199,7 +199,7 @@ Il template richiede per ogni caso d’uso attori, condizioni d’ingresso e d�
 | Requisiti qualitativi | Le informazioni presentate sulla mappa sono disponibili anche in forma testuale e risultano utilizzabili da tastiera e tecnologie assistive. |
 | Flusso degli eventi | Il viaggiatore seleziona o cerca un luogo; il sistema recupera dettaglio e caratteristiche; il sistema valuta la freschezza secondo la validità della fonte; il sistema mostra caratteristiche, fonte, aggiornamento e stati sconosciuti. |
 
-###### UC-03 — Inviare segnalazione
+###### UC-03: Inviare segnalazione
 
 | Campo | Specifica |
 |---|---|
@@ -209,7 +209,7 @@ Il template richiede per ogni caso d’uso attori, condizioni d’ingresso e d�
 | Requisiti qualitativi | Il modulo è accessibile; i dati identificativi sono minimizzati e separati dalla segnalazione; la foto non è pubblicata prima dei controlli previsti. |
 | Flusso degli eventi | Il segnalatore inserisce luogo, categoria, descrizione e data; facoltativamente allega una foto; il sistema valida i campi e controlla l’upload; il sistema registra segnalazione ed evento iniziale; restituisce il codice di tracking e invia eventuali notifiche solo secondo consenso e policy. |
 
-###### UC-04 — Seguire segnalazione
+###### UC-04: Seguire segnalazione
 
 | Campo | Specifica |
 |---|---|
@@ -219,7 +219,7 @@ Il template richiede per ogni caso d’uso attori, condizioni d’ingresso e d�
 | Requisiti qualitativi | La risposta non consente l’enumerazione delle segnalazioni e comunica lo stato in forma accessibile. |
 | Flusso degli eventi | Il segnalatore inserisce il codice; il sistema lo verifica e recupera lo stato consentito; il sistema mostra lo stato senza esporre dati riservati. |
 
-###### UC-05 — Moderare segnalazione
+###### UC-05: Moderare segnalazione
 
 | Campo | Specifica |
 |---|---|
@@ -229,7 +229,7 @@ Il template richiede per ogni caso d’uso attori, condizioni d’ingresso e d�
 | Requisiti qualitativi | Ogni decisione è tracciabile; gli eventi precedenti restano consultabili e non sono sovrascritti. |
 | Flusso degli eventi | Il moderatore apre il report; il sistema mostra i dati e la cronologia autorizzati; il moderatore sceglie conferma, rifiuto, risoluzione o unione e inserisce la motivazione richiesta; il sistema valida la transizione e registra stato ed evento nella stessa transazione; invia eventuali notifiche solo secondo consenso e policy. |
 
-###### UC-06 — Aggiornare una fonte
+###### UC-06: Aggiornare una fonte
 
 | Campo | Specifica |
 |---|---|

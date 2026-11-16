@@ -1,9 +1,9 @@
 ---
 name: aegis-xml
-description: Edit or validate XML used by Aegis, including Jakarta EE, Maven, OpenAPI, and document-related configuration.
+description: Edit or validate XML used by aegis, including Jakarta EE, Maven, OpenAPI, and document-related configuration.
 ---
 
-# Aegis XML
+# aegis XML
 
 Use when changing XML source or configuration files.
 

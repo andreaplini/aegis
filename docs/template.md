@@ -36,7 +36,7 @@ Descrivere il sistema proposto e i principali obiettivi.
 
 È possibile descrivere i requisiti funzionali con tabelle oppure con descrizioni verbali numerate. Il modello include questo esempio:
 
-> **FR1 — Creazione di un account personale:** chiunque può creare un account con nome utente, codice fiscale e password e distinguersi tra cittadino, medico e autorità sanitaria.
+> **FR1: Creazione di un account personale:** chiunque può creare un account con nome utente, codice fiscale e password e distinguersi tra cittadino, medico e autorità sanitaria.
 >
 > **FR2:** …
 
@@ -48,7 +48,7 @@ Il modello elenca queste aree: interfaccia utente e fattori umani; documentazion
 
 Anche questi requisiti possono essere presentati in forma tabellare oppure come elenco. Esempio del modello:
 
-> **NFR1 — Sicurezza:** le password dei singoli utenti non devono essere visualizzate né rese accessibili dall'esterno.
+> **NFR1: Sicurezza:** le password dei singoli utenti non devono essere visualizzate né rese accessibili dall'esterno.
 >
 > **NFR2:** …
 

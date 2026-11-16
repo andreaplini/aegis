@@ -20,8 +20,8 @@ La piattaforma Jakarta EE 11 supporta Java SE 17 o successivo. WildFly 42 standa
 
 Fonti consultate il 16 novembre 2026:
 
-- [Jakarta EE 11 — release e piattaforma](https://jakarta.ee/release/11/)
-- [WildFly 42 — release, compatibilità EE 11 e supporto Java SE](https://www.wildfly.org/news/2026/10/22/WildFly-42-is-released/)
+- [Jakarta EE 11: release e piattaforma](https://jakarta.ee/release/11/)
+- [WildFly 42: release, compatibilità EE 11 e supporto Java SE](https://www.wildfly.org/news/2026/10/22/WildFly-42-is-released/)
 - [Oracle Java SE Support Roadmap](https://www.oracle.com/java/technologies/java-se-support-roadmap.html)
 
 ## Driver decisionali

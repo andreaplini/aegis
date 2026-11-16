@@ -1,4 +1,4 @@
-# Aegis
+# aegis
 
 Monorepo per la piattaforma di mobilità urbana accessibile.
 

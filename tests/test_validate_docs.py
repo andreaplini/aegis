@@ -22,7 +22,7 @@ VALID_RAD = """# RAD
 | FR-01 | Consultare un luogo | UC-01 |
 | NFR-01 | Accessibilità | Usare i flussi con screen reader |
 
-###### UC-01 — Consultare un luogo
+###### UC-01: Consultare un luogo
 
 | Attori partecipanti | Viaggiatore, sistema |
 | Condizioni d’ingresso | Luogo selezionato |

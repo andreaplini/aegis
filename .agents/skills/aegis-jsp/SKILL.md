@@ -1,11 +1,11 @@
 ---
 name: aegis-jsp
-description: Maintain existing legacy Aegis JSP views only; new server-rendered views use Jakarta Faces with Facelets.
+description: Maintain existing legacy aegis JSP views only; new server-rendered views use Jakarta Faces with Facelets.
 ---
 
-# Legacy Aegis JSP views
+# Legacy aegis JSP views
 
-Use only when a task explicitly requires maintenance of existing JSP pages. JSP is not the selected view technology for new Aegis work; use Jakarta Faces with Facelets instead.
+Use only when a task explicitly requires maintenance of existing JSP pages. JSP is not the selected view technology for new aegis work; use Jakarta Faces with Facelets instead.
 
 - Keep request handling and business rules in controllers/use cases; JSP renders the supplied view model and does not access persistence or integrations.
 - Use JSTL and Expression Language instead of Java scriptlets. Escape untrusted values for their output context; do not emit user content as raw HTML.
