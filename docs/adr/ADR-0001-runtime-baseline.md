@@ -6,17 +6,17 @@
 |---|---|
 | ID | ADR-0001 |
 | Titolo | Baseline Java e Jakarta EE |
-| Stato | Proposto; in attesa di approvazione |
+| Stato | Proposto. In attesa di approvazione |
 | Data | 16 novembre 2026 |
 | Responsabile | Da designare |
 | Revisori | Responsabile tecnico e team di progetto, da designare |
-| Requisiti correlati | Vincolo piattaforma in RAD; NFR-12, NFR-15 e NFR-16; OPEN-08; ENG-02, ENG-03 |
+| Requisiti correlati | Vincolo piattaforma in RAD, NFR-12, NFR-15, NFR-16, OPEN-08, ENG-02 ed ENG-03 |
 
 ## Contesto e problema
 
 RAD e SDD prescrivono Java LTS, Jakarta EE, Jakarta Faces e Jakarta REST, ma il repository non ha ancora una versione Java, una versione Jakarta EE o un runtime configurati. La scelta determina la toolchain, le API disponibili, la build, il packaging, le immagini di esecuzione e le verifiche di compatibilità.
 
-La piattaforma Jakarta EE 11 supporta Java SE 17 o successivo. WildFly 42 standard dichiara compatibilità con Jakarta EE 11 Platform, Web Profile e Core Profile su Java SE 17 e Java SE 21. Il progetto WildFly raccomanda Java SE 25 per WildFly 42, ma dichiara di non rivendicare la compatibilità EE 11 su Java SE 25; per una versione con evidenza TCK EE 11 indica Java SE 21 o 17. Oracle classifica Java 21 e Java 25 come LTS nella propria roadmap; la durata del supporto dipende dalla distribuzione Java scelta.
+La piattaforma Jakarta EE 11 supporta Java SE 17 o successivo. WildFly 42 standard dichiara compatibilità con Jakarta EE 11 Platform, Web Profile e Core Profile su Java SE 17 e Java SE 21. Il progetto WildFly raccomanda Java SE 25 per WildFly 42, ma dichiara di non rivendicare la compatibilità EE 11 su Java SE 25. Per una versione con evidenza TCK EE 11 indica Java SE 21 o 17. Oracle classifica Java 21 e Java 25 come LTS nella propria roadmap. La durata del supporto dipende dalla distribuzione Java scelta.
 
 Fonti consultate il 16 novembre 2026:
 
@@ -38,8 +38,8 @@ Fonti consultate il 16 novembre 2026:
 
 | Opzione | Vantaggi | Costi e rischi | Requisiti soddisfatti o non soddisfatti |
 |---|---|---|---|
-| Jakarta EE 11, Java 21 LTS, WildFly 42 standard | WildFly dichiara evidenza di compatibilità EE 11 su Java 21; Oracle classifica Java 21 come LTS. | La distribuzione Java e il relativo supporto devono essere scelti; l’orizzonte di supporto varia per vendor. | Allinea Faces/REST e consente di basarsi sull’evidenza TCK pubblicata dal runtime. |
-| Jakarta EE 11, Java 25 LTS, WildFly 42 standard | Oracle classifica Java 25 come LTS e il progetto WildFly lo raccomanda per il runtime 42. | WildFly non dichiara la compatibilità EE 11 su Java 25; il progetto dovrebbe verificare la combinazione e non presentarla come certificata senza evidenza. | Potenzialmente soddisfa la piattaforma, ma la compatibilità formale EE 11 resta da dimostrare. |
+| Jakarta EE 11, Java 21 LTS, WildFly 42 standard | WildFly dichiara evidenza di compatibilità EE 11 su Java 21. Oracle classifica Java 21 come LTS. | La distribuzione Java e il relativo supporto devono essere scelti. L’orizzonte di supporto varia per vendor. | Allinea Faces/REST e consente di basarsi sull’evidenza TCK pubblicata dal runtime. |
+| Jakarta EE 11, Java 25 LTS, WildFly 42 standard | Oracle classifica Java 25 come LTS e il progetto WildFly lo raccomanda per il runtime 42. | WildFly non dichiara la compatibilità EE 11 su Java 25. Il progetto dovrebbe verificare la combinazione e non presentarla come certificata senza evidenza. | Potenzialmente soddisfa la piattaforma, ma la compatibilità formale EE 11 resta da dimostrare. |
 | Rinviare la selezione del runtime | Nessun vincolo prematuro prima di definire deployment e supporto. | Blocca la build applicativa, le immagini runtime e le verifiche d’integrazione. | Mantiene aperti i vincoli software del RAD e non consente ENG-03. |
 
 ## Proposta per approvazione
@@ -54,7 +54,7 @@ Non approvata. Compilare questa sezione dopo la revisione del responsabile tecni
 
 - La build locale e la CI fissano la stessa versione Java e Jakarta EE.
 - Il runtime standard e non Preview è usato negli ambienti concordati.
-- Le dipendenze restano sulle API Jakarta EE standard; le API specifiche WildFly richiedono un ADR distinto.
+- Le dipendenze restano sulle API Jakarta EE standard. Le API specifiche WildFly richiedono un ADR distinto.
 - L’aggiornamento a Java 25 richiede verifica di compatibilità, build e test d’integrazione sul runtime scelto.
 - README, SDD, configurazione di build e pipeline vengono aggiornati nello stesso cambiamento che approva questa decisione.
 

@@ -22,7 +22,7 @@ Descrivere le funzioni del servizio, gli utenti interessati, gli impatti di indi
 | Prerequisito | Metodo approvato | Responsabile o riferimento |
 |---|---|---|
 | Autorizzazione operativa | Da definire | Da designare |
-| Configurazione e segreti | Riferimento a secret manager; non copiarli qui | Da designare |
+| Configurazione e segreti | Riferimento a secret manager. Non copiarli qui | Da designare |
 | Strumenti e dashboard | Da indicare | Da designare |
 | Finestra di intervento e comunicazioni | Da concordare | Da designare |
 

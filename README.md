@@ -12,12 +12,12 @@ Il repository contiene la baseline documentale e l'esportazione automatizzata di
 |---|---|
 | `docs/` | [RAD](docs/RAD.md), [SDD](docs/SDD.md), [modelli e riferimenti](docs/template.md), [roadmap](docs/MILESTONES.md) e [guida ai contributi](docs/CONTRIBUTING.md). |
 | `config/` | Configurazione condivisa della toolchain, inclusa la versione Pandoc. |
-| `config/data/` | Directory per i dati del progetto; attualmente vuota. |
+| `config/data/` | Directory per i dati del progetto. Attualmente vuota. |
 | `src/` | Codice applicativo. |
 | `.agents/skills/` | Skill Codex specifiche del progetto. |
 | `.github/` | Workflow CI, Dependabot e collegamento issue alla segnalazione privata delle vulnerabilità. |
 
-La documentazione e tutti i relativi template e materiali di supporto risiedono in `docs/`. Il DOCX sorgente è il riferimento di stile e struttura; i DOCX esportati non sono versionati: il target `make docs` li genera e ne verifica archivio, contenuto e stile in `build/docs/`. La GitHub Action esegue lo stesso target e pubblica i due DOCX come artifact.
+La documentazione e tutti i relativi template e materiali di supporto risiedono in `docs/`. Il DOCX sorgente è il riferimento di stile e struttura. I DOCX esportati non sono versionati: il target `make docs` li genera e ne verifica archivio, contenuto e stile in `build/docs/`. La GitHub Action esegue lo stesso target e pubblica i due DOCX come artifact.
 
 ## Segnalazioni
 
@@ -35,4 +35,4 @@ La generazione esegue prima `make check-docs`, che verifica test del validatore,
 
 `make docs` verifica anche che la versione locale di Pandoc corrisponda a quella configurata, così lo stesso convertitore viene usato localmente e in CI.
 
-L'esportazione usa `docs/template/template.docx` come riferimento di stile. Pandoc converte Markdown in DOCX; MarkItDown svolge la direzione opposta, da documenti sorgente a Markdown.
+L'esportazione usa `docs/template/template.docx` come riferimento di stile. Pandoc converte Markdown in DOCX. MarkItDown svolge la direzione opposta, da documenti sorgente a Markdown.

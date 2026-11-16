@@ -10,7 +10,7 @@
 | Candidati | Da compilare |
 | Anno accademico | Da confermare |
 
-Bozza aggiornata il 16 novembre 2026. L’architettura è iniziale e descrive il sistema proposto; il prodotto non è ancora implementato. Le descrizioni dei componenti e dei flussi indicano comportamenti attesi e non attestano funzionalità realizzate o verificate. Runtime Jakarta EE, fonti dati, area pilota e servizi gestiti sono da convalidare secondo la [roadmap](MILESTONES.md).
+Bozza aggiornata il 16 novembre 2026. L’architettura è iniziale e descrive il sistema proposto. Il prodotto non è ancora implementato. Le descrizioni dei componenti e dei flussi indicano comportamenti attesi e non attestano funzionalità realizzate o verificate. Runtime Jakarta EE, fonti dati, area pilota e servizi gestiti sono da convalidare secondo la [roadmap](MILESTONES.md).
 
 ## SOMMARIO
 
@@ -40,7 +40,7 @@ Questo documento descrive l’architettura software proposta per aegis e dettagl
 | Obiettivo | Criterio architetturale |
 |---|---|
 | Separazione delle responsabilità | Mantenere distinti dominio, casi d’uso e adattatori. |
-| Affidabilità dei dati di accessibilità | Registrare fonte e freschezza; trattare i dati assenti o scaduti come sconosciuti. |
+| Affidabilità dei dati di accessibilità | Registrare fonte e freschezza. Trattare i dati assenti o scaduti come sconosciuti. |
 | Sostituibilità delle integrazioni | Collegare fonti e provider tramite porte e adattatori. |
 | Tracciabilità della moderazione | Conservare gli eventi decisionali in forma append-only. |
 | Sicurezza e privacy | Applicare autorizzazione server-side, minimizzazione dei dati e controlli sugli upload. |
@@ -66,7 +66,7 @@ Questo documento descrive l’architettura software proposta per aegis e dettagl
 |---|---|
 | [RAD: Documento di Analisi dei Requisiti](RAD.md) | Requisiti, attori, casi d’uso e vincoli. |
 | [Template RAD/SDD convertito](template.md) | Struttura accademica di riferimento. |
-| [ADR-0001: Baseline Java e Jakarta EE](adr/ADR-0001-runtime-baseline.md) | Proposta non approvata per la baseline runtime; include le fonti ufficiali consultate. |
+| [ADR-0001: Baseline Java e Jakarta EE](adr/ADR-0001-runtime-baseline.md) | Proposta non approvata per la baseline runtime. Include le fonti ufficiali consultate. |
 | Specifica OpenAPI | Da generare e versionare insieme all’API. |
 | Documentazione Jakarta EE e PostGIS | Riferimenti tecnici da associare alle versioni selezionate. |
 
@@ -82,11 +82,11 @@ Non è stato fornito un sistema software esistente. Il progetto è greenfield. D
 
 ### 3.1 PANORAMICA
 
-aegis è una web app responsive per consultare l’accessibilità di luoghi e servizi di trasporto, pianificare spostamenti e inviare segnalazioni. Le viste server-side usano Jakarta Faces e Facelets; le API REST usano Jakarta REST. La persistenza geografica usa PostgreSQL con PostGIS. Le immagini sono archiviate in object storage e le sincronizzazioni e attività lente sono svolte da worker.
+aegis è una web app responsive per consultare l’accessibilità di luoghi e servizi di trasporto, pianificare spostamenti e inviare segnalazioni. Le viste server-side usano Jakarta Faces e Facelets. Le API REST usano Jakarta REST. La persistenza geografica usa PostgreSQL con PostGIS. Le immagini sono archiviate in object storage e le sincronizzazioni e attività lente sono svolte da worker.
 
 La versione Jakarta EE e il runtime compatibile saranno selezionati in base ai requisiti di distribuzione e alle dipendenze del progetto. La proposta [ADR-0001](adr/ADR-0001-runtime-baseline.md) è in attesa di approvazione. Provider di routing, fonti di trasporto, canali di notifica e servizi gestiti restano sostituibili e da selezionare.
 
-Il browser riceve HTML per le viste e JSON per le API. La mappa usa una libreria cartografica client-side, ma i dati cartografici e di accessibilità provengono dall’API. La consultazione può essere pubblica; invio delle segnalazioni e moderazione applicano le policy di identità e ruolo ancora da definire.
+Il browser riceve HTML per le viste e JSON per le API. La mappa usa una libreria cartografica client-side, ma i dati cartografici e di accessibilità provengono dall’API. La consultazione può essere pubblica. Invio delle segnalazioni e moderazione applicano le policy di identità e ruolo ancora da definire.
 
 ### 3.2 DECOMPOSIZIONE DEL SISTEMA
 
@@ -94,20 +94,20 @@ La tabella collega i requisiti del [RAD](RAD.md#32-requisiti-funzionali) ai modu
 
 | Modulo | Responsabilità | Requisiti funzionali e casi d’uso | Requisiti di qualità |
 |---|---|---|---|
-| Places | Gestire luoghi, fermate e stazioni e fornire ricerche geospaziali. | FR-01, FR-06; UC-02 | NFR-08, NFR-11, NFR-14 |
-| Accessibility | Gestire caratteristiche, stato, fonte, timestamp e validità. | FR-02, FR-03; UC-01, UC-02 | NFR-08, NFR-14 |
-| Routing | Validare richieste, invocare il provider e mostrare l’incertezza dei tratti. | FR-04, FR-05; UC-01 | NFR-11, NFR-14 |
-| Reports | Creare segnalazioni e consentire il tracking con dati minimizzati. | FR-07, FR-08; UC-03, UC-04 | NFR-04, NFR-07 |
-| Moderation | Applicare autorizzazioni e transizioni; conservare la cronologia append-only. | FR-09; UC-05 | NFR-04, NFR-05, NFR-06 |
-| Identity | Gestire autenticazione, ruoli e separazione dei dati identificativi. | FR-13; UC-03, UC-05, UC-06 | NFR-04, NFR-05, NFR-06 |
-| Integrations | Implementare adattatori per fonti di trasporto, routing, notifiche e storage. | FR-10, FR-12; UC-03, UC-05, UC-06 | NFR-07, NFR-12, NFR-16 |
-| Worker | Eseguire sincronizzazioni schedulate e attività asincrone con retry idempotenti. | FR-10, FR-11, FR-12; UC-06 | NFR-09, NFR-10, NFR-14 |
-| Web | Rendere viste Facelets accessibili, mappa, alternative testuali, moduli e pannello di moderazione. | FR-01–FR-09, FR-13; UC-01–UC-05 | NFR-01, NFR-02, NFR-03, NFR-13 |
+| Places | Gestire luoghi, fermate e stazioni e fornire ricerche geospaziali. | FR-01, FR-06. UC-02 | NFR-08, NFR-11, NFR-14 |
+| Accessibility | Gestire caratteristiche, stato, fonte, timestamp e validità. | FR-02, FR-03. UC-01, UC-02 | NFR-08, NFR-14 |
+| Routing | Validare richieste, invocare il provider e mostrare l’incertezza dei tratti. | FR-04, FR-05. UC-01 | NFR-11, NFR-14 |
+| Reports | Creare segnalazioni e consentire il tracking con dati minimizzati. | FR-07, FR-08. UC-03, UC-04 | NFR-04, NFR-07 |
+| Moderation | Applicare autorizzazioni e transizioni. Conservare la cronologia append-only. | FR-09. UC-05 | NFR-04, NFR-05, NFR-06 |
+| Identity | Gestire autenticazione, ruoli e separazione dei dati identificativi. | FR-13. UC-03, UC-05, UC-06 | NFR-04, NFR-05, NFR-06 |
+| Integrations | Implementare adattatori per fonti di trasporto, routing, notifiche e storage. | FR-10, FR-12. UC-03, UC-05, UC-06 | NFR-07, NFR-12, NFR-16 |
+| Worker | Eseguire sincronizzazioni schedulate e attività asincrone con retry idempotenti. | FR-10, FR-11, FR-12. UC-06 | NFR-09, NFR-10, NFR-14 |
+| Web | Rendere viste Facelets accessibili, mappa, alternative testuali, moduli e pannello di moderazione. | FR-01–FR-09, FR-13. UC-01–UC-05 | NFR-01, NFR-02, NFR-03, NFR-13 |
 | Runtime e Operations | Gestire configurazione, distribuzione, osservabilità, migrazioni e ripristino. | Nessun caso d’uso diretto | NFR-05, NFR-09, NFR-10, NFR-12, NFR-15, NFR-16 |
 
 NFR-15 è trasversale: separazione tra dominio, casi d’uso e adattatori e documentazione delle interfacce si applicano a tutti i moduli, non solo a Runtime e Operations.
 
-La struttura applicativa proposta organizza il codice Java per domini e separa `domain`, `application` e `adapter`. Le entità e i value object dovranno contenere invarianti; i casi d’uso dovranno orchestrare le operazioni e dipendere da porte; gli adattatori dovranno implementare accesso HTTP, persistenza e integrazioni. DTO HTTP, modello di dominio e modello di persistenza resteranno separati.
+La struttura applicativa proposta organizza il codice Java per domini e separa `domain`, `application` e `adapter`. Le entità e i value object dovranno contenere invarianti. I casi d’uso dovranno orchestrare le operazioni e dipendere da porte. Gli adattatori dovranno implementare accesso HTTP, persistenza e integrazioni. DTO HTTP, modello di dominio e modello di persistenza resteranno separati.
 
 La struttura dei package proposta è `places`, `accessibility`, `routing`, `reports`, `identity`, `integrations` e `shared`, ciascuno articolato secondo le responsabilità effettive. La collocazione dettagliata dei componenti web e dei worker dipende dalla selezione del runtime e dal packaging applicativo.
 
@@ -163,46 +163,46 @@ flowchart TB
 | Nodo | Hardware e software | Responsabilità |
 |---|---|---|
 | Dispositivo client | Browser desktop o mobile e tecnologie assistive. | Renderizzare le viste, interagire con la mappa e inviare richieste HTTPS. |
-| Container applicativo | Runtime Jakarta EE da selezionare; Jakarta Faces, Facelets e Jakarta REST. | Servire viste e API e coordinare i casi d’uso. |
+| Container applicativo | Runtime Jakarta EE da selezionare. Jakarta Faces, Facelets e Jakarta REST. | Servire viste e API e coordinare i casi d’uso. |
 | Container worker | Processo Java compatibile con la piattaforma scelta. | Sincronizzare fonti e gestire attività lente e retry. |
 | Database | PostgreSQL con PostGIS. | Conservare entità, eventi e geometrie. |
-| Object storage | Servizio compatibile con il protocollo S3; implementazione da selezionare. | Conservare immagini in modo controllato e con scadenza. |
+| Object storage | Servizio compatibile con il protocollo S3. Implementazione da selezionare. | Conservare immagini in modo controllato e con scadenza. |
 | Ingress e distribuzione | Terminazione TLS e CDN secondo l’ambiente. | Instradare il traffico verso l’applicazione e distribuire risorse statiche. |
 | Servizi esterni | Fonti ufficiali, provider di routing e canali di notifica da selezionare. | Fornire dati e capacità integrate tramite adattatori. |
 
-In sviluppo è previsto Docker Compose con PostgreSQL/PostGIS e storage locale compatibile S3. Staging e produzione sono ambienti separati. L’obiettivo di produzione prevede container applicativi gestiti, database con backup automatici, object storage, CDN e gestione centralizzata dei segreti; fornitori, topologia di rete, dimensionamento e obiettivi di ripristino restano da selezionare o concordare.
+In sviluppo è previsto Docker Compose con PostgreSQL/PostGIS e storage locale compatibile S3. Staging e produzione sono ambienti separati. L’obiettivo di produzione prevede container applicativi gestiti, database con backup automatici, object storage, CDN e gestione centralizzata dei segreti. Fornitori, topologia di rete, dimensionamento e obiettivi di ripristino restano da selezionare o concordare.
 
-La pipeline di rilascio dovrà compilare e verificare gli artefatti applicativi, eseguire test e scansioni delle dipendenze, creare immagini versionate e distribuire progressivamente. Le migrazioni devono mantenere la compatibilità con le versioni applicative attive durante il rilascio. La configurazione applicativa dovrà essere versionata e distinta per ambiente; i segreti non dovranno essere inclusi nel repository.
+La pipeline di rilascio dovrà compilare e verificare gli artefatti applicativi, eseguire test e scansioni delle dipendenze, creare immagini versionate e distribuire progressivamente. Le migrazioni devono mantenere la compatibilità con le versioni applicative attive durante il rilascio. La configurazione applicativa dovrà essere versionata e distinta per ambiente. I segreti non dovranno essere inclusi nel repository.
 
-Le procedure operative per rilascio, migrazione, rollback, incidenti e ripristino sono da redigere e provare in base al runtime e agli ambienti selezionati. Come struttura si può usare il [modello di runbook](template/RUNBOOK.md); il modello non rappresenta procedure già operative.
+Le procedure operative per rilascio, migrazione, rollback, incidenti e ripristino sono da redigere e provare in base al runtime e agli ambienti selezionati. Come struttura si può usare il [modello di runbook](template/RUNBOOK.md). Il modello non rappresenta procedure già operative.
 
 ### 3.4 GESTIONE DEI DATI PERSISTENTI
 
-La persistenza relazionale proposta usa PostgreSQL e PostGIS. Le migrazioni dovranno essere versionate e rimanere compatibili con le versioni applicative durante il rilascio progressivo. Le entità di dominio non dovranno dipendere dal modello relazionale; gli adattatori di persistenza le convertiranno nel modello dati.
+La persistenza relazionale proposta usa PostgreSQL e PostGIS. Le migrazioni dovranno essere versionate e rimanere compatibili con le versioni applicative durante il rilascio progressivo. Le entità di dominio non dovranno dipendere dal modello relazionale. Gli adattatori di persistenza le convertiranno nel modello dati.
 
 #### 3.4.1 POSTGRESQL E STRUTTURA RELAZIONALE
 
 | Tabella | Contenuto e relazioni |
 |---|---|
 | `place` | Luogo, fermata o stazione con nome, tipo e geometria a SRID esplicito. |
-| `accessibility_feature` | Tipo, stato, fonte, validità e timestamp della caratteristica; riferimento a `place`. |
-| `data_source` | Fonte autorizzata, responsabile, configurazione di aggiornamento e regola di validità; schema e modalità di gestione da convalidare. |
+| `accessibility_feature` | Tipo, stato, fonte, validità e timestamp della caratteristica. Riferimento a `place`. |
+| `data_source` | Fonte autorizzata, responsabile, configurazione di aggiornamento e regola di validità. Schema e modalità di gestione da convalidare. |
 | `transit_line` | Linee importate e relativi riferimenti alla fonte. |
 | `transit_stop` | Fermate, geometrie e relazioni con le linee e la fonte. |
-| `report` | Geometria o luogo, categoria, descrizione, stato e date; dati identificativi separati. |
+| `report` | Geometria o luogo, categoria, descrizione, stato e date. Dati identificativi separati. |
 | `report_event` | Eventi append-only con autore, data, decisione e riferimento a eventuale duplicato. |
 | `user_account` | Riferimento d’identità e ruoli con accesso limitato. |
 | `source_sync` | Fonte, versione, timestamp, esito e controlli di qualità. |
 
-Le relazioni sono protette da chiavi esterne e vincoli. Le ricerche geografiche usano indici spaziali; ulteriori indici sono definiti in base alle query validate. Le coordinate di dominio sono rappresentate da `GeoPoint`, value object immutabile con controlli di validità.
+Le relazioni sono protette da chiavi esterne e vincoli. Le ricerche geografiche usano indici spaziali. Ulteriori indici sono definiti in base alle query validate. Le coordinate di dominio sono rappresentate da `GeoPoint`, value object immutabile con controlli di validità.
 
 La politica di backup, la conservazione delle copie e gli obiettivi di ripristino sono da definire con il responsabile operativo. Le procedure di ripristino devono essere provate prima del lancio e dopo modifiche rilevanti all’infrastruttura.
 
-Ogni caratteristica di accessibilità registra fonte, stato, data di aggiornamento e validità. L’assenza o la scadenza produce lo stato sconosciuto. Ogni operazione di moderazione aggiorna lo stato corrente e inserisce l’evento corrispondente nella stessa transazione; gli eventi non sono modificati né eliminati dall’applicazione ordinaria.
+Ogni caratteristica di accessibilità registra fonte, stato, data di aggiornamento e validità. L’assenza o la scadenza produce lo stato sconosciuto. Ogni operazione di moderazione aggiorna lo stato corrente e inserisce l’evento corrispondente nella stessa transazione. Gli eventi non sono modificati né eliminati dall’applicazione ordinaria.
 
 #### 3.4.2 OBJECT STORAGE
 
-Le foto sono conservate fuori dal database in object storage. Prima della pubblicazione devono essere verificati tipo effettivo, dimensione e contenuto e deve essere eseguita la scansione prevista. L’accesso è controllato; la conservazione e la scadenza dipendono dalla policy privacy ancora da definire. Il database conserva riferimenti e metadati necessari, non i byte dell’immagine.
+Le foto sono conservate fuori dal database in object storage. Prima della pubblicazione devono essere verificati tipo effettivo, dimensione e contenuto e deve essere eseguita la scansione prevista. L’accesso è controllato. La conservazione e la scadenza dipendono dalla policy privacy ancora da definire. Il database conserva riferimenti e metadati necessari, non i byte dell’immagine.
 
 #### 3.4.3 MECCANISMI DI SINCRONIZZAZIONE
 
@@ -220,7 +220,7 @@ La consultazione di luoghi e percorsi è pubblica secondo le policy applicabili.
 
 #### 3.5.2 CONTROLLO DEGLI ACCESSI AI DATI
 
-Ogni operazione riservata verifica l’autorizzazione sul server. L’accesso ai dati identificativi è separato da quello ai contenuti pubblici delle segnalazioni. Le query sono parametrizzate; input e transizioni di dominio sono validati. Le migrazioni applicano vincoli relazionali e indici necessari all’integrità e alle query autorizzate.
+Ogni operazione riservata verifica l’autorizzazione sul server. L’accesso ai dati identificativi è separato da quello ai contenuti pubblici delle segnalazioni. Le query sono parametrizzate. Input e transizioni di dominio sono validati. Le migrazioni applicano vincoli relazionali e indici necessari all’integrità e alle query autorizzate.
 
 #### 3.5.3 GESTIONE DELLE IMMAGINI
 
@@ -234,10 +234,10 @@ Gli endpoint applicano rate limiting e validazione server-side. Le richieste non
 
 | Scenario di minaccia | Bene e impatto | Controllo progettato | Verifica richiesta |
 |---|---|---|---|
-| Enumerazione dei codici di tracking | Esposizione dello stato o di informazioni personali di segnalazioni altrui. | Usare un token casuale non sequenziale con entropia adeguata al rischio; limitare le richieste e rendere uniformi gli esiti per codice inesistente e non autorizzato. Non registrare il token nei log. | Prove di autorizzazione, enumerazione e analisi dei log prima del pilota. |
-| Accesso o transizione di moderazione non autorizzati | Modifica fraudolenta di stato e cronologia delle segnalazioni. | Verificare identità e ruolo sul server per ogni operazione; applicare transizioni ammesse in modo atomico e registrare gli eventi in audit append-only. | Prove negative per ruolo e stato, incluse chiamate dirette alle API e richieste ripetute. |
-| Upload malevolo o non conforme | Esecuzione o diffusione di contenuti ostili, esposizione di dati o abuso dello storage. | Validare tipo effettivo, dimensione e contenuto; mettere in quarantena e sottoporre a scansione; impedire la pubblicazione prima dell’esito; servire i file da storage controllato. Limiti e scanner sono da selezionare. | Prove con file invalidi, contenuti malevoli di test, esito di scansione fallito e tentativi di accesso non autorizzato. |
-| Dati di fonte errati, alterati o scaduti | Percorsi o descrizioni di accessibilità che inducono decisioni non sicure. | Importare solo fonti autorizzate, validare schema e qualità, conservare provenienza e validità; mostrare come sconosciuti i dati assenti o scaduti. | Test di schema, duplicati, aggiornamento fallito, fonte scaduta e propagazione dello stato sconosciuto. |
+| Enumerazione dei codici di tracking | Esposizione dello stato o di informazioni personali di segnalazioni altrui. | Usare un token casuale non sequenziale con entropia adeguata al rischio. Limitare le richieste e rendere uniformi gli esiti per codice inesistente e non autorizzato. Non registrare il token nei log. | Prove di autorizzazione, enumerazione e analisi dei log prima del pilota. |
+| Accesso o transizione di moderazione non autorizzati | Modifica fraudolenta di stato e cronologia delle segnalazioni. | Verificare identità e ruolo sul server per ogni operazione. Applicare transizioni ammesse in modo atomico e registrare gli eventi in audit append-only. | Prove negative per ruolo e stato, incluse chiamate dirette alle API e richieste ripetute. |
+| Upload malevolo o non conforme | Esecuzione o diffusione di contenuti ostili, esposizione di dati o abuso dello storage. | Validare tipo effettivo, dimensione e contenuto. Mettere in quarantena e sottoporre a scansione. Impedire la pubblicazione prima dell’esito. Servire i file da storage controllato. Limiti e scanner sono da selezionare. | Prove con file invalidi, contenuti malevoli di test, esito di scansione fallito e tentativi di accesso non autorizzato. |
+| Dati di fonte errati, alterati o scaduti | Percorsi o descrizioni di accessibilità che inducono decisioni non sicure. | Importare solo fonti autorizzate, validare schema e qualità, conservare provenienza e validità. Mostrare come sconosciuti i dati assenti o scaduti. | Test di schema, duplicati, aggiornamento fallito, fonte scaduta e propagazione dello stato sconosciuto. |
 | Injection o consumo eccessivo di risorse | Compromissione dei dati o indisponibilità di API e database. | Usare query parametrizzate, validare input, limitare dimensioni e frequenza delle richieste e rendere le operazioni ripetibili in sicurezza. Le soglie sono da definire. | Analisi statica, prove di input ostile e carico con soglie concordate. |
 | Divulgazione di dati personali o segreti | Violazione di riservatezza attraverso log, backup, configurazione o risposta API. | Minimizzare i dati, escludere segreti e identificativi dai log, limitare accessi e definire conservazione e cancellazione prima del lancio. Configurazione e segreti sono separati dal codice. | Revisione di log e permessi, controlli di segreti in CI e prove di accesso, conservazione e cancellazione. |
 
@@ -245,10 +245,10 @@ Gli endpoint applicano rate limiting e validazione server-side. Le richieste non
 
 | Pericolo | Possibile danno | Controllo progettato | Evidenza richiesta |
 |---|---|---|---|
-| Una caratteristica di accessibilità assente, scaduta o incoerente viene interpretata come disponibile. | La persona sceglie un luogo o un tratto che non può utilizzare. | Propagare lo stato sconosciuto senza convertirlo in accessibile; mostrare fonte e validità quando disponibili; escludere il dato incerto dalle dichiarazioni di compatibilità. | Test end-to-end per dato assente, scaduto, incoerente e aggiornamento fallito; revisione dei testi con persone del profilo pilota. |
-| Un percorso include un tratto non verificato o un fallback del provider. | La persona incontra una barriera o non riesce a completare il tragitto. | Etichettare i tratti non verificati; rendere visibili le limitazioni e l'origine del percorso; fornire un esito esplicito quando non è possibile stabilire la compatibilità. | Prove con provider indisponibile, dati parziali e profili approvati; verifica dell'equivalenza tra mappa e descrizione testuale. |
-| Una sincronizzazione incompleta o duplicata pubblica uno stato non coerente. | La persona pianifica sulla base di informazioni obsolete o contraddittorie. | Applicare importazioni idempotenti e aggiornamenti atomici; mantenere provenienza e tempi; rendere osservabili esito e ritardo della sincronizzazione; non promuovere dati parziali a stato verificato. | Prove di retry, interruzione a metà importazione, duplicati e ripristino; confronto tra fonte e dati pubblicati. |
-| Un avviso o un errore non è percepibile o comprensibile con la modalità d'interazione usata. | La persona non nota l'incertezza o non riesce a scegliere un'alternativa. | Esporre avvisi nel contenuto e nella struttura accessibile, senza affidarsi al solo colore, alla sola mappa o a notifiche temporanee; mantenere il messaggio disponibile nella vista. | Verifica con tastiera e tecnologie assistive, prove con utenti e controllo che gli stati equivalenti siano disponibili in forma testuale. |
+| Una caratteristica di accessibilità assente, scaduta o incoerente viene interpretata come disponibile. | La persona sceglie un luogo o un tratto che non può utilizzare. | Propagare lo stato sconosciuto senza convertirlo in accessibile. Mostrare fonte e validità quando disponibili. Escludere il dato incerto dalle dichiarazioni di compatibilità. | Test end-to-end per dato assente, scaduto, incoerente e aggiornamento fallito. Revisione dei testi con persone del profilo pilota. |
+| Un percorso include un tratto non verificato o un fallback del provider. | La persona incontra una barriera o non riesce a completare il tragitto. | Etichettare i tratti non verificati. Rendere visibili le limitazioni e l'origine del percorso. Fornire un esito esplicito quando non è possibile stabilire la compatibilità. | Prove con provider indisponibile, dati parziali e profili approvati. Verifica dell'equivalenza tra mappa e descrizione testuale. |
+| Una sincronizzazione incompleta o duplicata pubblica uno stato non coerente. | La persona pianifica sulla base di informazioni obsolete o contraddittorie. | Applicare importazioni idempotenti e aggiornamenti atomici. Mantenere provenienza e tempi. Rendere osservabili esito e ritardo della sincronizzazione. Non promuovere dati parziali a stato verificato. | Prove di retry, interruzione a metà importazione, duplicati e ripristino. Confronto tra fonte e dati pubblicati. |
+| Un avviso o un errore non è percepibile o comprensibile con la modalità d'interazione usata. | La persona non nota l'incertezza o non riesce a scegliere un'alternativa. | Esporre avvisi nel contenuto e nella struttura accessibile, senza affidarsi al solo colore, alla sola mappa o a notifiche temporanee. Mantenere il messaggio disponibile nella vista. | Verifica con tastiera e tecnologie assistive, prove con utenti e controllo che gli stati equivalenti siano disponibili in forma testuale. |
 
 Gli esiti delle verifiche, le limitazioni note e l'accettazione del rischio residuo devono essere registrati prima del pilota. I criteri di accettazione e i profili coinvolti dipendono dalle decisioni OPEN-02, OPEN-03 e OPEN-06.
 
@@ -264,17 +264,17 @@ La sessione è necessaria solo per le funzioni protette. Il runtime e il meccani
 
 #### 3.6.2 NAVIGAZIONE TRA VISTE
 
-Jakarta Faces e Facelets gestiscono la navigazione server-side secondo le convenzioni del runtime selezionato. Le viste previste comprendono ricerca, risultati, mappa con elenco testuale, dettaglio luogo, modulo di segnalazione, tracking e pannello di moderazione. Le transizioni riservate applicano i controlli di autorizzazione; i flussi mantengono etichette, focus e annunci accessibili.
+Jakarta Faces e Facelets gestiscono la navigazione server-side secondo le convenzioni del runtime selezionato. Le viste previste comprendono ricerca, risultati, mappa con elenco testuale, dettaglio luogo, modulo di segnalazione, tracking e pannello di moderazione. Le transizioni riservate applicano i controlli di autorizzazione. I flussi mantengono etichette, focus e annunci accessibili.
 
 Le API REST sono versionate e separate dal contratto delle viste. Un client cartografico riceve dati dall’API e offre una rappresentazione testuale equivalente.
 
 #### 3.6.3 GESTIONE ASINCRONA ED EVENTI
 
-Le sincronizzazioni e le attività lente sono eseguite da worker. Le notifiche sono inviate tramite `NotificationPort` dopo il completamento del caso d’uso, con retry e deduplicazione da definire. Gli aggiornamenti urgenti invalidano la cache geograficamente coinvolta. Le chiamate a provider esterni non mantengono aperte transazioni database quando non necessario. Metriche e allarmi devono rendere osservabili disponibilità, latenza, ritardo delle fonti, errori di sincronizzazione e dimensione e anzianità della coda di moderazione; soglie e obiettivi di servizio sono da concordare.
+Le sincronizzazioni e le attività lente sono eseguite da worker. Le notifiche sono inviate tramite `NotificationPort` dopo il completamento del caso d’uso, con retry e deduplicazione da definire. Gli aggiornamenti urgenti invalidano la cache geograficamente coinvolta. Le chiamate a provider esterni non mantengono aperte transazioni database quando non necessario. Metriche e allarmi devono rendere osservabili disponibilità, latenza, ritardo delle fonti, errori di sincronizzazione e dimensione e anzianità della coda di moderazione. Soglie e obiettivi di servizio sono da concordare.
 
 #### 3.6.4 GESTIONE DEGLI ERRORI
 
-Gli errori sono convertiti in una forma HTTP uniforme e in messaggi comprensibili per l’interfaccia. I dettagli interni e i dati personali non sono restituiti al client né registrati nei log. Ogni caso d’uso garantisce le proprie condizioni transazionali: un errore di moderazione non lascia divergenze tra stato e cronologia; un errore di creazione non lascia una segnalazione parziale. Le viste espongono in modo accessibile stati di caricamento, assenza di risultati ed errore.
+Gli errori sono convertiti in una forma HTTP uniforme e in messaggi comprensibili per l’interfaccia. I dettagli interni e i dati personali non sono restituiti al client né registrati nei log. Ogni caso d’uso garantisce le proprie condizioni transazionali: un errore di moderazione non lascia divergenze tra stato e cronologia. Un errore di creazione non lascia una segnalazione parziale. Le viste espongono in modo accessibile stati di caricamento, assenza di risultati ed errore.
 
 La procedura operativa per gli incidenti deve definire rilevazione, escalation, contenimento, ripristino, comunicazioni e registrazione degli esiti prima dell’apertura del servizio.
 
@@ -290,7 +290,7 @@ Se un identificativo non corrisponde a un luogo, il sistema restituisce un esito
 
 #### 3.7.3 SEGNALAZIONI DUPLICATE
 
-Una segnalazione che descrive un caso già registrato può essere unita al report esistente solo tramite una decisione autorizzata di moderazione. Il sistema conserva entrambe le segnalazioni e registra l’unione nello storico; non crea una relazione duplicata né sovrascrive eventi precedenti.
+Una segnalazione che descrive un caso già registrato può essere unita al report esistente solo tramite una decisione autorizzata di moderazione. Il sistema conserva entrambe le segnalazioni e registra l’unione nello storico. Non crea una relazione duplicata né sovrascrive eventi precedenti.
 
 #### 3.7.4 INVII RIPETUTI E DUPLICAZIONE DEI DATI IMPORTATI
 
@@ -312,23 +312,23 @@ Se la persona nega il permesso di geolocalizzazione, il sistema non blocca ricer
 
 ### 4.1 AUTENTICAZIONE UTENTE
 
-Il sottosistema Identity gestisce autenticazione e autorizzazione delle funzioni protette. La moderazione richiede un moderatore autenticato e autorizzato; anche l’avvio manuale di una sincronizzazione richiede un gestore autorizzato. Le policy per autenticazione dell’invio e accesso al tracking restano da definire secondo OPEN-04. Il flusso proposto di tracking restituisce al possessore del codice solo lo stato consentito, senza rendere già approvata la policy di accesso. Provider e protocollo di autenticazione sono da selezionare. La consultazione pubblica non richiede una sessione autenticata. I dati identificativi restano separati dai contenuti pubblici delle segnalazioni.
+Il sottosistema Identity gestisce autenticazione e autorizzazione delle funzioni protette. La moderazione richiede un moderatore autenticato e autorizzato. Anche l’avvio manuale di una sincronizzazione richiede un gestore autorizzato. Le policy per autenticazione dell’invio e accesso al tracking restano da definire secondo OPEN-04. Il flusso proposto di tracking restituisce al possessore del codice solo lo stato consentito, senza rendere già approvata la policy di accesso. Provider e protocollo di autenticazione sono da selezionare. La consultazione pubblica non richiede una sessione autenticata. I dati identificativi restano separati dai contenuti pubblici delle segnalazioni.
 
 ### 4.2 GESTIONE DEI LUOGHI
 
-Il sottosistema Places importa e consulta luoghi, fermate e stazioni. Le query geospaziali usano PostGIS e restituiscono geometrie e identificativi secondo il contratto API. La ricerca e il dettaglio sono in sola lettura per i dati ufficiali; gli aggiornamenti arrivano dagli adattatori delle fonti autorizzate.
+Il sottosistema Places importa e consulta luoghi, fermate e stazioni. Le query geospaziali usano PostGIS e restituiscono geometrie e identificativi secondo il contratto API. La ricerca e il dettaglio sono in sola lettura per i dati ufficiali. Gli aggiornamenti arrivano dagli adattatori delle fonti autorizzate.
 
 ### 4.3 INFORMAZIONI DI ACCESSIBILITÀ
 
-Il sottosistema Accessibility recupera le caratteristiche associate ai luoghi e valuta validità e provenienza. Ogni risposta include stato, fonte e freschezza disponibili; dato assente o scaduto è classificato sconosciuto. Le informazioni sono fornite ai dettagli dei luoghi e ai casi d’uso di pianificazione.
+Il sottosistema Accessibility recupera le caratteristiche associate ai luoghi e valuta validità e provenienza. Ogni risposta include stato, fonte e freschezza disponibili. Dato assente o scaduto è classificato sconosciuto. Le informazioni sono fornite ai dettagli dei luoghi e ai casi d’uso di pianificazione.
 
 ### 4.4 PIANIFICAZIONE DEI PERCORSI
 
-Il caso d’uso `PlanRoute` valida origine, destinazione e vincoli, invoca `RoutingProvider` e combina il risultato con le informazioni di accessibilità. Dati affidabili e compatibili possono essere usati per escludere tratti; dati incerti sono mostrati come tali. Il servizio non modifica lo stato persistente di dominio.
+Il caso d’uso `PlanRoute` valida origine, destinazione e vincoli, invoca `RoutingProvider` e combina il risultato con le informazioni di accessibilità. Dati affidabili e compatibili possono essere usati per escludere tratti. Dati incerti sono mostrati come tali. Il servizio non modifica lo stato persistente di dominio.
 
 ### 4.5 SEGNALAZIONI E MODERAZIONE
 
-`CreateReport` valida i dati, gestisce l’eventuale upload attraverso il flusso di scansione e persiste segnalazione ed evento iniziale in modo atomico. `TrackReport` restituisce soltanto lo stato consentito al possessore del codice. `ModerateReport` verifica identità, ruolo, esistenza del report e transizione ammessa; aggiorna lo stato e aggiunge un evento append-only nella stessa transazione. Conferma, rifiuto, risoluzione e unione dei duplicati devono essere rappresentati dalla macchina a stati di dominio da definire. I dettagli identificativi sono esclusi dalla risposta pubblica.
+`CreateReport` valida i dati, gestisce l’eventuale upload attraverso il flusso di scansione e persiste segnalazione ed evento iniziale in modo atomico. `TrackReport` restituisce soltanto lo stato consentito al possessore del codice. `ModerateReport` verifica identità, ruolo, esistenza del report e transizione ammessa. Aggiorna lo stato e aggiunge un evento append-only nella stessa transazione. Conferma, rifiuto, risoluzione e unione dei duplicati devono essere rappresentati dalla macchina a stati di dominio da definire. I dettagli identificativi sono esclusi dalla risposta pubblica.
 
 ### 4.6 GEOLOCALIZZAZIONE, SINCRONIZZAZIONE E NOTIFICHE
 

@@ -42,7 +42,7 @@ Ogni requisito descrive un’azione osservabile, indica chi la avvia o la esegue
 
 ### 3.3 REQUISITI NON FUNZIONALI
 
-Descrivere qualità e vincoli misurabili. Ogni riga deve indicare un’azione richiesta e un criterio osservabile; soglie e metodi non ancora concordati restano da definire.
+Descrivere qualità e vincoli misurabili. Ogni riga deve indicare un’azione richiesta e un criterio osservabile. Soglie e metodi non ancora concordati restano da definire.
 
 | ID | Qualità | Azione richiesta | Criterio di verifica |
 |---|---|---|---|
@@ -100,7 +100,7 @@ Ogni scheda riporta identificativo, scopo, attori, precondizioni, postcondizioni
 | Attore principale e altri attori | Da definire |
 | Scopo | Da descrivere |
 | Precondizioni | Condizioni vere prima dell’avvio |
-| Postcondizioni | Stato garantito al termine con successo; indicare anche gli effetti in caso di errore rilevante |
+| Postcondizioni | Stato garantito al termine con successo. Indicare anche gli effetti in caso di errore rilevante |
 | Flusso principale | Passi numerati solo quando necessari alla sequenza |
 | Flussi alternativi ed errori | Da descrivere |
 | Requisiti collegati | Identificativi FR e NFR |
@@ -135,7 +135,7 @@ Descrizione del diagramma: da compilare.
 
 #### 3.5.6 DIAGRAMMI DI SEQUENZA
 
-Inserire diagrammi per i casi d’uso principali. Ogni diagramma chiarisce partecipanti, messaggi, condizioni e risultato; una descrizione testuale ne riassume il significato.
+Inserire diagrammi per i casi d’uso principali. Ogni diagramma chiarisce partecipanti, messaggi, condizioni e risultato. Una descrizione testuale ne riassume il significato.
 
 Descrizione dei diagrammi: da compilare per ciascun flusso rappresentato.
 
@@ -150,10 +150,10 @@ Dichiarare lo stato reale del prototipo e documentare:
 | Aspetto | Specifica |
 |---|---|
 | Scopo, ruolo, interfaccia e implementazione | Da descrivere |
-| Modalità d’uso | Statica, dinamica o interattiva; indicare quella effettiva |
-| Fedeltà | Bassa o alta; motivare |
-| Completezza funzionale | Orizzontale o verticale; indicare i flussi coperti |
-| Durata | Usa e getta, evolutivo, incrementale o altra modalità; motivare |
+| Modalità d’uso | Statica, dinamica o interattiva. Indicare quella effettiva |
+| Fedeltà | Bassa o alta. Motivare |
+| Completezza funzionale | Orizzontale o verticale. Indicare i flussi coperti |
+| Durata | Usa e getta, evolutivo, incrementale o altra modalità. Motivare |
 
 Non dichiarare realizzato un prototipo che esiste solo come proposta o descrizione.
 
@@ -180,7 +180,7 @@ Documentare partecipanti e relativa esperienza, compiti e scenari, contesto e st
 
 #### 4.2.3 SINTESI DELLE MISURE
 
-Riportare risultati per partecipante e compito, quindi una sintesi aggregata per compito. Definire unità, denominatori e metodo di aggregazione; proteggere l’identità dei partecipanti.
+Riportare risultati per partecipante e compito, quindi una sintesi aggregata per compito. Definire unità, denominatori e metodo di aggregazione. Proteggere l’identità dei partecipanti.
 
 | Partecipante pseudonimizzato | Compito | Tempo o misura | Completamento | Errori e note |
 |---|---|---|---|---|

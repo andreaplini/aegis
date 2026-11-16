@@ -120,7 +120,7 @@ Descrivere validazione, rate limiting, idempotenza, rilevamento di duplicati, mo
 
 **Analisi delle minacce.**
 
-Analizzare gli scenari di minaccia rilevanti indicando bene esposto, impatto, controllo progettato, metodo di verifica e stato. Distinguere i controlli previsti da quelli implementati e verificati; non dichiarare mitigato un rischio senza evidenza.
+Analizzare gli scenari di minaccia rilevanti indicando bene esposto, impatto, controllo progettato, metodo di verifica e stato. Distinguere i controlli previsti da quelli implementati e verificati. Non dichiarare mitigato un rischio senza evidenza.
 
 | Scenario di minaccia | Bene e impatto | Controllo progettato | Verifica richiesta |
 |---|---|---|---|

@@ -10,7 +10,7 @@
 | Candidati | Da compilare |
 | Anno accademico | Da confermare |
 
-Bozza aggiornata il 16 novembre 2026. I requisiti sono da convalidare con persone con disabilità, enti di trasporto e responsabili delle fonti dati. Il prodotto non è ancora implementato; decisioni e prove mancanti sono tracciate nella [roadmap](MILESTONES.md).
+Bozza aggiornata il 16 novembre 2026. I requisiti sono da convalidare con persone con disabilità, enti di trasporto e responsabili delle fonti dati. Il prodotto non è ancora implementato. Decisioni e prove mancanti sono tracciate nella [roadmap](MILESTONES.md).
 
 ## SOMMARIO
 
@@ -42,7 +42,7 @@ Bozza aggiornata il 16 novembre 2026. I requisiti sono da convalidare con person
 
 La web app aiuta le persone con disabilità a pianificare spostamenti urbani, consultare l’accessibilità di stazioni, fermate e mezzi e segnalare barriere o guasti. Il sistema mostra la fonte e la data di aggiornamento delle caratteristiche. Un dato assente o scaduto è sconosciuto e non viene interpretato come prova di accessibilità.
 
-Gli obiettivi sono trovare e confrontare percorsi, consultare le caratteristiche dei luoghi, inviare e tracciare segnalazioni e permettere ai moderatori di gestirle senza perdere la cronologia. Il successo sarà valutato con prove sul campo e sessioni con persone con disabilità; area pilota, partecipanti, metriche e soglie sono da definire.
+Gli obiettivi sono trovare e confrontare percorsi, consultare le caratteristiche dei luoghi, inviare e tracciare segnalazioni e permettere ai moderatori di gestirle senza perdere la cronologia. Il successo sarà valutato con prove sul campo e sessioni con persone con disabilità. Area pilota, partecipanti, metriche e soglie sono da definire.
 
 | Obiettivo | Criterio di verifica |
 |---|---|
@@ -64,7 +64,7 @@ Il progetto è greenfield. Non è stato fornito un sistema esistente da descrive
 
 ### 3.1 PANORAMICA
 
-La consultazione pubblica offre ricerca per area, dettagli di accessibilità e pianificazione di percorsi alternativi. Il sistema distingue caratteristiche verificate positive o negative da quelle sconosciute. Un dato scaduto è segnalato come tale e trattato come sconosciuto; non dimostra accessibilità. Le segnalazioni seguono un ciclo moderato e mantengono uno storico append-only.
+La consultazione pubblica offre ricerca per area, dettagli di accessibilità e pianificazione di percorsi alternativi. Il sistema distingue caratteristiche verificate positive o negative da quelle sconosciute. Un dato scaduto è segnalato come tale e trattato come sconosciuto. Non dimostra accessibilità. Le segnalazioni seguono un ciclo moderato e mantengono uno storico append-only.
 
 ### 3.2 REQUISITI FUNZIONALI
 
@@ -73,12 +73,12 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 | FR-01 | Sistema | Mostrare luoghi e informazioni di accessibilità per l’area richiesta. | Must | UC-02 |
 | FR-02 | Sistema | Mostrare caratteristiche quali ascensori, rampe, accessi e annunci con stato, fonte, aggiornamento e validità. | Must | UC-01, UC-02 |
 | FR-03 | Sistema | Classificare come sconosciuti i dati assenti o scaduti, senza inferire accessibilità. | Must | UC-01, UC-02 |
-| FR-04 | Utente e sistema | Acquisire origine, destinazione ed esigenze; calcolare e restituire percorsi alternativi. | Must | UC-01 |
+| FR-04 | Utente e sistema | Acquisire origine, destinazione ed esigenze. Calcolare e restituire percorsi alternativi. | Must | UC-01 |
 | FR-05 | Sistema | Distinguere nei percorsi barriere note, tratti compatibili e tratti non verificati. | Must | UC-01 |
 | FR-06 | Utente e sistema | Consentire la selezione di un luogo e mostrare dettagli di accessibilità e provenienza. | Must | UC-02 |
-| FR-07 | Segnalatore | Inserire luogo, categoria, descrizione e data; allegare facoltativamente una foto. | Must | UC-03 |
+| FR-07 | Segnalatore | Inserire luogo, categoria, descrizione e data. Allegare facoltativamente una foto. | Must | UC-03 |
 | FR-08 | Sistema | Generare e restituire un codice di tracking per consultare lo stato della segnalazione. | Must | UC-03, UC-04 |
-| FR-09 | Moderatore e sistema | Consentire conferma, rifiuto, risoluzione o unione di duplicati; registrare ogni decisione. | Must | UC-05 |
+| FR-09 | Moderatore e sistema | Consentire conferma, rifiuto, risoluzione o unione di duplicati. Registrare ogni decisione. | Must | UC-05 |
 | FR-10 | Adattatore dati | Importare dati ufficiali e registrare versione, esito e timestamp della sincronizzazione. | Should | UC-06 |
 | FR-11 | Sistema | Invalidare la cache dell’area interessata quando riceve un aggiornamento urgente. | Should | UC-06 |
 | FR-12 | Sistema | Inviare notifiche secondo preferenze, autorizzazioni e consensi configurati. | Could | UC-03, UC-05, UC-06 |
@@ -90,18 +90,18 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 |---|---|---|---|
 | NFR-01 | Accessibilità | Consentire di completare i flussi essenziali da tastiera e con screen reader. | Verificare compiti approvati, navigazione, focus, etichette e annunci con tastiera e tecnologie assistive. |
 | NFR-02 | Accessibilità | Fornire una vista testuale equivalente alle informazioni presentate sulla mappa. | Confrontare per le stesse richieste luoghi, percorsi e stati disponibili nella mappa e nella vista testuale. |
-| NFR-03 | Accessibilità | Verificare contrasto e fruibilità con zoom. | Verificare i criteri dello standard e del livello di conformità da concordare; finché OPEN-06 resta aperto il requisito non è valutabile. |
-| NFR-04 | Privacy | Minimizzare i dati personali e separare identità e segnalazioni pubbliche. | Prima del lancio approvare finalità, accessi, conservazione e cancellazione; verificare autorizzazioni, scadenza e cancellazione con prove sui dati. |
+| NFR-03 | Accessibilità | Verificare contrasto e fruibilità con zoom. | Verificare i criteri dello standard e del livello di conformità da concordare. Finché OPEN-06 resta aperto il requisito non è valutabile. |
+| NFR-04 | Privacy | Minimizzare i dati personali e separare identità e segnalazioni pubbliche. | Prima del lancio approvare finalità, accessi, conservazione e cancellazione. Verificare autorizzazioni, scadenza e cancellazione con prove sui dati. |
 | NFR-05 | Sicurezza | Proteggere le comunicazioni con TLS e le funzioni riservate con ruoli. | Verificare TLS sugli endpoint esposti e rifiuto lato server delle operazioni riservate per ruoli non autorizzati. |
-| NFR-06 | Sicurezza | Applicare rate limiting, validazione server-side e protezione da injection agli endpoint. | Provare input malformati e injection; verificare il rifiuto senza effetti parziali e il comportamento del rate limiting rispetto alle soglie approvate. |
-| NFR-07 | Sicurezza | Controllare gli upload per tipo, dimensione e contenuto prima dell’uso o pubblicazione. | Provare file ammessi, non validi e con scansione fallita; verificare rifiuto o quarantena e accesso controllato ai file. |
-| NFR-08 | Affidabilità dati | Esporre provenienza e freschezza e applicare scadenze per fonte e tipo di dato. | Verificare fonte, timestamp e validità; testare dati assenti, scaduti e incoerenti e confermare che risultino sconosciuti. |
-| NFR-09 | Operatività | Produrre log strutturati senza dati sensibili e metriche operative. | In ambiente concordato verificare log e metriche di disponibilità, latenza, sincronizzazioni e coda di moderazione; controllare che log e allarmi non espongano dati sensibili. |
-| NFR-10 | Continuità | Configurare allarmi e backup automatici e svolgere prove di ripristino. | Eseguire e registrare una prova di ripristino e verificare l’integrità dei dati; approvare gli obiettivi di ripristino prima del lancio. |
-| NFR-11 | Performance | Misurare e mantenere entro soglie concordate la latenza API e il caricamento delle viste principali. | Misurare p95 in staging con concorrenza e dataset approvati; il requisito non è valutabile finché target e carico non sono concordati. |
+| NFR-06 | Sicurezza | Applicare rate limiting, validazione server-side e protezione da injection agli endpoint. | Provare input malformati e injection. Verificare il rifiuto senza effetti parziali e il comportamento del rate limiting rispetto alle soglie approvate. |
+| NFR-07 | Sicurezza | Controllare gli upload per tipo, dimensione e contenuto prima dell’uso o pubblicazione. | Provare file ammessi, non validi e con scansione fallita. Verificare rifiuto o quarantena e accesso controllato ai file. |
+| NFR-08 | Affidabilità dati | Esporre provenienza e freschezza e applicare scadenze per fonte e tipo di dato. | Verificare fonte, timestamp e validità. Testare dati assenti, scaduti e incoerenti e confermare che risultino sconosciuti. |
+| NFR-09 | Operatività | Produrre log strutturati senza dati sensibili e metriche operative. | In ambiente concordato verificare log e metriche di disponibilità, latenza, sincronizzazioni e coda di moderazione. Controllare che log e allarmi non espongano dati sensibili. |
+| NFR-10 | Continuità | Configurare allarmi e backup automatici e svolgere prove di ripristino. | Eseguire e registrare una prova di ripristino e verificare l’integrità dei dati. Approvare gli obiettivi di ripristino prima del lancio. |
+| NFR-11 | Performance | Misurare e mantenere entro soglie concordate la latenza API e il caricamento delle viste principali. | Misurare p95 in staging con concorrenza e dataset approvati. Il requisito non è valutabile finché target e carico non sono concordati. |
 | NFR-12 | Compatibilità | Versionare le API e applicare migrazioni compatibili con le versioni applicative in distribuzione. | Verificare in prova di rilascio che le versioni applicative attive durante la migrazione possano completare le operazioni previste. |
 | NFR-13 | Usabilità | Rendere i flussi principali comprensibili e coerenti, con feedback sul completamento delle operazioni. | Svolgere sessioni con compiti e criteri approvati, registrare misure e problemi osservati e riportare gli esiti nel RAD. |
-| NFR-14 | Scalabilità | Dimensionare API, database, worker e indici spaziali in base alla crescita di utenti, luoghi e richieste. | Eseguire prove di carico con dataset e profilo concordati; confrontare i risultati con gli obiettivi approvati prima del pilota. |
+| NFR-14 | Scalabilità | Dimensionare API, database, worker e indici spaziali in base alla crescita di utenti, luoghi e richieste. | Eseguire prove di carico con dataset e profilo concordati. Confrontare i risultati con gli obiettivi approvati prima del pilota. |
 | NFR-15 | Manutenibilità | Mantenere separati dominio, casi d’uso e adattatori e documentare le interfacce e le procedure operative. | Effettuare revisione architetturale e verificare build ripetibile, test e documentazione delle interfacce e procedure. |
 | NFR-16 | Portabilità | Distribuire API e worker in container e mantenere la configurazione specifica dell’ambiente esterna al codice. | Avviare la stessa versione degli artefatti negli ambienti approvati e verificare le funzioni essenziali con test smoke e configurazioni distinte. |
 
@@ -109,11 +109,11 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 
 | Vincolo | Specifica e stato |
 |---|---|
-| Piattaforma applicativa | Usare Java LTS e Jakarta EE per API e worker; usare Jakarta Faces e Facelets per le viste server-side. Versioni e runtime sono da convalidare. |
+| Piattaforma applicativa | Usare Java LTS e Jakarta EE per API e worker. Usare Jakarta Faces e Facelets per le viste server-side. Versioni e runtime sono da convalidare. |
 | Persistenza e file | Usare PostgreSQL con PostGIS, migrazioni versionate e storage compatibile S3 per le immagini. |
-| Struttura software | Separare frontend, casi d’uso, dominio e adattatori; documentare API versionate con OpenAPI. |
-| Accesso | La consultazione è pubblica; autenticazione e ruoli per invio e moderazione sono da definire. |
-| Dati di accessibilità | Ogni proprietà registra provenienza e validità; dato assente o scaduto è sconosciuto. |
+| Struttura software | Separare frontend, casi d’uso, dominio e adattatori. Documentare API versionate con OpenAPI. |
+| Accesso | La consultazione è pubblica. Autenticazione e ruoli per invio e moderazione sono da definire. |
+| Dati di accessibilità | Ogni proprietà registra provenienza e validità. Dato assente o scaduto è sconosciuto. |
 | Dati personali e immagini | Applicare consenso, accesso controllato, conservazione limitata e cancellazione secondo policy da concordare. |
 
 ### 3.5 MODELLI DI SISTEMA
@@ -123,7 +123,7 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 | Utente/ruolo | Obiettivi | Contesto |
 |---|---|---|
 | Viaggiatore | Consultare luoghi e pianificare un viaggio secondo le proprie esigenze. | Web responsive, anche con tecnologie assistive. |
-| Segnalatore | Inviare una barriera o un guasto e seguirne lo stato. | Pubblico; autenticazione e possibilità di invio anonimo da definire. |
+| Segnalatore | Inviare una barriera o un guasto e seguirne lo stato. | Pubblico. Autenticazione e possibilità di invio anonimo da definire. |
 | Moderatore | Valutare segnalazioni e gestire duplicati. | Area riservata, autenticazione e ruolo richiesti. |
 | Gestore fonte | Mantenere configurazione e qualità delle sincronizzazioni. | Ruolo operativo da definire. |
 | Amministratore tecnico | Gestire configurazione, sicurezza e operatività. | Accesso privilegiato e audit. |
@@ -132,11 +132,11 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 
 | Nome | Attori partecipanti | Flusso degli eventi |
 |---|---|---|
-| Viaggio con esigenze selezionate | Viaggiatore, sistema, provider di routing | Il viaggiatore inserisce origine, destinazione ed esigenze; il sistema richiede alternative al provider; il sistema mostra tempi, cambi, barriere note e tratti non verificati. |
-| Verifica di una fermata | Viaggiatore, sistema | Il viaggiatore seleziona una fermata; il sistema recupera le caratteristiche disponibili; il sistema mostra stato, fonte e validità, indicando come sconosciuti i dati assenti o scaduti. |
-| Guasto temporaneo | Segnalatore, sistema | Il segnalatore inserisce luogo, categoria, descrizione e data; facoltativamente allega una foto; il sistema registra la segnalazione e restituisce il codice di tracking. |
-| Moderazione di un duplicato | Moderatore, sistema | Il moderatore esamina una segnalazione e la collega al duplicato esistente; il sistema registra la decisione e conserva la cronologia precedente. |
-| Aggiornamento di una fonte | Gestore fonte, sistema | Il gestore avvia o controlla una sincronizzazione; il sistema importa i dati, applica i controlli di qualità, registra l’esito e invalida la cache se l’aggiornamento è urgente. |
+| Viaggio con esigenze selezionate | Viaggiatore, sistema, provider di routing | Il viaggiatore inserisce origine, destinazione ed esigenze. Il sistema richiede alternative al provider. Il sistema mostra tempi, cambi, barriere note e tratti non verificati. |
+| Verifica di una fermata | Viaggiatore, sistema | Il viaggiatore seleziona una fermata. Il sistema recupera le caratteristiche disponibili. Il sistema mostra stato, fonte e validità, indicando come sconosciuti i dati assenti o scaduti. |
+| Guasto temporaneo | Segnalatore, sistema | Il segnalatore inserisce luogo, categoria, descrizione e data. Facoltativamente allega una foto. Il sistema registra la segnalazione e restituisce il codice di tracking. |
+| Moderazione di un duplicato | Moderatore, sistema | Il moderatore esamina una segnalazione e la collega al duplicato esistente. Il sistema registra la decisione e conserva la cronologia precedente. |
+| Aggiornamento di una fonte | Gestore fonte, sistema | Il gestore avvia o controlla una sincronizzazione. Il sistema importa i dati, applica i controlli di qualità, registra l’esito e invalida la cache se l’aggiornamento è urgente. |
 
 #### 3.5.3 MODELLI DEI CASI D’USO
 
@@ -184,60 +184,60 @@ Il template richiede per ogni caso d’uso attori, condizioni d’ingresso e d�
 | Campo | Specifica |
 |---|---|
 | Attori partecipanti | Viaggiatore, sistema, provider di routing. |
-| Condizioni d’ingresso | Origine, destinazione ed esigenze specificate e valide; la consultazione non richiede autenticazione. |
-| Condizioni d’uscita | Restituiti zero o più percorsi con tempi, cambi e stato di verifica. Fonte e freschezza sono esposte quando disponibili; dati assenti o scaduti non risultano accessibili. |
+| Condizioni d’ingresso | Origine, destinazione ed esigenze specificate e valide. La consultazione non richiede autenticazione. |
+| Condizioni d’uscita | Restituiti zero o più percorsi con tempi, cambi e stato di verifica. Fonte e freschezza sono esposte quando disponibili. Dati assenti o scaduti non risultano accessibili. |
 | Requisiti qualitativi | Il sistema distingue barriere note, tratti compatibili e tratti non verificati e presenta alternative disponibili. |
-| Flusso degli eventi | Il viaggiatore inserisce origine, destinazione ed esigenze; il sistema valida la richiesta e la inoltra al provider; il provider restituisce le alternative; il sistema aggiunge stato di verifica e provenienza disponibili e mostra risultati e incertezze. |
+| Flusso degli eventi | Il viaggiatore inserisce origine, destinazione ed esigenze. Il sistema valida la richiesta e la inoltra al provider. Il provider restituisce le alternative. Il sistema aggiunge stato di verifica e provenienza disponibili e mostra risultati e incertezze. |
 
 ###### UC-02: Consultare luogo
 
 | Campo | Specifica |
 |---|---|
 | Attori partecipanti | Viaggiatore, sistema. |
-| Condizioni d’ingresso | Luogo identificabile tramite ID o selezione geografica; parametri validi. |
-| Condizioni d’uscita | Dettaglio e caratteristiche note sono mostrati con fonte e validità. Dati assenti o scaduti sono indicati come sconosciuti; nessuna modifica ai dati. |
+| Condizioni d’ingresso | Luogo identificabile tramite ID o selezione geografica. Parametri validi. |
+| Condizioni d’uscita | Dettaglio e caratteristiche note sono mostrati con fonte e validità. Dati assenti o scaduti sono indicati come sconosciuti. Nessuna modifica ai dati. |
 | Requisiti qualitativi | Le informazioni presentate sulla mappa sono disponibili anche in forma testuale e risultano utilizzabili da tastiera e tecnologie assistive. |
-| Flusso degli eventi | Il viaggiatore seleziona o cerca un luogo; il sistema recupera dettaglio e caratteristiche; il sistema valuta la freschezza secondo la validità della fonte; il sistema mostra caratteristiche, fonte, aggiornamento e stati sconosciuti. |
+| Flusso degli eventi | Il viaggiatore seleziona o cerca un luogo. Il sistema recupera dettaglio e caratteristiche. Il sistema valuta la freschezza secondo la validità della fonte. Il sistema mostra caratteristiche, fonte, aggiornamento e stati sconosciuti. |
 
 ###### UC-03: Inviare segnalazione
 
 | Campo | Specifica |
 |---|---|
 | Attori partecipanti | Segnalatore, sistema, servizio di storage e scansione. |
-| Condizioni d’ingresso | Campi obbligatori validi; autorizzazione, rate limit, consenso e requisiti dell’eventuale upload conformi alla policy definita. |
-| Condizioni d’uscita | Segnalazione ed evento iniziale persistiti; codice di tracking restituito. In caso di errore non rimane una segnalazione parziale. |
-| Requisiti qualitativi | Il modulo è accessibile; i dati identificativi sono minimizzati e separati dalla segnalazione; la foto non è pubblicata prima dei controlli previsti. |
-| Flusso degli eventi | Il segnalatore inserisce luogo, categoria, descrizione e data; facoltativamente allega una foto; il sistema valida i campi e controlla l’upload; il sistema registra segnalazione ed evento iniziale; restituisce il codice di tracking e invia eventuali notifiche solo secondo consenso e policy. |
+| Condizioni d’ingresso | Campi obbligatori validi. Autorizzazione, rate limit, consenso e requisiti dell’eventuale upload conformi alla policy definita. |
+| Condizioni d’uscita | Segnalazione ed evento iniziale persistiti. Codice di tracking restituito. In caso di errore non rimane una segnalazione parziale. |
+| Requisiti qualitativi | Il modulo è accessibile. I dati identificativi sono minimizzati e separati dalla segnalazione. La foto non è pubblicata prima dei controlli previsti. |
+| Flusso degli eventi | Il segnalatore inserisce luogo, categoria, descrizione e data. Facoltativamente allega una foto. Il sistema valida i campi e controlla l’upload. Il sistema registra segnalazione ed evento iniziale. Restituisce il codice di tracking e invia eventuali notifiche solo secondo consenso e policy. |
 
 ###### UC-04: Seguire segnalazione
 
 | Campo | Specifica |
 |---|---|
 | Attori partecipanti | Segnalatore, sistema. |
-| Condizioni d’ingresso | Codice di tracking valido fornito dal richiedente; modalità di accesso da definire secondo OPEN-04. |
-| Condizioni d’uscita | È mostrato solo lo stato consentito dalla policy di accesso approvata; identità e dettagli riservati non sono esposti; nessuna modifica al report. |
+| Condizioni d’ingresso | Codice di tracking valido fornito dal richiedente. Modalità di accesso da definire secondo OPEN-04. |
+| Condizioni d’uscita | È mostrato solo lo stato consentito dalla policy di accesso approvata. Identità e dettagli riservati non sono esposti. Nessuna modifica al report. |
 | Requisiti qualitativi | La risposta non consente l’enumerazione delle segnalazioni e comunica lo stato in forma accessibile. |
-| Flusso degli eventi | Il segnalatore inserisce il codice; il sistema lo verifica e recupera lo stato consentito; il sistema mostra lo stato senza esporre dati riservati. |
+| Flusso degli eventi | Il segnalatore inserisce il codice. Il sistema lo verifica e recupera lo stato consentito. Il sistema mostra lo stato senza esporre dati riservati. |
 
 ###### UC-05: Moderare segnalazione
 
 | Campo | Specifica |
 |---|---|
 | Attori partecipanti | Moderatore, sistema. |
-| Condizioni d’ingresso | Moderatore autenticato e autorizzato; report esistente; transizione ammessa; motivazione presente quando richiesta. |
+| Condizioni d’ingresso | Moderatore autenticato e autorizzato. Report esistente. Transizione ammessa. Motivazione presente quando richiesta. |
 | Condizioni d’uscita | Stato ed evento append-only aggiornati nella stessa transazione, con attore e timestamp. Una transizione non valida non modifica i dati. |
-| Requisiti qualitativi | Ogni decisione è tracciabile; gli eventi precedenti restano consultabili e non sono sovrascritti. |
-| Flusso degli eventi | Il moderatore apre il report; il sistema mostra i dati e la cronologia autorizzati; il moderatore sceglie conferma, rifiuto, risoluzione o unione e inserisce la motivazione richiesta; il sistema valida la transizione e registra stato ed evento nella stessa transazione; invia eventuali notifiche solo secondo consenso e policy. |
+| Requisiti qualitativi | Ogni decisione è tracciabile. Gli eventi precedenti restano consultabili e non sono sovrascritti. |
+| Flusso degli eventi | Il moderatore apre il report. Il sistema mostra i dati e la cronologia autorizzati. Il moderatore sceglie conferma, rifiuto, risoluzione o unione e inserisce la motivazione richiesta. Il sistema valida la transizione e registra stato ed evento nella stessa transazione. Invia eventuali notifiche solo secondo consenso e policy. |
 
 ###### UC-06: Aggiornare una fonte
 
 | Campo | Specifica |
 |---|---|
 | Attori partecipanti | Gestore fonte, sistema, adattatore della fonte. |
-| Condizioni d’ingresso | Fonte configurata e abilitata; gestore autenticato e autorizzato quando l’avvio è manuale; esecuzione schedulata ammessa dalla configurazione. |
+| Condizioni d’ingresso | Fonte configurata e abilitata. Gestore autenticato e autorizzato quando l’avvio è manuale. Esecuzione schedulata ammessa dalla configurazione. |
 | Condizioni d’uscita | Versione, timestamp, controlli ed esito della sincronizzazione registrati. Un aggiornamento urgente invalida la cache dell’area interessata. Un errore non sostituisce i dati validi con dati parziali. |
-| Requisiti qualitativi | Retry idempotenti; provenienza e freschezza conservate; dati assenti, incoerenti o scaduti non sono presentati come accessibili. |
-| Flusso degli eventi | Il gestore avvia o consulta il processo, oppure scatta la pianificazione; il sistema invoca l’adattatore; l’adattatore acquisisce e valida i dati; il sistema registra versione, timestamp, controlli ed esito; se richiesto, invalida la cache dell’area interessata e rende disponibile l’esito operativo. |
+| Requisiti qualitativi | Retry idempotenti. Provenienza e freschezza conservate. Dati assenti, incoerenti o scaduti non sono presentati come accessibili. |
+| Flusso degli eventi | Il gestore avvia o consulta il processo, oppure scatta la pianificazione. Il sistema invoca l’adattatore. L’adattatore acquisisce e valida i dati. Il sistema registra versione, timestamp, controlli ed esito. Se richiesto, invalida la cache dell’area interessata e rende disponibile l’esito operativo. |
 
 #### 3.5.4 MODELLO DEGLI OGGETTI
 
@@ -250,7 +250,7 @@ Il template richiede per ogni caso d’uso attori, condizioni d’ingresso e d�
 | `Report` | Rappresenta luogo/geometria, categoria, descrizione, stato, date e riferimento protetto per tracking. |
 | `ReportEvent` | Registra in modo append-only attore, timestamp, decisione e riferimento a un eventuale duplicato. |
 | `SourceSync` | Registra fonte, versione, esito, timestamp e controlli di qualità. |
-| `UserAccount` | Rappresenta identità e ruoli; i dati identificativi sono separati dai contenuti pubblici. |
+| `UserAccount` | Rappresenta identità e ruoli. I dati identificativi sono separati dai contenuti pubblici. |
 | `DataSource` | Rappresenta una fonte con identificativo, responsabile, versione e regola di validità da definire. |
 | `TransitLine` e `TransitStop` | Rappresentano linee e fermate importate, con geometria e riferimenti alla fonte. |
 | `GeoPoint` | Value object immutabile che rappresenta coordinate valide con riferimento spaziale esplicito. |
@@ -261,7 +261,7 @@ Il template richiede per ogni caso d’uso attori, condizioni d’ingresso e d�
 |---|---|
 | API luoghi/accessibilità | Riceve richieste di ricerca e dettaglio e restituisce dati con fonte e freschezza. |
 | API percorsi | Riceve origine, destinazione e vincoli e restituisce alternative con incertezza esplicita. |
-| API segnalazioni e tracking | Riceve segnalazioni e richieste di tracking; restituisce conferma o stato consentito. |
+| API segnalazioni e tracking | Riceve segnalazioni e richieste di tracking. Restituisce conferma o stato consentito. |
 | API moderazione | Espone coda e operazioni di moderazione protette da autorizzazione. |
 | Interfaccia web | Presenta mappa, viste testuali, percorsi, moduli e pannello di moderazione. |
 | Gateway upload | Valida e inoltra le immagini al flusso controllato di storage e scansione. |
@@ -472,7 +472,7 @@ sequenceDiagram
 
 ## INTERFACCIA UTENTE
 
-Le viste iniziali sono: ricerca e preferenze di viaggio; risultati e alternative; mappa affiancata da elenco; dettaglio luogo; form segnalazione; pagina tracking; coda e dettaglio moderazione. Ogni informazione cartografica deve avere alternativa testuale e le interazioni devono supportare tastiera e screen reader. Wireframe e prototipo sono da realizzare e validare.
+Le viste iniziali sono: ricerca e preferenze di viaggio. Risultati e alternative. Mappa affiancata da elenco. Dettaglio luogo. Form segnalazione. Pagina tracking. Coda e dettaglio moderazione. Ogni informazione cartografica deve avere alternativa testuale e le interazioni devono supportare tastiera e screen reader. Wireframe e prototipo sono da realizzare e validare.
 
 ### 4.1 DESCRIZIONE DEL PROTOTIPO REALIZZATO
 
@@ -502,8 +502,8 @@ Il test non è ancora stato condotto. Numero, esperienza e caratteristiche dei p
 |---|---|
 | Partecipanti ed esperienza | Da definire con persone con disabilità e in base ai profili d’uso del pilota. |
 | Compiti e scenari | Pianificare un viaggio, consultare un luogo, inviare e seguire una segnalazione e usare i flussi con tecnologie assistive. Da convalidare prima delle sessioni. |
-| Contesto e strumenti | Da definire; registrare dispositivo, browser, tecnologie assistive e condizioni di rete usati. |
-| Modalità e durata | Sessioni individuali o altra modalità da definire; durata per partecipante e complessiva da registrare. |
+| Contesto e strumenti | Da definire. Registrare dispositivo, browser, tecnologie assistive e condizioni di rete usati. |
+| Modalità e durata | Sessioni individuali o altra modalità da definire. Durata per partecipante e complessiva da registrare. |
 | Misure | Tempi, completamento, errori, richieste di aiuto, comprensione di freschezza e incertezza e riscontri qualitativi. |
 | Osservatori e analisi | Ruoli, metodo di registrazione, trattamento delle evidenze e metodo di analisi da definire prima dei test. |
 
@@ -567,7 +567,7 @@ La matrice riporta i sette principi dell’edizione 2020 per pianificare la valu
 
 #### 4.3.2 PROFILO DI VALUTAZIONE VISIVA
 
-Il profilo visivo non è disponibile perché i punteggi non sono stati raccolti. Dopo la valutazione potrà essere rappresentato con un diagramma radar dei sette principi; una tabella accessibile e una descrizione testuale accompagneranno il grafico. Non saranno introdotti valori non osservati.
+Il profilo visivo non è disponibile perché i punteggi non sono stati raccolti. Dopo la valutazione potrà essere rappresentato con un diagramma radar dei sette principi. Una tabella accessibile e una descrizione testuale accompagneranno il grafico. Non saranno introdotti valori non osservati.
 
 ## GLOSSARIO
 
@@ -584,4 +584,4 @@ Il profilo visivo non è disponibile perché i punteggi non sono stati raccolti.
 | Codice di tracking | Codice non enumerabile usato per consultare lo stato di una segnalazione. |
 | Moderazione | Processo di valutazione e decisione su una segnalazione. |
 | Duplicato | Segnalazione riferita a un caso già registrato e collegata senza cancellare la cronologia. |
-| p95 | Valore sotto il quale ricade il 95 per cento delle misurazioni osservate; popolazione e finestra temporale vanno definite nel protocollo. |
+| p95 | Valore sotto il quale ricade il 95 per cento delle misurazioni osservate. Popolazione e finestra temporale vanno definite nel protocollo. |

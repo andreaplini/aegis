@@ -1,6 +1,6 @@
 # Template RAD e SDD
 
-Trascrizione strutturata del [documento Word originale](template/template.docx), con la gerarchia espressa in Markdown. Le voci degli indici del DOCX ripetono o azzerano alcuni numeri di sezione; qui la numerazione segue l'ordine logico delle sezioni. Le immagini sono collegate ai file estratti dal pacchetto originale.
+Trascrizione strutturata del [documento Word originale](template/template.docx), con la gerarchia espressa in Markdown. Le voci degli indici del DOCX ripetono o azzerano alcuni numeri di sezione. Qui la numerazione segue l'ordine logico delle sezioni. Le immagini sono collegate ai file estratti dal pacchetto originale.
 
 Per la struttura dei documenti basati sugli esempi accademici, usare i modelli anonimizzati [RAD](template/RAD.md) e [SDD](template/SDD.md). Questa trascrizione resta il riferimento del template Word generico.
 
@@ -44,7 +44,7 @@ Descrivere il sistema proposto e i principali obiettivi.
 
 #### 3.3 Requisiti non funzionali
 
-Il modello elenca queste aree: interfaccia utente e fattori umani; documentazione; considerazioni hardware; prestazioni; gestione degli errori e condizioni limite; interfacciamento del sistema; qualità; modifiche del sistema; ambiente fisico; sicurezza; risorse e gestione.
+Il modello elenca queste aree: interfaccia utente e fattori umani. Documentazione. Considerazioni hardware. Prestazioni. Gestione degli errori e condizioni limite. Interfacciamento del sistema. Qualità. Modifiche del sistema. Ambiente fisico. Sicurezza. Risorse e gestione.
 
 Anche questi requisiti possono essere presentati in forma tabellare oppure come elenco. Esempio del modello:
 
@@ -114,10 +114,10 @@ Il template rimanda al documento separato `indice_template_interfaccia_utente.do
 
 Specificare:
 
-- scopo, ruolo, interfaccia e implementazione;
-- modo d'uso: statico, dinamico o interattivo;
-- fedeltà: bassa o alta;
-- completezza funzionale: prototipo orizzontale o verticale;
+- scopo, ruolo, interfaccia e implementazione.
+- modo d'uso: statico, dinamico o interattivo.
+- fedeltà: bassa o alta.
+- completezza funzionale: prototipo orizzontale o verticale.
 - durata: usa e getta, evolutivo, incrementale o interattivo.
 
 #### 4.2 Test di usabilità
@@ -125,9 +125,9 @@ Specificare:
 Il template richiede di documentare:
 
 - **Obiettivi del test:** descrivere brevemente gli obiettivi.
-- **Metodologia:** specificare numero, esperienza e caratteristiche dei partecipanti; compiti e scenari; contesto e strumenti; modalità e durata delle sessioni, per ciascun partecipante e nel complesso; misure raccolte; ruolo degli osservatori e metodo di analisi.
+- **Metodologia:** specificare numero, esperienza e caratteristiche dei partecipanti. Compiti e scenari. Contesto e strumenti. Modalità e durata delle sessioni, per ciascun partecipante e nel complesso. Misure raccolte. Ruolo degli osservatori e metodo di analisi.
 - **Sintesi delle misure:** fornire una tabella dei risultati, per esempio tempi di esecuzione e percentuale dei compiti completati con successo, per ciascun partecipante e nel complesso.
-- **Analisi dei risultati:** descrivere i problemi incontrati da ciascun partecipante durante ogni compito; allegare screenshot significativi; assegnare un livello di gravità; registrare reazioni e commenti; indicare gli interventi necessari per risolvere i problemi.
+- **Analisi dei risultati:** descrivere i problemi incontrati da ciascun partecipante durante ogni compito. Allegare screenshot significativi. Assegnare un livello di gravità. Registrare reazioni e commenti. Indicare gli interventi necessari per risolvere i problemi.
 - **Sintesi delle interviste:** sintetizzare i risultati delle interviste svolte dopo il test.
 - **Raccomandazioni finali:** descrivere gli interventi migliorativi, ordinandoli per priorità e collegandoli ai problemi rilevati.
 
