@@ -24,7 +24,7 @@ Per bug e richieste, consultare le [issue aperte](https://github.com/kairosci/ae
 
 ## Esportazione DOCX
 
-Installare Pandoc e lanciare:
+Installare Pandoc 3.14, la stessa versione fissata nella CI, e lanciare:
 
 ```sh
 make docs
