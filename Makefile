@@ -7,7 +7,7 @@ OUTPUT_DIR ?= build/docs
 help:
 	@printf '%s\n' \
 	  'make docs       Generate RAD and SDD DOCX files in $(OUTPUT_DIR)' \
-	  'make check-docs  Validate local Markdown links and heading anchors' \
+	  'make check-docs  Test and validate docs, structure, traceability, and style' \
 	  'Set PANDOC=/path/to/pandoc to select a Pandoc executable'
 
 check-docs:

@@ -20,7 +20,7 @@ Per modifiche Markdown eseguire:
 make check-docs
 ```
 
-Il comando esegue i test del validatore e controlla percorsi e ancore locali, campi dei casi d’uso e tracciabilità degli ID FR/NFR/UC tra RAD e moduli SDD. Per verificare anche l’esportazione installare Pandoc ed eseguire:
+Il comando esegue i test del validatore e controlla percorsi e ancore locali, struttura numerata, campi dei casi d’uso, tracciabilità degli ID FR/NFR/UC tra RAD e moduli SDD e stile del nome e della punteggiatura. Per verificare anche l’esportazione installare Pandoc ed eseguire:
 
 ```sh
 make docs

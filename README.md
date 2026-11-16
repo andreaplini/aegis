@@ -26,6 +26,6 @@ Installare Pandoc e lanciare:
 make docs
 ```
 
-La generazione esegue prima `make check-docs`, che verifica i collegamenti locali e le ancore ai titoli. Il controllo può essere lanciato separatamente e non richiede Pandoc.
+La generazione esegue prima `make check-docs`, che verifica test del validatore, collegamenti e ancore locali, struttura dei modelli, tracciabilità RAD/SDD, casi d'uso e stile del progetto. Il controllo può essere lanciato separatamente e non richiede Pandoc.
 
 L'esportazione usa `docs/template/template.docx` come riferimento di stile. Pandoc converte Markdown in DOCX; MarkItDown svolge la direzione opposta, da documenti sorgente a Markdown.
