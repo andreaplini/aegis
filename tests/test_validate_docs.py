@@ -318,6 +318,22 @@ class MarkdownValidationTests(unittest.TestCase):
                 self.assertTrue(any("ID milestone duplicati: OPEN-01" in error for error in errors))
                 self.assertTrue(any("ID milestone non dichiarati: OPEN-02" in error for error in errors))
 
+                milestones.write_text(
+                    "## Roadmap\n"
+                    "| DOC-01 | Documentazione |\n"
+                    "## Applicazione degli sprint\n"
+                    "| DOC-01 | Documentazione completata |\n"
+                    "## Decisioni documentali ancora aperte\n"
+                    "| OPEN-01 | Decisione |\n"
+                    "## Criterio di completamento della roadmap\n"
+                    "## Milestone di ingegneria del prodotto\n"
+                    "| ENG-01 | Implementazione | ENG-01 |\n"
+                    "## Regole di avanzamento\n",
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_roadmap_ids()
+                self.assertTrue(any("ENG-01 dipende da una fase successiva o da sé stessa" in error for error in errors))
+
     def test_local_google_docs_registry_is_not_project_documentation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

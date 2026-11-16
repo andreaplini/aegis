@@ -36,6 +36,7 @@ NUMBERED_SECTION_PATTERN = re.compile(r"^(#{2,6})\s+(\d+(?:\.\d+)+)(?:\s|$)", re
 MERMAID_BLOCK_PATTERN = re.compile(r"```mermaid\s*\n(.*?)\n```", re.DOTALL)
 ROADMAP_ROW_PATTERN = re.compile(r"^\|\s*((?:DOC|OPEN|ENG)-\d{2})\s*\|", re.MULTILINE)
 ROADMAP_REFERENCE_PATTERN = re.compile(r"\b(?:DOC|OPEN|ENG)-\d{2}\b")
+ENGINEERING_DEPENDENCY_PATTERN = re.compile(r"\bENG-(\d{2})(?:[–-]ENG-(\d{2}))?\b")
 ADR_FILENAME_PATTERN = re.compile(r"ADR-(\d{4})(?:-[a-z0-9-]+)?\.md$")
 ADR_STATUSES = {"Proposto", "Accettato", "Rifiutato", "Sostituito"}
 VERIFICATION_STATUSES = {"Non eseguito", "In corso", "Superato", "Non superato", "Bloccato"}
@@ -268,6 +269,36 @@ def validate_roadmap_ids() -> list[str]:
             "docs/MILESTONES.md: riferimenti a ID milestone non dichiarati: "
             + ", ".join(undeclared)
         )
+
+    engineering_start = "## Milestone di ingegneria del prodotto"
+    engineering_end = "## Regole di avanzamento"
+    if engineering_start in content and engineering_end in content:
+        engineering_section = content.split(engineering_start, 1)[1].split(
+            engineering_end, 1
+        )[0]
+        for line in engineering_section.splitlines():
+            match = ROADMAP_ROW_PATTERN.match(line)
+            if not match or not match.group(1).startswith("ENG-"):
+                continue
+            cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+            if len(cells) < 3:
+                continue
+            milestone_id = cells[0]
+            milestone_number = int(milestone_id.removeprefix("ENG-"))
+            for dependency in ENGINEERING_DEPENDENCY_PATTERN.finditer(cells[2]):
+                first = int(dependency.group(1))
+                last = int(dependency.group(2) or dependency.group(1))
+                if last < first:
+                    errors.append(
+                        f"docs/MILESTONES.md: intervallo dei prerequisiti non valido per {milestone_id}"
+                    )
+                    continue
+                forward = [number for number in range(first, last + 1) if number >= milestone_number]
+                if forward:
+                    references = ", ".join(f"ENG-{number:02d}" for number in forward)
+                    errors.append(
+                        f"docs/MILESTONES.md: {milestone_id} dipende da una fase successiva o da sé stessa: {references}"
+                    )
     return errors
 
 
