@@ -2,6 +2,8 @@
 
 Copia integrale dei file contenuti nel pacchetto DOCX, mantenuti nei percorsi OOXML originali.
 
+`make docs` verifica che `word/document.xml` corrisponda alla parte omonima di `docs/template/template.docx`.
+
 - `[Content_Types].xml`
 - `_rels/.rels`
 - `docProps/app.xml`

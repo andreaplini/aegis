@@ -2,6 +2,8 @@
 
 Trascrizione strutturata del [documento Word originale](template/template.docx), con la gerarchia espressa in Markdown. Le voci degli indici del DOCX ripetono o azzerano alcuni numeri di sezione. Qui la numerazione segue l'ordine logico delle sezioni. Le immagini sono collegate ai file estratti dal pacchetto originale.
 
+Il pacchetto estratto è in `docs/template/assets/package/`. `make docs` verifica che il documento principale estratto resti identico a quello del DOCX sorgente.
+
 Per la struttura dei documenti basati sugli esempi accademici, usare i modelli anonimizzati [RAD](template/RAD.md) e [SDD](template/SDD.md). Questa trascrizione resta il riferimento del template Word generico.
 
 Per registrare decisioni architetturali approvate o proposte, usare il [modello ADR](template/ADR.md). Un ADR non sostituisce i requisiti RAD né la descrizione architetturale SDD.
@@ -44,7 +46,19 @@ Descrivere il sistema proposto e i principali obiettivi.
 
 #### 3.3 Requisiti non funzionali
 
-Il modello elenca queste aree: interfaccia utente e fattori umani. Documentazione. Considerazioni hardware. Prestazioni. Gestione degli errori e condizioni limite. Interfacciamento del sistema. Qualità. Modifiche del sistema. Ambiente fisico. Sicurezza. Risorse e gestione.
+Il modello elenca queste aree:
+
+- Interfaccia utente e fattori umani
+- Documentazione
+- Considerazioni hardware
+- Caratteristiche delle prestazioni
+- Gestione errori e condizioni limite
+- Interfacciamento del sistema
+- Problemi di qualità
+- Modifiche del sistema
+- Ambiente fisico
+- Problemi di sicurezza
+- Problemi di risorse e gestione
 
 Anche questi requisiti possono essere presentati in forma tabellare oppure come elenco. Esempio del modello:
 
