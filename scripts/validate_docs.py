@@ -95,11 +95,18 @@ def validate_traceability() -> list[str]:
     rad_path = ROOT / "docs/RAD.md"
     sdd_path = ROOT / "docs/SDD.md"
     rad_ids = set(TRACE_ID_PATTERN.findall(rad_path.read_text(encoding="utf-8")))
-    sdd_ids = set(TRACE_ID_PATTERN.findall(sdd_path.read_text(encoding="utf-8")))
-    missing = sorted(rad_ids - sdd_ids)
+    sdd_text = sdd_path.read_text(encoding="utf-8")
+    section_start = "### 3.2 DECOMPOSIZIONE DEL SISTEMA"
+    section_end = "#### 3.2.1 DIAGRAMMA DEI MODULI"
+    if section_start not in sdd_text or section_end not in sdd_text:
+        return ["docs/SDD.md: sezione di decomposizione dei moduli non trovata"]
+
+    module_section = sdd_text.split(section_start, 1)[1].split(section_end, 1)[0]
+    module_ids = set(TRACE_ID_PATTERN.findall(module_section))
+    missing = sorted(rad_ids - module_ids)
     if not missing:
         return []
-    return [f"docs/SDD.md: requisiti o casi d’uso RAD non tracciati: {', '.join(missing)}"]
+    return [f"docs/SDD.md: requisiti o casi d’uso RAD non mappati a un modulo: {', '.join(missing)}"]
 
 
 def main() -> int:

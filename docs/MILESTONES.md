@@ -55,7 +55,7 @@ La roadmap documentale è applicata quando tutti gli sprint hanno raggiunto il c
 
 ## Baseline ingegneristica
 
-Alla revisione del 16 novembre 2026, `src/` contiene solo `.gitkeep` e `config/data/` è vuota. Non sono presenti build applicativa, moduli software, ambienti container o test applicativi. L'unica build automatizzata genera i documenti DOCX; l'ultima esecuzione osservata della GitHub Action per questo scopo è riuscita sul commit `7ff2376`. Questa baseline separa il funzionamento della documentazione dallo stato del prodotto.
+Alla revisione del 16 novembre 2026, `src/` contiene solo `.gitkeep` e `config/data/` è vuota. Non sono presenti build applicativa, moduli software, ambienti container o test applicativi. L'unica build automatizzata genera i documenti DOCX; la GitHub Action è stata verificata con successo durante questa revisione. Questa baseline separa il funzionamento della documentazione dallo stato del prodotto.
 
 ## Milestone di ingegneria del prodotto
 
