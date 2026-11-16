@@ -14,7 +14,7 @@ Il repository contiene la baseline documentale e l'esportazione automatizzata di
 | `config/data/` | Dati e configurazioni del progetto. |
 | `src/` | Codice applicativo. |
 | `.agents/skills/` | Skill Codex specifiche del progetto. |
-| `.github/workflows/` | Automazioni CI. |
+| `.github/` | Workflow CI, Dependabot e collegamento issue alla segnalazione privata delle vulnerabilità. |
 
 La documentazione e tutti i relativi template e materiali di supporto risiedono in `docs/`. Il DOCX sorgente è il riferimento di stile e struttura; i DOCX esportati non sono versionati: il target `make docs` li genera e ne verifica archivio, contenuto e stile in `build/docs/`. La GitHub Action esegue lo stesso target e pubblica i due DOCX come artifact.
 

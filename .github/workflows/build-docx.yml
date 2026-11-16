@@ -11,6 +11,7 @@ on:
       - 'AGENTS.md'
       - 'Makefile'
       - 'config/tool-versions.env'
+      - '.github/ISSUE_TEMPLATE/**'
       - 'README.md'
       - '.github/workflows/build-docx.yml'
   pull_request:
@@ -22,6 +23,7 @@ on:
       - 'AGENTS.md'
       - 'Makefile'
       - 'config/tool-versions.env'
+      - '.github/ISSUE_TEMPLATE/**'
       - 'README.md'
       - '.github/workflows/build-docx.yml'
   workflow_dispatch:

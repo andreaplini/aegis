@@ -54,6 +54,7 @@ Verifica di sola lettura del repository `kairosci/aegis` il 16 novembre 2026:
 | Dependabot security updates | Abilitati |
 | Secret scanning e push protection | Abilitati |
 | Segnalazione privata delle vulnerabilità GitHub | Abilitata |
+| Collegamento al report privato nel flusso issue | Configurato in `.github/ISSUE_TEMPLATE/config.yml` |
 | Release | Nessuna release pubblicata |
 
-La configurazione Dependabot apre pull request settimanali per gli aggiornamenti di versione delle GitHub Actions. Gli avvisi, gli aggiornamenti di sicurezza e la segnalazione privata delle vulnerabilità sono attivi. Per inviare una vulnerabilità usare la funzione privata nella pagina Security del repository, non le issue pubbliche. Il proprietario deve ancora decidere la licenza e i termini di contribuzione, la protezione di `main`, le review e gli status check obbligatori e la policy di merge.
+La configurazione Dependabot apre pull request settimanali per gli aggiornamenti di versione delle GitHub Actions. Gli avvisi, gli aggiornamenti di sicurezza e la segnalazione privata delle vulnerabilità sono attivi. Il flusso “New issue” mostra il collegamento al report privato. Il proprietario deve ancora decidere la licenza e i termini di contribuzione, la protezione di `main`, le review e gli status check obbligatori e la policy di merge.
