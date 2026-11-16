@@ -69,6 +69,7 @@ Questo documento descrive l’architettura software proposta per aegis e dettagl
 | [ADR-0001: Baseline Java e Jakarta EE](adr/ADR-0001-runtime-baseline.md) | Proposta non approvata per la baseline runtime. Include le fonti ufficiali consultate. |
 | [ADR-0002: Validità dei dati e coerenza della cache](adr/ADR-0002-data-freshness-and-cache-consistency.md) | Proposta non approvata per regole di validità per fonte e tipo e consistenza delle cache. |
 | [ADR-0003: Contratto del provider di routing accessibile](adr/ADR-0003-routing-provider-contract.md) | Proposta non approvata per il contratto, la compatibilità e il fallback del routing. |
+| [ADR-0004: Contratto di identità e autorizzazione](adr/ADR-0004-identity-and-authorization-contract.md) | Proposta non approvata per autorizzazione lato server, identità operative e accesso al tracking. |
 | Specifica OpenAPI | Da generare e versionare insieme all’API. |
 | Documentazione Jakarta EE e PostGIS | Riferimenti tecnici da associare alle versioni selezionate. |
 
@@ -241,11 +242,11 @@ Il worker elimina le chiavi delle generazioni non più attive dopo il commit. Un
 
 ### 3.5 CONTROLLO ACCESSI E SICUREZZA
 
-Il controllo accessi è applicato lato server. Le policy di identità per invio, tracking e moderazione, i tempi di conservazione e il consenso delle immagini sono da definire prima del lancio.
+Il controllo accessi è applicato lato server. Il contratto proposto per autenticazione e autorizzazione, incluse identità operative e protezione del tracking, è descritto in [ADR-0004](adr/ADR-0004-identity-and-authorization-contract.md) e resta da approvare. Modalità di invio, ruoli, campi accessibili, tempi di conservazione e consenso delle immagini sono da definire secondo OPEN-04 e OPEN-05 prima del lancio.
 
 #### 3.5.1 AUTENTICAZIONE E IDENTITÀ
 
-La consultazione di luoghi e percorsi è pubblica secondo le policy applicabili. Le funzioni riservate richiedono un’identità autenticata e un ruolo autorizzato. Il provider d’identità e i relativi protocolli non sono ancora selezionati. Le credenziali e i segreti non sono conservati nei log né nel codice applicativo.
+La consultazione di luoghi e percorsi è pubblica secondo le policy applicabili. Le funzioni riservate richiedono un’identità autenticata e un permesso verificato lato server. Il provider d’identità e i relativi protocolli non sono ancora selezionati. Le credenziali e i segreti non sono conservati nei log né nel codice applicativo. Per invio, tracking e identità dei processi automatici si applica la proposta non approvata in [ADR-0004](adr/ADR-0004-identity-and-authorization-contract.md).
 
 #### 3.5.2 CONTROLLO DEGLI ACCESSI AI DATI
 
