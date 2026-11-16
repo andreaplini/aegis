@@ -33,13 +33,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Verifica documentazione e regole di progetto
         run: make check-docs
 
       - name: Installa Pandoc
-        uses: pandoc/actions/setup@v1
+        uses: pandoc/actions/setup@86321b6dd4675f5014c611e05088e10d4939e09e # v1
 
       - name: Genera i DOCX
         run: |
@@ -48,7 +48,7 @@ jobs:
           pandoc --from=gfm --to=docx --standalone --reference-doc=docs/template/template.docx docs/SDD.md --output=build/docs/sdd-is.docx
 
       - name: Pubblica i DOCX come artifact
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: documentazione-docx
           path: build/docs/*.docx
