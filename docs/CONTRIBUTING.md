@@ -50,11 +50,12 @@ Verifica di sola lettura del repository `kairosci/aegis` il 16 novembre 2026:
 | Licenza dichiarata su GitHub | Non configurata |
 | Issues | Abilitate |
 | Protezione di `main` e ruleset | Non configurati |
-| Avvisi di vulnerabilità Dependabot | Abilitati |
+| Avvisi di vulnerabilità Dependabot | Abilitati per le dipendenze rilevate |
 | Dependabot security updates | Abilitati |
+| Aggiornamenti Dependabot | GitHub Actions e strumenti Node documentali, controllo settimanale |
 | Secret scanning e push protection | Abilitati |
 | Segnalazione privata delle vulnerabilità GitHub | Abilitata |
 | Collegamento al report privato nel flusso issue | Configurato in `.github/ISSUE_TEMPLATE/config.yml` |
 | Release | Nessuna release pubblicata |
 
-La configurazione Dependabot apre pull request settimanali per gli aggiornamenti di versione delle GitHub Actions. Gli avvisi, gli aggiornamenti di sicurezza e la segnalazione privata delle vulnerabilità sono attivi. Il flusso “New issue” mostra il collegamento al report privato e la [politica di sicurezza](SECURITY.md) ne descrive l'uso. Il proprietario deve ancora decidere la licenza e i termini di contribuzione, la protezione di `main`, le review e gli status check obbligatori e la policy di merge.
+La configurazione Dependabot apre pull request settimanali per gli aggiornamenti di versione delle GitHub Actions e degli strumenti Node documentali. La CI esegue `npm audit` sugli strumenti e blocca la build per vulnerabilità ad alta o critica gravità. Gli avvisi, gli aggiornamenti di sicurezza e la segnalazione privata delle vulnerabilità sono attivi. Il flusso “New issue” mostra il collegamento al report privato e la [politica di sicurezza](SECURITY.md) ne descrive l'uso. Il proprietario deve ancora decidere la licenza e i termini di contribuzione, la protezione di `main`, le review e gli status check obbligatori e la policy di merge.

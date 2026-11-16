@@ -13,6 +13,7 @@ on:
       - 'config/tool-versions.env'
       - 'config/documentation/**'
       - '.github/ISSUE_TEMPLATE/**'
+      - '.github/dependabot.yml'
       - 'README.md'
       - '.github/workflows/build-docx.yml'
   pull_request:
@@ -26,6 +27,7 @@ on:
       - 'config/tool-versions.env'
       - 'config/documentation/**'
       - '.github/ISSUE_TEMPLATE/**'
+      - '.github/dependabot.yml'
       - 'README.md'
       - '.github/workflows/build-docx.yml'
   workflow_dispatch:
@@ -49,6 +51,9 @@ jobs:
 
       - name: Installa gli strumenti Mermaid
         run: npm ci --prefix config/documentation
+
+      - name: Verifica vulnerabilità degli strumenti Node
+        run: npm audit --prefix config/documentation --audit-level=high
 
       - name: Installa Chromium headless
         run: npm exec --prefix config/documentation -- puppeteer browsers install chrome-headless-shell
