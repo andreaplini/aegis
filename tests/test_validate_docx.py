@@ -25,6 +25,7 @@ def write_docx(
     story_parts: dict[str, str] | None = None,
     diagram_count: int = 0,
     diagram_descriptions: list[str] | None = None,
+    personal_metadata: dict[str, str] | None = None,
 ) -> None:
     document = ElementTree.Element(f"{{{WORD_NAMESPACE}}}document")
     body = ElementTree.SubElement(document, f"{{{WORD_NAMESPACE}}}body")
@@ -76,6 +77,21 @@ def write_docx(
         package.writestr("[Content_Types].xml", ElementTree.tostring(content_types))
         package.writestr("_rels/.rels", ElementTree.tostring(relationships))
         package.writestr("word/document.xml", ElementTree.tostring(document))
+        if personal_metadata is not None:
+            properties = ElementTree.Element(
+                "{http://schemas.openxmlformats.org/package/2006/metadata/core-properties}coreProperties"
+            )
+            metadata_tags = {
+                "creator": "{http://purl.org/dc/elements/1.1/}creator",
+                "lastModifiedBy": (
+                    "{http://schemas.openxmlformats.org/package/2006/metadata/core-properties}"
+                    "lastModifiedBy"
+                ),
+            }
+            for name, value in personal_metadata.items():
+                node = ElementTree.SubElement(properties, metadata_tags[name])
+                node.text = value
+            package.writestr("docProps/core.xml", ElementTree.tostring(properties))
         for part_name, part_text in (story_parts or {}).items():
             story_kind = Path(part_name).stem.rstrip("0123456789")
             story = ElementTree.Element(f"{{{WORD_NAMESPACE}}}{story_kind}")
@@ -164,6 +180,17 @@ class DocxValidationTests(unittest.TestCase):
             write_docx(path, "aegis\nSOMMARIO")
             errors = validate_docx.validate_document(path, ("GLOSSARIO",))
             self.assertTrue(any("GLOSSARIO" in error for error in errors))
+
+    def test_rejects_personal_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "rad-is.docx"
+            write_docx(
+                path,
+                "aegis\nTitolo documento",
+                personal_metadata={"creator": "Autore", "lastModifiedBy": "Revisore"},
+            )
+            errors = validate_docx.validate_document(path, ("Titolo documento",))
+            self.assertTrue(any("metadati personali" in error for error in errors))
 
 
 if __name__ == "__main__":

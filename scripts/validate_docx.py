@@ -14,6 +14,8 @@ WORD_NAMESPACE = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}
 DRAWING_NAMESPACE = "{http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing}"
 CONTENT_TYPES_NAMESPACE = "{http://schemas.openxmlformats.org/package/2006/content-types}"
 PACKAGE_RELATIONSHIPS_NAMESPACE = "{http://schemas.openxmlformats.org/package/2006/relationships}"
+CORE_PROPERTIES_NAMESPACE = "{http://schemas.openxmlformats.org/package/2006/metadata/core-properties}"
+DC_NAMESPACE = "{http://purl.org/dc/elements/1.1/}"
 OFFICE_DOCUMENT_RELATIONSHIP = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"
 DOCUMENT_CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
 REQUIRED_PARTS = {"[Content_Types].xml", "_rels/.rels", "word/document.xml"}
@@ -95,6 +97,23 @@ def document_diagram_descriptions(path: Path) -> list[str]:
     ]
 
 
+def document_personal_metadata(path: Path) -> list[str]:
+    with zipfile.ZipFile(path) as package:
+        if "docProps/core.xml" not in package.namelist():
+            return []
+        properties = ElementTree.fromstring(package.read("docProps/core.xml"))
+
+    personal_fields = (
+        (f"{DC_NAMESPACE}creator", "autore"),
+        (f"{CORE_PROPERTIES_NAMESPACE}lastModifiedBy", "ultimo modificatore"),
+    )
+    return [
+        label
+        for tag, label in personal_fields
+        if (node := properties.find(tag)) is not None and (node.text or "").strip()
+    ]
+
+
 def validate_document(path: Path, required_text: tuple[str, ...] | None = None) -> list[str]:
     expected = required_text or REQUIRED_TEXT.get(path.name)
     if expected is None:
@@ -108,6 +127,15 @@ def validate_document(path: Path, required_text: tuple[str, ...] | None = None) 
         return [f"{path}: DOCX non leggibile: {error}"]
 
     errors = [f"{path}: testo richiesto mancante: {marker}" for marker in expected if marker not in text]
+    try:
+        personal_metadata = document_personal_metadata(path)
+    except (OSError, KeyError, ValueError, zipfile.BadZipFile, ElementTree.ParseError) as error:
+        errors.append(f"{path}: impossibile verificare i metadati personali: {error}")
+    else:
+        if personal_metadata:
+            errors.append(
+                f"{path}: rimuovere i metadati personali: {', '.join(personal_metadata)}"
+            )
     if not PRODUCT_NAME_PATTERN.search(text):
         errors.append(f"{path}: nome progetto aegis non trovato")
     if any(match.group(0) != "aegis" for match in PRODUCT_NAME_PATTERN.finditer(text)):
