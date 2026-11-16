@@ -107,7 +107,7 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 
 #### REGISTRO DELLE VERIFICHE NFR
 
-Registrare l’esito effettivamente osservato e un riferimento consultabile all’evidenza. Finché la verifica non è eseguita, usare `Non eseguito` e `Da registrare`.
+Registrare l’esito effettivamente osservato e un collegamento consultabile all’evidenza. Usare uno stato tra `Non eseguito`, `In corso`, `Superato`, `Non superato` e `Bloccato`. Per `Non eseguito` usare il riferimento `Da registrare`. Per gli altri stati collegare l’evidenza che documenta risultato o impedimento.
 
 | ID | Esito osservato | Riferimento evidenza |
 |---|---|---|

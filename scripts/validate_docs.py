@@ -38,6 +38,7 @@ ROADMAP_ROW_PATTERN = re.compile(r"^\|\s*((?:DOC|OPEN|ENG)-\d{2})\s*\|", re.MULT
 ROADMAP_REFERENCE_PATTERN = re.compile(r"\b(?:DOC|OPEN|ENG)-\d{2}\b")
 ADR_FILENAME_PATTERN = re.compile(r"ADR-(\d{4})(?:-[a-z0-9-]+)?\.md$")
 ADR_STATUSES = {"Proposto", "Accettato", "Rifiutato", "Sostituito"}
+NFR_VERIFICATION_STATUSES = {"Non eseguito", "In corso", "Superato", "Non superato", "Bloccato"}
 
 
 def markdown_files() -> list[Path]:
@@ -535,6 +536,15 @@ def validate_non_functional_requirements() -> list[str]:
             evidence_ids.append(requirement_id)
             if len(cells) != len(evidence_headers) or not all(cells[1:]):
                 errors.append(f"docs/RAD.md: {requirement_id} deve avere esito osservato e riferimento evidenza")
+                continue
+            result, evidence_reference = cells[1:]
+            if result not in NFR_VERIFICATION_STATUSES:
+                errors.append(f"docs/RAD.md: {requirement_id} ha uno stato di verifica NFR non valido")
+            if result == "Non eseguito":
+                if evidence_reference != "Da registrare":
+                    errors.append(f"docs/RAD.md: {requirement_id} non eseguito deve avere il riferimento `Da registrare`")
+            elif not LINK_PATTERN.search(evidence_reference):
+                errors.append(f"docs/RAD.md: {requirement_id} con verifica avviata deve collegare un’evidenza consultabile")
         else:
             ids.append(requirement_id)
             if len(cells) != len(expected_headers) or not all(cells[1:]):

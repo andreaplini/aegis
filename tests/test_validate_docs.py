@@ -307,7 +307,7 @@ class MarkdownValidationTests(unittest.TestCase):
             docs = root / "docs"
             docs.mkdir()
             rad = docs / "RAD.md"
-            rad.write_text(
+            valid_content = (
                 "### 3.3 REQUISITI NON FUNZIONALI\n"
                 "| ID | Qualità | Azione richiesta | Criterio di verifica | Responsabile dell’accettazione |\n"
                 "|---|---|---|---|---|\n"
@@ -316,9 +316,9 @@ class MarkdownValidationTests(unittest.TestCase):
                 "| ID | Esito osservato | Riferimento evidenza |\n"
                 "|---|---|---|\n"
                 "| NFR-01 | Non eseguito | Da registrare |\n"
-                "### 3.4 VINCOLI\n",
-                encoding="utf-8",
+                "### 3.4 VINCOLI\n"
             )
+            rad.write_text(valid_content, encoding="utf-8")
 
             with patch.object(validate_docs, "ROOT", root):
                 self.assertEqual(validate_docs.validate_non_functional_requirements(), [])
@@ -346,6 +346,20 @@ class MarkdownValidationTests(unittest.TestCase):
                 )
                 errors = validate_docs.validate_non_functional_requirements()
                 self.assertTrue(any("ID del registro verifiche NFR" in error for error in errors))
+                rad.write_text(valid_content.replace("| Non eseguito |", "| Superato |"), encoding="utf-8")
+                errors = validate_docs.validate_non_functional_requirements()
+                self.assertTrue(any("collegare un’evidenza consultabile" in error for error in errors))
+                rad.write_text(
+                    valid_content.replace("| Non eseguito | Da registrare |", "| Superato | [Rapporto](evidence/NFR-01.md) |"),
+                    encoding="utf-8",
+                )
+                self.assertEqual(validate_docs.validate_non_functional_requirements(), [])
+                rad.write_text(
+                    valid_content.replace("| Non eseguito |", "| Approvato |"),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_non_functional_requirements()
+                self.assertTrue(any("stato di verifica NFR non valido" in error for error in errors))
 
     def test_fenced_code_is_ignored_when_scanning_links(self) -> None:
         text = """[valid](docs.md)
