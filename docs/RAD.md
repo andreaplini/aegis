@@ -104,7 +104,7 @@ I criteri descrivono risultati osservabili ricavati dai flussi dei casi d’uso 
 | FR-09 | Una transizione ammessa aggiorna stato ed evento nella stessa transazione. Una transizione non valida non modifica i dati. |
 | FR-10 | Solo una generazione completa e validata viene pubblicata. Versione, timestamp, controlli ed esito sono registrati. Un errore mantiene i dati validi precedenti. |
 | FR-11 | Dopo la pubblicazione di un aggiornamento urgente viene invalidata la cache dell’area interessata. L’operazione resta recuperabile in caso di interruzione. |
-| FR-12 | Una notifica è pianificata solo quando preferenze, autorizzazioni e consensi configurati la consentono. Un errore del canale non annulla il caso d’uso già completato e resta osservabile e recuperabile secondo la policy da definire in OPEN-08. Canali e policy restano da definire. |
+| FR-12 | L’intenzione di notifica è registrata solo quando preferenze, autorizzazioni e consensi configurati la consentono. La consegna avviene in modo asincrono. Un errore del canale non annulla il caso d’uso già completato e resta osservabile e recuperabile secondo la policy da definire in OPEN-08. Un esito ambiguo non è presentato come consegna confermata. Retry e gestione dei possibili duplicati seguono la policy da approvare. Canali e policy restano da definire. |
 | FR-13 | La consultazione pubblica non richiede autenticazione. Le operazioni riservate sono rifiutate lato server quando identità o ruolo non sono autorizzati. |
 
 #### REGISTRO DELLE VERIFICHE FR
@@ -139,8 +139,8 @@ Registrare l’esito effettivamente osservato e un collegamento consultabile all
 | NFR-06 | Sicurezza | Applicare rate limiting, validazione server-side e protezione da injection agli endpoint. | Provare input malformati e injection. Verificare il rifiuto senza effetti parziali e il comportamento del rate limiting rispetto alle soglie approvate. | Responsabile sicurezza, da designare |
 | NFR-07 | Sicurezza | Controllare gli upload per tipo, dimensione e contenuto prima dell’uso o pubblicazione. | Provare file ammessi, non validi e con scansione fallita. Verificare rifiuto o quarantena e accesso controllato ai file. | Responsabile sicurezza, da designare |
 | NFR-08 | Affidabilità dati | Esporre provenienza e freschezza e applicare scadenze per fonte e tipo di dato. | Verificare fonte, timestamp e validità. Testare dati assenti, scaduti e incoerenti e confermare che risultino sconosciuti. Con pubblicazioni concorrenti, verificare che ogni risposta e chiave cache usino un vettore coerente delle generazioni attive. | Responsabile dati, da designare |
-| NFR-09 | Operatività | Produrre log strutturati senza dati sensibili e metriche operative. | In ambiente concordato verificare log e metriche di disponibilità, latenza, sincronizzazioni e coda di moderazione. Controllare che log e allarmi non espongano dati sensibili. | Responsabile operativo, da designare |
-| NFR-10 | Continuità | Configurare allarmi e backup automatici e svolgere prove di ripristino. | Eseguire e registrare una prova di ripristino e verificare l’integrità dei dati. Approvare gli obiettivi di ripristino prima del lancio. | Responsabile operativo, da designare |
+| NFR-09 | Operatività | Produrre log strutturati senza dati sensibili e metriche operative. | In ambiente concordato verificare log e metriche di disponibilità, latenza, sincronizzazioni, coda di moderazione e stato delle notifiche pendenti. Controllare che log e allarmi non espongano dati sensibili. | Responsabile operativo, da designare |
+| NFR-10 | Continuità | Configurare allarmi e backup automatici e svolgere prove di ripristino. | Eseguire e registrare una prova di ripristino. Verificare integrità, riferimenti tra dati e oggetti e ripresa dei lavori asincroni pendenti, inclusi gli esiti di notifica ambigui. Approvare gli obiettivi di ripristino prima del lancio. | Responsabile operativo, da designare |
 | NFR-11 | Performance | Misurare e mantenere entro soglie concordate la latenza API e il caricamento delle viste principali. | Misurare p95 in staging con concorrenza e dataset approvati. Il requisito non è valutabile finché target e carico non sono concordati. | Responsabile operativo, da designare |
 | NFR-12 | Compatibilità | Versionare le API e applicare migrazioni compatibili con le versioni applicative in distribuzione. | Verificare in prova di rilascio che le versioni applicative attive durante la migrazione possano completare le operazioni previste. | Responsabile tecnico, da designare |
 | NFR-13 | Usabilità | Rendere i flussi principali comprensibili e coerenti, con feedback sul completamento delle operazioni. | Svolgere sessioni con compiti e criteri approvati, registrare misure e problemi osservati e riportare gli esiti nel RAD. | Responsabile di prodotto, da designare |
@@ -329,6 +329,8 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | `AccessibilityFeature` | Rappresenta una caratteristica con stato esplicito, fonte, timestamp e validità, associata a un luogo. |
 | `Report` | Rappresenta luogo/geometria, categoria, descrizione, stato, date e riferimento protetto per tracking. |
 | `ReportEvent` | Registra in modo append-only attore, timestamp, decisione e riferimento a un eventuale duplicato. |
+| `NotificationIntent` | Rappresenta un’intenzione di notifica autorizzata, collegata all’evento che l’ha generata e con esito tecnico registrabile. |
+| `NotificationAttemptState` | Stato tecnico di un tentativo di notifica. Valori e transizioni sono da definire secondo OPEN-08. |
 | `SourceSync` | Registra fonte, versione, esito, timestamp e controlli di qualità. |
 | `UserAccount` | Rappresenta identità e ruoli. I dati identificativi sono separati dai contenuti pubblici. |
 | `DataSource` | Rappresenta una fonte con identificativo, responsabile, versione e regola di validità da definire. |
@@ -359,11 +361,11 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 
 #### 3.5.5 DIAGRAMMA DELLE CLASSI
 
-Il diagramma riassume le associazioni concettuali tra luoghi, caratteristiche di accessibilità, segnalazioni, eventi, coordinate e fonti.
+Il diagramma riassume le associazioni concettuali tra luoghi, caratteristiche di accessibilità, segnalazioni, eventi, intenzioni di notifica, coordinate e fonti.
 
 ```mermaid
 classDiagram
-  accDescr: Relazioni concettuali tra luoghi, caratteristiche, segnalazioni, eventi e fonti.
+  accDescr: Relazioni concettuali tra luoghi, caratteristiche, segnalazioni, eventi, intenzioni di notifica e fonti.
   class Place {
     PlaceId id
     String name
@@ -386,6 +388,11 @@ classDiagram
     ReportEventId id
     ModerationDecision decision
     Instant occurredAt
+  }
+  class NotificationIntent {
+    NotificationIntentId id
+    NotificationAttemptState state
+    Instant createdAt
   }
   class DataSource {
     SourceId id
@@ -413,6 +420,7 @@ classDiagram
   Place --> TransitStop
   TransitLine --> TransitStop
   Report --> ReportEvent
+  ReportEvent --> NotificationIntent
   Report --> GeoPoint
   Place --> GeoPoint
   AccessibilityFeature --> DataSource
@@ -473,17 +481,31 @@ Il diagramma mostra lo scambio tra segnalatore, API, caso d’uso e repository d
 
 ```mermaid
 sequenceDiagram
-  accDescr: L'API valida i dati e crea segnalazione ed evento in modo atomico.
+  accDescr: L'API salva segnalazione, evento e intenzione di notifica autorizzata in modo atomico. Un worker invia la notifica dopo il commit e registra gli esiti.
   actor S as Segnalatore
   participant API as Reports API
   participant UC as CreateReport
   participant Repo as ReportRepository
+  participant W as NotificationWorker
+  participant N as NotificationPort
   S->>API: POST segnalazione
   API->>UC: input validato
-  UC->>Repo: salva Report + ReportEvent
-  Repo-->>UC: report persistito
+  UC->>Repo: salva Report + ReportEvent + intenzione autorizzata
+  Repo-->>UC: commit completato
   UC-->>API: tracking code e stato
   API-->>S: conferma invio
+  opt Intenzione di notifica presente
+    W->>Repo: Legge intenzione pendente
+    Repo-->>W: Intenzione e riferimento
+    W->>N: Richiede l'invio
+    alt Provider conferma l'accettazione
+      N-->>W: Accettazione confermata
+      W->>Repo: Registra l'esito
+    else Errore o esito ambiguo
+      N-->>W: Esito non confermato
+      W->>Repo: Registra stato recuperabile
+    end
+  end
 ```
 
 Le transizioni ammesse di moderazione e gli stati completi del report sono da definire nel modello di dominio.
@@ -516,22 +538,36 @@ Il diagramma descrive la verifica della transizione e la registrazione atomica d
 
 ```mermaid
 sequenceDiagram
-  accDescr: La moderazione valida la transizione e registra stato ed evento nella stessa operazione.
+  accDescr: La moderazione registra transizione, evento e intenzione di notifica autorizzata in modo atomico. Un worker invia la notifica dopo il commit e registra gli esiti.
   actor M as Moderatore
   participant UI as Pannello moderazione
   participant API as API moderazione
   participant UC as ModerateReport
   participant Repo as ReportRepository
+  participant W as NotificationWorker
+  participant N as NotificationPort
   M->>UI: Seleziona decisione e motivazione
   UI->>API: Invia decisione
   API->>UC: Comando autorizzato
   UC->>Repo: Carica report e cronologia
   Repo-->>UC: Stato corrente
   UC->>UC: Verifica transizione
-  UC->>Repo: Salva stato ed evento
+  UC->>Repo: Salva stato, evento e intenzione autorizzata
   Repo-->>UC: Operazione completata
   UC-->>API: Esito
   API-->>UI: Conferma o errore
+  opt Intenzione di notifica presente
+    W->>Repo: Legge intenzione pendente
+    Repo-->>W: Intenzione e riferimento
+    W->>N: Richiede l'invio
+    alt Provider conferma l'accettazione
+      N-->>W: Accettazione confermata
+      W->>Repo: Registra l'esito
+    else Errore o esito ambiguo
+      N-->>W: Esito non confermato
+      W->>Repo: Registra stato recuperabile
+    end
+  end
 ```
 
 ##### Sincronizzazione di una fonte

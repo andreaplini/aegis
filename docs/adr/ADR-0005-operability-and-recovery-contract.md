@@ -10,7 +10,7 @@
 | Data | 16 novembre 2026 |
 | Responsabile | Responsabile operativo, da designare |
 | Revisori | Responsabile tecnico e responsabile dati, da designare |
-| Requisiti correlati | NFR-08, NFR-09, NFR-10, NFR-11, NFR-14, NFR-15, NFR-16, OPEN-02, OPEN-07, OPEN-08, ENG-02 ed ENG-08 |
+| Requisiti correlati | FR-12, NFR-08, NFR-09, NFR-10, NFR-11, NFR-14, NFR-15, NFR-16, UC-03, UC-05, OPEN-02, OPEN-07, OPEN-08, ENG-02, ENG-06 ed ENG-08 |
 
 ## Contesto e problema
 
@@ -42,11 +42,18 @@ La documentazione non definisce ancora come distinguere un ritardo recuperabile 
 
 Definire un contratto operativo indipendente dagli strumenti. Ogni servizio deve produrre segnali sufficienti per rilevare guasti, misurare gli obiettivi approvati e seguire una procedura di risposta documentata.
 
+Per la consegna delle notifiche sono state considerate tre strategie:
+
+- Invio diretto dopo il commit. È semplice, ma un arresto tra il commit del caso e l’invio può perdere la notifica senza lasciare un lavoro recuperabile.
+- Outbox transazionale. L’intenzione di invio viene persistita nella stessa transazione del report e dell’evento iniziale oppure della transizione e del relativo evento di moderazione. Se il provider non risponde in modo conclusivo, il worker conserva l’esito ambiguo per riconciliazione. Questa strategia è la proposta perché evita la finestra di perdita tra il commit e la registrazione dell’intenzione, senza dichiarare consegna esattamente una volta.
+- Transazione distribuita con il provider. Richiederebbe supporto transazionale compatibile dal provider e accoppierebbe disponibilità e tecnologia esterna alla transazione applicativa. Non è selezionata come baseline.
+
 - Registrare log strutturati con identificativo di correlazione, operazione, esito e riferimenti tecnici necessari alla diagnosi. Escludere credenziali, codici di tracking, descrizioni delle segnalazioni e dati personali non necessari. Accesso e conservazione seguono OPEN-05 e OPEN-08.
 - Raccogliere almeno disponibilità e latenza delle API, errori per operazione, ritardo e fallimenti delle sincronizzazioni, lavori di pulizia cache pendenti, anzianità e dimensione delle code e risultato delle notifiche. Le metriche non devono usare identificativi personali o etichette ad alta cardinalità. Finestre, soglie e obiettivi sono approvati in OPEN-07.
 - Associare a ogni allarme un impatto osservabile, un responsabile, una procedura e un criterio di chiusura. Verificare gli allarmi con eventi controllati prima del pilota. Canali e reperibilità sono scelti in OPEN-08.
 - Persistire i lavori asincroni accettati prima dell’esecuzione. Retry, backoff, timeout e numero massimo di tentativi sono configurabili per tipo di lavoro e approvati in OPEN-08. Dopo l’esaurimento dei tentativi, il lavoro resta consultabile e recuperabile da un operatore. Non eliminarlo né segnalarlo come riuscito senza evidenza.
-- Rendere idempotenti gli effetti ripetibili. Per notifiche e altri effetti esterni, registrare l’intenzione in modo durevole e riconciliare esiti ambigui prima di ripetere l’invio, così un arresto non genera duplicati silenziosi. Il meccanismo concreto resta da selezionare con il runtime e il provider di notifica.
+- Per le notifiche consentite da FR-12, registrare l’intenzione di invio in un outbox nella stessa transazione che persiste il report e l’evento iniziale oppure la transizione e il relativo evento di moderazione. Un worker legge le intenzioni solo dopo il commit e registra gli esiti senza includere segreti o dati personali non necessari. Destinatari, contenuto, accesso, conservazione e cancellazione sono soggetti alle decisioni OPEN-04 e OPEN-05.
+- Rendere idempotente l’elaborazione delle intenzioni. Se l’esito del provider è ambiguo, conservare uno stato da riconciliare prima di un nuovo tentativo. Il sistema non dichiara consegna esattamente una volta. Se il provider non offre idempotenza o verifica dell’esito, il rischio di invio duplicato e la regola di recupero devono essere valutati e approvati in OPEN-08. Retry, backoff, timeout, tentativi massimi e azione operativa restano da definire. Il meccanismo concreto di persistenza e il provider restano da selezionare.
 - Definire backup e ripristino congiuntamente per database e object storage. Registrare copertura, data, esito e integrità delle copie. La procedura di ripristino riconcilia i riferimenti tra record e oggetti e verifica che le policy di accesso continuino ad applicarsi.
 - Prima del pilota, eseguire una prova documentata di ripristino in ambiente isolato. Verificare integrità relazionale e degli oggetti, ripresa dei lavori pendenti, comportamento delle cache e assenza di notifiche duplicate. Confrontare i tempi osservati con gli obiettivi approvati in OPEN-07.
 - Mantenere runbook revisionati per incidenti, ripristino, migrazioni e rollback. Ogni procedura indica prerequisiti, responsabile, passi verificabili, criteri di arresto e registrazione dell’esito.
@@ -72,7 +79,8 @@ Non approvata. Il responsabile operativo e il responsabile tecnico devono selezi
 |---|---|---|---|
 | Obiettivi OPEN-07 approvati | Carichi, soglie, finestre di misura, disponibilità e obiettivi di ripristino hanno unità, ambito, responsabile e fonte | Responsabile operativo, da designare | In attesa |
 | Inventario di segnali e allarmi | Ogni segnale ha definizione, scopo, trattamento dei dati e allarmi associati con procedura e responsabile | Responsabile operativo e responsabile privacy, da designare | In attesa |
-| Prova di recupero dei worker | Interruzione, retry, esaurimento dei tentativi e ripresa sono osservabili e non perdono né duplicano effetti | Responsabile tecnico e operativo, da designare | Non eseguito |
+| Prova di recupero dei worker | Interruzione, retry, esaurimento dei tentativi e ripresa sono osservabili. Il lavoro non è perso e gli effetti possibili duplicati sono gestiti secondo la regola approvata | Responsabile tecnico e operativo, da designare | Non eseguito |
+| Prova dell’outbox notifiche | Intenzione e modifica di dominio sono persistite nella stessa transazione. Un arresto dopo il commit lascia l’invio recuperabile. Gli esiti ambigui non sono registrati come consegnati senza evidenza né ritentati senza applicare la regola approvata | Responsabile tecnico e operativo, da designare | Non eseguito |
 | Prova di ripristino con database e oggetti | Integrità verificata, riferimenti coerenti e tempi confrontati con gli obiettivi approvati | Responsabile operativo e responsabile dati, da designare | Non eseguito |
 | Prova di allarme e runbook | Un evento controllato genera l’allarme atteso e il responsabile completa la procedura registrandone l’esito | Responsabile operativo, da designare | Non eseguito |
 | Revisione di backup e cancellazione | Copie e procedure rispettano accesso e ciclo di vita approvati in OPEN-05 | Responsabile privacy e responsabile operativo, da designare | In attesa |

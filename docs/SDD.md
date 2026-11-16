@@ -110,7 +110,7 @@ La tabella collega i requisiti del [RAD](RAD.md#32-requisiti-funzionali) ai modu
 | Moderation | Applicare le autorizzazioni e validare le transizioni conservando la cronologia append-only. | FR-09, UC-05 | NFR-04, NFR-05, NFR-06 |
 | Identity | Gestire autenticazione, ruoli e separazione dei dati identificativi. | FR-13, UC-03, UC-05, UC-06 | NFR-04, NFR-05, NFR-06 |
 | Integrations | Implementare adattatori per fonti di trasporto, routing, notifiche e storage. | FR-10 (UC-06), FR-12 (UC-03, UC-05) | NFR-07, NFR-12, NFR-16 |
-| Worker | Eseguire sincronizzazioni schedulate e attività asincrone con retry idempotenti. | FR-10, FR-11, UC-06 | NFR-09, NFR-10, NFR-14 |
+| Worker | Eseguire sincronizzazioni schedulate e notifiche asincrone recuperabili. | FR-10, FR-11, UC-06, FR-12 (UC-03, UC-05) | NFR-09, NFR-10, NFR-14 |
 | Web | Fornire viste accessibili in Facelets con mappa, alternative testuali, moduli e pannello di moderazione. | FR-01–FR-09, FR-13, UC-01–UC-05 | NFR-01, NFR-02, NFR-03, NFR-13 |
 | Runtime e Operations | Gestire configurazione, distribuzione, osservabilità, migrazioni e ripristino. | Nessun caso d’uso diretto | NFR-05, NFR-09, NFR-10, NFR-12, NFR-15, NFR-16 |
 
@@ -201,6 +201,7 @@ La persistenza relazionale proposta usa PostgreSQL e PostGIS. Le migrazioni dovr
 | `transit_stop` | Fermate, geometrie e relazioni con le linee e la fonte. |
 | `report` | Geometria o luogo, categoria, descrizione, stato e date. Dati identificativi separati. |
 | `report_event` | Eventi append-only con autore, data, decisione e riferimento a eventuale duplicato. |
+| `notification_outbox` | Intenzioni di notifica registrate nella stessa transazione del report e dell’evento iniziale oppure della transizione e dell’evento di moderazione. Stato, tentativi e riferimenti tecnici necessari al recupero. Destinatario, contenuto, accesso e conservazione dipendono dalle policy OPEN-04, OPEN-05 e OPEN-08. |
 | `user_account` | Riferimento d’identità e ruoli con accesso limitato. |
 | `source_sync` | Fonte, versione, timestamp, esito, controlli di qualità, generazione pubblicata, generazione precedente e stato del lavoro durevole di pulizia cache. |
 
@@ -220,6 +221,7 @@ La matrice seguente descrive il trattamento progettato. Non definisce basi giuri
 | Identità e ruoli | Definire identificativi persistiti, finalità, accessi, revoca e cancellazione secondo OPEN-04 e OPEN-05. |
 | Segnalazione | Definire campi pubblici, minimizzazione, correzione, scadenza e cancellazione secondo OPEN-05. |
 | Eventi di moderazione | Definire contenuto minimo, riferimenti all’attore e rimozione dei dati personali senza dichiarare anonimizzazione non dimostrata. Rivedere la proposta [ADR-0006](adr/ADR-0006-data-lifecycle-and-audit-semantics.md) e approvare la regola in OPEN-05. |
+| Intenzioni di notifica | Definire destinatari, contenuto, accessi, conservazione, cancellazione e trattamento degli esiti secondo OPEN-04, OPEN-05 e OPEN-08. Evitare credenziali e dati personali non necessari. |
 | Credenziale di tracking | Definire memorizzazione, revoca, scadenza e cancellazione secondo OPEN-04 e OPEN-05. |
 | Immagine allegata | Definire consenso, rimozione dei metadati non necessari, conservazione, revoca e cancellazione secondo OPEN-05. |
 | Log operativi | Escludere descrizioni personali, credenziali e codici di tracking. Definire accesso, durata e cancellazione secondo OPEN-05 e OPEN-08. |
@@ -306,7 +308,7 @@ Le API REST sono versionate e separate dal contratto delle viste. Un client cart
 
 #### 3.6.3 GESTIONE ASINCRONA ED EVENTI
 
-Le sincronizzazioni e le attività lente sono eseguite da worker. La transazione di pubblicazione registra anche il lavoro pendente di pulizia cache. Un worker recupera i lavori incompleti da `source_sync` e ne registra l’esito. Le chiavi cache includono la generazione attiva, così un arresto del worker non rende leggibili dati di una generazione superata. La politica di retry, backoff e allarme per lavori pendenti è da definire secondo OPEN-08. Le notifiche sono inviate tramite `NotificationPort` dopo il completamento del caso d’uso. Un errore del canale non annulla il caso già persistito. L’esito del tentativo resta osservabile e recuperabile. Retry, backoff, deduplicazione e riconciliazione degli esiti ambigui sono da definire in OPEN-08 secondo la proposta [ADR-0005](adr/ADR-0005-operability-and-recovery-contract.md). Le chiamate a provider esterni non mantengono aperte transazioni database quando non necessario. Metriche e allarmi devono rendere osservabili disponibilità, latenza, ritardo delle fonti, errori di sincronizzazione, lavori di pulizia cache pendenti e dimensione e anzianità della coda di moderazione. Soglie e obiettivi di servizio sono da concordare.
+Le sincronizzazioni e le attività lente sono eseguite da worker. La transazione di pubblicazione registra anche il lavoro pendente di pulizia cache. Un worker recupera i lavori incompleti da `source_sync` e ne registra l’esito. Le chiavi cache includono la generazione attiva, così un arresto del worker non rende leggibili dati di una generazione superata. La politica di retry, backoff e allarme per lavori pendenti è da definire secondo OPEN-08. Per FR-12, l’intenzione di notifica è registrata in `notification_outbox` nella stessa transazione che completa la creazione o la moderazione, se le policy autorizzano l’invio. Un worker elabora l’intenzione dopo il commit tramite `NotificationPort`. L’esito è registrato. Un errore non annulla il caso d’uso già persistito e lascia il lavoro osservabile e recuperabile. Il sistema non garantisce consegna esattamente una volta. Retry, backoff, deduplicazione, riconciliazione degli esiti ambigui e rischio di duplicati quando il provider non offre conferme idempotenti sono da valutare in OPEN-08 secondo la proposta [ADR-0005](adr/ADR-0005-operability-and-recovery-contract.md). Le chiamate a provider esterni non mantengono aperte transazioni database. Metriche e allarmi devono rendere osservabili disponibilità, latenza, ritardo delle fonti, errori di sincronizzazione, lavori di pulizia cache pendenti, stato ed età delle notifiche pendenti e dimensione e anzianità della coda di moderazione. Soglie e obiettivi di servizio sono da concordare.
 
 #### 3.6.4 GESTIONE DEGLI ERRORI
 
@@ -364,7 +366,7 @@ Il caso d’uso `PlanRoute` valida origine, destinazione e vincoli, invoca `Rout
 
 ### 4.5 SEGNALAZIONI E MODERAZIONE
 
-`CreateReport` valida i dati, gestisce l’eventuale upload attraverso il flusso di scansione e persiste segnalazione ed evento iniziale in modo atomico. `TrackReport` restituisce soltanto lo stato consentito al possessore del codice. `ModerateReport` verifica identità, ruolo, esistenza del report e transizione ammessa. Aggiorna lo stato e aggiunge un evento append-only nella stessa transazione. Le eventuali notifiche sono pianificate dopo il completamento di questi casi d’uso. Un errore di invio non annulla segnalazione, codice di tracking o transizione già registrati. L’esito e il recupero sono trattati secondo la policy OPEN-08. Conferma, rifiuto, risoluzione e unione dei duplicati devono essere rappresentati dalla macchina a stati di dominio da definire. I dettagli identificativi sono esclusi dalla risposta pubblica.
+`CreateReport` valida i dati, gestisce l’eventuale upload attraverso il flusso di scansione e persiste segnalazione, evento iniziale e intenzione autorizzata di notifica nella stessa transazione. `TrackReport` restituisce soltanto lo stato consentito al possessore del codice. `ModerateReport` verifica identità, ruolo, esistenza del report e transizione ammessa. Aggiorna lo stato e aggiunge un evento append-only nella stessa transazione, registrando anche l’intenzione autorizzata di notifica. Un worker elabora l’outbox dopo il commit. Un errore di invio non annulla segnalazione, codice di tracking o transizione già registrati. Il sistema non garantisce consegna esattamente una volta. Esito, tentativi, riconciliazione e recupero seguono la policy OPEN-08. Conferma, rifiuto, risoluzione e unione dei duplicati devono essere rappresentati dalla macchina a stati di dominio da definire. I dettagli identificativi sono esclusi dalla risposta pubblica.
 
 ### 4.6 GEOLOCALIZZAZIONE, SINCRONIZZAZIONE E NOTIFICHE
 
@@ -391,6 +393,7 @@ I termini di cache e generazione descrivono invarianti del comportamento progett
 | Jakarta Faces | API Jakarta EE per viste server-side basate su componenti. |
 | Jakarta REST | API Jakarta EE per l’esposizione di risorse HTTP. |
 | NotificationPort | Porta applicativa per l’invio di notifiche tramite un adattatore sostituibile. |
+| Outbox di notifica | Archivio durevole delle intenzioni di invio persistite nella stessa transazione dell’operazione che le ha generate. |
 | Porta | Interfaccia applicativa che descrive una dipendenza richiesta da un caso d’uso. |
 | PostGIS | Estensione PostgreSQL per dati e interrogazioni geospaziali. |
 | Pubblicazione atomica | Cambio della generazione attiva e registrazione del lavoro di pulizia nella stessa transazione. |
