@@ -22,6 +22,8 @@ Per modifiche Markdown eseguire:
 make check-docs
 ```
 
+Il workflow `Verifica documentazione` esegue questo controllo per ogni push e pull request verso `main`, senza filtri sui percorsi. Il workflow `Genera documenti DOCX` esegue inoltre la generazione e validazione degli export quando cambiano i percorsi documentali configurati. La protezione remota di `main` non è ancora attiva, quindi il check non è attualmente un requisito di merge.
+
 Il comando esegue i test del validatore e controlla percorsi e ancore locali, link esterni HTTPS, struttura numerata, ID roadmap, metadati e completezza degli ADR, criteri e registri FR, corrispondenza dei responsabili FR con gli attori dei casi collegati, schema dei requisiti e del registro NFR nel template RAD, presenza dei glossari con intestazioni valide, definizioni complete e termini univoci, completezza del registro revisioni del runbook, campi FR/NFR inclusi responsabili dell’accettazione, esiti e riferimenti di evidenza, priorità, casi d’uso, descrizioni accessibili dei diagrammi in tutta la documentazione e tracciabilità tra RAD e moduli SDD. Verifica che ogni caso d’uso dichiarato compaia una sola volta nel diagramma globale e abbia un’associazione con ciascun attore partecipante dichiarato. Per verificare anche l’esportazione installare le versioni Node.js e Pandoc indicate in `config/tool-versions.env`. Installare i pacchetti Mermaid bloccati dal lockfile con `make install-doc-tools`, quindi eseguire:
 
 ```sh

@@ -72,6 +72,7 @@ Questo documento descrive l’architettura software proposta per aegis e dettagl
 | [ADR-0004: Contratto di identità e autorizzazione](adr/ADR-0004-identity-and-authorization-contract.md) | Proposta non approvata per autorizzazione lato server, identità operative e accesso al tracking. |
 | [ADR-0005: Contratto di operabilità e ripristino](adr/ADR-0005-operability-and-recovery-contract.md) | Proposta non approvata per segnali operativi, recupero dei worker e prove di ripristino. |
 | [ADR-0006: Ciclo di vita dei dati e semantica dell’audit](adr/ADR-0006-data-lifecycle-and-audit-semantics.md) | Proposta non approvata per minimizzazione, correzione, cancellazione e coerenza dell’audit. |
+| [ADR-0007: Governance del branch main](adr/ADR-0007-main-branch-governance.md) | Proposta non approvata per pull request, check obbligatorio e protezioni del branch predefinito. |
 | Specifica OpenAPI | Da generare e versionare insieme all’API. |
 | Documentazione Jakarta EE e PostGIS | Riferimenti tecnici da associare alle versioni selezionate. |
 
