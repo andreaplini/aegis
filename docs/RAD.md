@@ -134,46 +134,52 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 |---|---|---|
 | Viaggio con esigenze selezionate | Viaggiatore, sistema, provider di routing | Il viaggiatore inserisce origine, destinazione ed esigenze. Il sistema richiede alternative al provider. Il sistema mostra tempi, cambi, barriere note e tratti non verificati. |
 | Verifica di una fermata | Viaggiatore, sistema | Il viaggiatore seleziona una fermata. Il sistema recupera le caratteristiche disponibili. Il sistema mostra stato, fonte e validità, indicando come sconosciuti i dati assenti o scaduti. |
-| Guasto temporaneo | Segnalatore, sistema | Il segnalatore inserisce luogo, categoria, descrizione e data. Facoltativamente allega una foto. Il sistema registra la segnalazione e restituisce il codice di tracking. |
+| Guasto temporaneo | Segnalatore, sistema, servizio di storage e scansione | Il segnalatore inserisce luogo, categoria, descrizione e data. Facoltativamente allega una foto. Il sistema registra la segnalazione e restituisce il codice di tracking. |
 | Moderazione di un duplicato | Moderatore, sistema | Il moderatore esamina una segnalazione e la collega al duplicato esistente. Il sistema registra la decisione e conserva la cronologia precedente. |
-| Aggiornamento di una fonte | Gestore fonte, sistema | Il gestore avvia o controlla una sincronizzazione. Il sistema importa i dati, applica i controlli di qualità, registra l’esito e invalida la cache se l’aggiornamento è urgente. |
+| Aggiornamento di una fonte | Gestore fonte, sistema, fonte dati autorizzata | Il gestore avvia o controlla una sincronizzazione. Il sistema acquisisce i dati dalla fonte, applica i controlli di qualità, pubblica solo una generazione valida e registra l’esito. |
 
 #### 3.5.3 MODELLI DEI CASI D’USO
 
 ##### Diagramma globale
 
-Il diagramma mostra gli attori esterni e i casi d’uso principali di consultazione, pianificazione, segnalazione, moderazione e sincronizzazione.
+Il confine di sistema separa i casi d’uso di `aegis` dagli attori e dai servizi esterni.
 
 ```mermaid
 flowchart TB
-  accDescr: Attori esterni collegati ai sei casi d'uso principali.
-  subgraph ACTORS[Attori]
+  accDescr: I sei casi d'uso aegis e le associazioni con persone, provider di routing, fonti e servizi esterni.
+  subgraph ACTORS[Attori e servizi esterni]
     direction LR
     V[Viaggiatore]
     S[Segnalatore]
     M[Moderatore]
     G[Gestore fonte]
+    R[Provider di routing]
+    D[Fonte dati autorizzata]
+    O[Servizio di storage e scansione]
   end
   subgraph SYSTEM[aegis]
     direction LR
-    P((Pianificare viaggio))
-    L((Consultare luogo))
-    R((Inviare segnalazione))
-    T((Seguire segnalazione))
-    Q((Moderare segnalazione))
-    I((Sincronizzare dati))
+    UC01((UC-01 Pianificare un viaggio))
+    UC02((UC-02 Consultare un luogo))
+    UC03((UC-03 Inviare una segnalazione))
+    UC04((UC-04 Seguire una segnalazione))
+    UC05((UC-05 Moderare una segnalazione))
+    UC06((UC-06 Aggiornare una fonte))
   end
-  V --> P
-  V --> L
-  S --> R
-  S --> T
-  M --> Q
-  G --> I
+  V --- UC01
+  R --- UC01
+  V --- UC02
+  S --- UC03
+  O --- UC03
+  S --- UC04
+  M --- UC05
+  G --- UC06
+  D --- UC06
 ```
 
 ##### Specifiche dei casi d’uso
 
-Il template richiede per ogni caso d’uso attori, condizioni d’ingresso e d’uscita, requisiti qualitativi e flusso degli eventi. Ogni scheda seguente usa questi campi.
+Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requisiti qualitativi e flusso degli eventi.
 
 | ID | Caso d’uso | Titolo | Attore principale | Descrizione |
 |---|---|---|---|---|
@@ -238,7 +244,7 @@ Il template richiede per ogni caso d’uso attori, condizioni d’ingresso e d�
 
 | Campo | Specifica |
 |---|---|
-| Attori partecipanti | Gestore fonte, sistema, adattatore della fonte. |
+| Attori partecipanti | Gestore fonte, sistema e fonte dati autorizzata. |
 | Condizioni d’ingresso | Fonte configurata e abilitata. Gestore autenticato e autorizzato quando l’avvio è manuale. Esecuzione schedulata ammessa dalla configurazione. |
 | Condizioni d’uscita | Versione, timestamp, controlli ed esito della sincronizzazione registrati. Solo un insieme completo e validato diventa visibile. Un aggiornamento urgente invalida la cache dell’area interessata dopo la pubblicazione. Un errore mantiene disponibili i dati validi precedenti e non pubblica dati parziali. |
 | Requisiti qualitativi | Retry idempotenti. Provenienza e freschezza conservate. Dati assenti, incoerenti o scaduti non sono presentati come accessibili. |

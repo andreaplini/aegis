@@ -49,6 +49,20 @@ VALID_SDD = """# SDD
 #### 3.2.1 DIAGRAMMA DEI MODULI
 """
 
+VALID_USE_CASE_DIAGRAM = """##### Diagramma globale
+
+```mermaid
+flowchart TB
+  subgraph ACTORS[Attori]
+    V[Viaggiatore]
+  end
+  subgraph SYSTEM[aegis]
+    UC01((UC-01 Pianificare un viaggio))
+  end
+  V --- UC01
+```
+"""
+
 
 class MarkdownValidationTests(unittest.TestCase):
     def test_roadmap_ids_are_unique_and_references_are_declared(self) -> None:
@@ -107,6 +121,26 @@ class MarkdownValidationTests(unittest.TestCase):
         self.assertEqual(validate_docs.mermaid_description_errors("docs/RAD.md", valid), [])
         errors = validate_docs.mermaid_description_errors("docs/RAD.md", invalid)
         self.assertTrue(any("senza descrizione accessibile" in error for error in errors))
+
+    def test_mermaid_description_check_includes_templates_and_skills(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "docs/template").mkdir(parents=True)
+            (root / ".agents/skills/example").mkdir(parents=True)
+            (root / "README.md").write_text("# aegis\n", encoding="utf-8")
+            (root / "AGENTS.md").write_text("## Skill aegis\n", encoding="utf-8")
+            (root / ".agents/skills/example/SKILL.md").write_text("# Skill\n", encoding="utf-8")
+            template = root / "docs/template/RAD.md"
+            template.write_text("```mermaid\nflowchart LR\n  A-->B\n```\n", encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", root):
+                errors = validate_docs.validate_mermaid_descriptions()
+                self.assertTrue(any("docs/template/RAD.md" in error for error in errors))
+                template.write_text(
+                    "```mermaid\nflowchart LR\n  accDescr: Diagramma accessibile.\n  A-->B\n```\n",
+                    encoding="utf-8",
+                )
+                self.assertEqual(validate_docs.validate_mermaid_descriptions(), [])
 
     def test_functional_requirements_have_complete_unique_fields(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -269,6 +303,56 @@ class MarkdownValidationTests(unittest.TestCase):
                 rad.write_text(VALID_RAD.replace("| Condizioni d’uscita | Dettaglio mostrato |\n", ""), encoding="utf-8")
                 errors = validate_docs.validate_use_case_specs()
                 self.assertTrue(any("condizioni d’uscita" in error for error in errors))
+
+    def test_use_case_diagram_covers_defined_cases_and_actor_associations(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            docs.mkdir()
+            rad = docs / "RAD.md"
+
+            def write_rad(diagram: str = VALID_USE_CASE_DIAGRAM) -> None:
+                rad.write_text(
+                    VALID_RAD.replace(
+                        "### 3.2 REQUISITI FUNZIONALI",
+                        diagram + "\n### 3.2 REQUISITI FUNZIONALI",
+                    ),
+                    encoding="utf-8",
+                )
+
+            write_rad()
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_use_case_diagram(), [])
+                write_rad(VALID_USE_CASE_DIAGRAM.replace("V --- UC01\n", ""))
+                errors = validate_docs.validate_use_case_diagram()
+                self.assertTrue(any("non è collegato ad alcun attore" in error for error in errors))
+
+                write_rad(
+                    VALID_USE_CASE_DIAGRAM.replace(
+                        "UC-01 Pianificare",
+                        "UC-02 Pianificare",
+                    )
+                )
+                errors = validate_docs.validate_use_case_diagram()
+                self.assertTrue(any("casi d’uso assenti dal diagramma" in error for error in errors))
+                self.assertTrue(any("ID del diagramma senza specifica" in error for error in errors))
+
+                write_rad(VALID_USE_CASE_DIAGRAM.replace("Viaggiatore", "Viandante"))
+                errors = validate_docs.validate_use_case_diagram()
+                self.assertTrue(any("attore partecipante non rappresentato" in error for error in errors))
+
+                write_rad(VALID_USE_CASE_DIAGRAM.replace("V --- UC01", "V --- UC01\n  V --- UC99"))
+                errors = validate_docs.validate_use_case_diagram()
+                self.assertTrue(any("verso caso non dichiarato UC-99" in error for error in errors))
+
+                duplicate_diagram = VALID_USE_CASE_DIAGRAM.replace(
+                    "  end\n  V --- UC01",
+                    "    UC02((UC-01 Duplicato))\n  end\n  V --- UC01",
+                )
+                write_rad(duplicate_diagram)
+                errors = validate_docs.validate_use_case_diagram()
+                self.assertTrue(any("ID ripetuti nel diagramma" in error for error in errors))
 
     def test_functional_requirement_cannot_reference_missing_case(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

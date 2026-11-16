@@ -37,7 +37,9 @@ Generare e verificare gli export con:
 make docs
 ```
 
-La generazione esegue prima `make check-docs`, che verifica test del validatore, collegamenti e ancore locali, struttura dei modelli, unicità e riferimenti degli ID roadmap, completezza e unicità dei requisiti, tracciabilità RAD/SDD, casi d'uso e stile del progetto. Mermaid CLI converte i diagrammi in immagini accessibili nella directory di build. Pandoc incorpora immagini e testo nei DOCX. Il validatore controlla integrità, contenuto, nome, punteggiatura e presenza dei diagrammi negli export. `make check-docs` può essere lanciato separatamente e non richiede Node.js o Pandoc.
+La generazione esegue prima `make check-docs`. Il comando esegue i test del validatore e verifica link e ancore locali, struttura dei modelli, ID della roadmap, requisiti, tracciabilità RAD/SDD, specifiche e copertura dei casi d’uso nel diagramma globale. Controlla anche nome e punteggiatura nei file Markdown. Può essere eseguito separatamente e non richiede Node.js o Pandoc.
+
+Mermaid CLI converte i diagrammi in immagini accessibili. Pandoc incorpora immagini e testo nei DOCX. Il validatore verifica pacchetto, contenuto, metadati, nome e punteggiatura nel testo e nelle descrizioni alternative, associazioni OOXML e immagini incorporate.
 
 La CI esegue anche `make audit-doc-tools` sulle dipendenze degli strumenti documentali e blocca la generazione in presenza di vulnerabilità ad alta o critica gravità. Usa lo stesso target per ripetere il controllo in locale. Dependabot verifica settimanalmente gli aggiornamenti di Mermaid CLI e Puppeteer.
 

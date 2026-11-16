@@ -17,6 +17,18 @@ HEADING_PATTERN = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$")
 FENCE_PATTERN = re.compile(r"^\s*(`{3,}|~{3,})")
 TRACE_ID_PATTERN = re.compile(r"\b(?:FR|NFR|UC)-\d{2}\b")
 USE_CASE_HEADING_PATTERN = re.compile(r"^######\s+(UC-\d{2})\b")
+USE_CASE_DIAGRAM_NODE_PATTERN = re.compile(
+    r"^\s*(UC(\d{2}))\(\(UC-(\d{2})\b",
+    re.MULTILINE,
+)
+USE_CASE_DIAGRAM_ACTOR_PATTERN = re.compile(
+    r"^\s*([A-Z][A-Z0-9_]*)\[([^\]]+)\]\s*$",
+    re.MULTILINE,
+)
+USE_CASE_DIAGRAM_EDGE_PATTERN = re.compile(
+    r"^\s*([A-Z][A-Z0-9_]*)\s*---\s*(UC\d{2})\s*$",
+    re.MULTILINE,
+)
 FUNCTIONAL_REQUIREMENT_ROW_PATTERN = re.compile(r"^\|\s*(FR-\d{2})\s*\|")
 NON_FUNCTIONAL_REQUIREMENT_ROW_PATTERN = re.compile(r"^\|\s*(NFR-\d{2})\s*\|")
 CASE_FIELD_PATTERN = re.compile(r"^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|")
@@ -251,9 +263,9 @@ def mermaid_description_errors(label: str, content: str) -> list[str]:
 
 def validate_mermaid_descriptions() -> list[str]:
     errors: list[str] = []
-    for name in ("docs/RAD.md", "docs/SDD.md"):
-        path = ROOT / name
-        errors.extend(mermaid_description_errors(name, path.read_text(encoding="utf-8")))
+    for path in markdown_files():
+        label = path.relative_to(ROOT).as_posix()
+        errors.extend(mermaid_description_errors(label, path.read_text(encoding="utf-8")))
     return errors
 
 
@@ -415,6 +427,120 @@ def validate_use_case_specs() -> list[str]:
     return errors
 
 
+def validate_use_case_diagram() -> list[str]:
+    path = ROOT / "docs/RAD.md"
+    lines = path.read_text(encoding="utf-8").splitlines()
+    heading = "##### Diagramma globale"
+    if heading not in lines:
+        return ["docs/RAD.md: diagramma globale dei casi d’uso non trovato"]
+
+    heading_index = lines.index(heading)
+    opening_index = next(
+        (
+            index
+            for index in range(heading_index + 1, len(lines))
+            if lines[index].strip() == "```mermaid"
+        ),
+        None,
+    )
+    if opening_index is None:
+        return ["docs/RAD.md: blocco Mermaid del diagramma dei casi d’uso non trovato"]
+    closing_index = next(
+        (
+            index
+            for index in range(opening_index + 1, len(lines))
+            if lines[index].strip() == "```"
+        ),
+        None,
+    )
+    if closing_index is None:
+        return ["docs/RAD.md: blocco Mermaid del diagramma dei casi d’uso non chiuso"]
+
+    diagram = "\n".join(lines[opening_index + 1 : closing_index])
+    case_ids = {
+        match.group(1)
+        for line in lines
+        if (match := USE_CASE_HEADING_PATTERN.match(line))
+    }
+    node_matches = USE_CASE_DIAGRAM_NODE_PATTERN.findall(diagram)
+    label_ids = [f"UC-{label_number}" for _, _, label_number in node_matches]
+    diagram_ids = set(label_ids)
+    errors: list[str] = []
+    duplicates = sorted(case_id for case_id, count in Counter(label_ids).items() if count > 1)
+    if duplicates:
+        errors.append(
+            "docs/RAD.md: ID ripetuti nel diagramma dei casi d’uso: " + ", ".join(duplicates)
+        )
+    missing = sorted(case_ids - diagram_ids)
+    if missing:
+        errors.append("docs/RAD.md: casi d’uso assenti dal diagramma: " + ", ".join(missing))
+    unknown = sorted(diagram_ids - case_ids)
+    if unknown:
+        errors.append("docs/RAD.md: ID del diagramma senza specifica: " + ", ".join(unknown))
+
+    node_labels: dict[str, list[str]] = {}
+    for node_id, node_number, label_number in node_matches:
+        node_labels.setdefault(f"UC-{label_number}", []).append(node_id)
+        if node_number != label_number:
+            errors.append(
+                f"docs/RAD.md: nodo {node_id} non corrisponde all’etichetta UC-{label_number}"
+            )
+    for case_id in sorted(case_ids):
+        if len(node_labels.get(case_id, [])) != 1:
+            errors.append(f"docs/RAD.md: {case_id} deve avere un solo nodo nel diagramma")
+
+    actor_labels = dict(USE_CASE_DIAGRAM_ACTOR_PATTERN.findall(diagram))
+    associated_cases: set[str] = set()
+    actor_case_edges: set[tuple[str, str]] = set()
+    for actor_id, case_node in USE_CASE_DIAGRAM_EDGE_PATTERN.findall(diagram):
+        case_id = f"UC-{case_node[2:]}"
+        if actor_id not in actor_labels:
+            errors.append(f"docs/RAD.md: attore {actor_id} non dichiarato nel diagramma")
+        if case_id not in case_ids:
+            errors.append(
+                f"docs/RAD.md: associazione del diagramma verso caso non dichiarato {case_id}"
+            )
+        associated_cases.add(case_id)
+        actor_case_edges.add((actor_id, case_id))
+    for case_id in sorted(case_ids - associated_cases):
+        errors.append(f"docs/RAD.md: {case_id} non è collegato ad alcun attore nel diagramma")
+
+    declared_actors = {actor_id for actor_id, _ in actor_case_edges}
+    for actor_id in sorted(set(actor_labels) - declared_actors):
+        errors.append(f"docs/RAD.md: attore {actor_id} senza associazioni nel diagramma")
+
+    case_headings = [
+        (index, match.group(1))
+        for index, line in enumerate(lines)
+        if (match := USE_CASE_HEADING_PATTERN.match(line))
+    ]
+    for index, (start, case_id) in enumerate(case_headings):
+        end = case_headings[index + 1][0] if index + 1 < len(case_headings) else len(lines)
+        fields = {
+            match.group(1).strip().lower(): match.group(2).strip().rstrip(".")
+            for line in lines[start + 1 : end]
+            if (match := CASE_FIELD_PATTERN.match(line))
+        }
+        raw_participants = fields.get("attori partecipanti", "").casefold()
+        unmatched_participants = raw_participants
+        for actor_id, label in actor_labels.items():
+            normalized_label = label.casefold()
+            if normalized_label not in raw_participants:
+                continue
+            unmatched_participants = unmatched_participants.replace(normalized_label, "", 1)
+            if (actor_id, case_id) not in actor_case_edges:
+                errors.append(
+                    f"docs/RAD.md: attore partecipante {label} non collegato a {case_id} nel diagramma"
+                )
+        unmatched_participants = re.sub(r"\bsistema\b", "", unmatched_participants)
+        unmatched_participants = re.sub(r"\be\b|[\s,.]+", "", unmatched_participants)
+        if unmatched_participants:
+            errors.append(
+                f"docs/RAD.md: attore partecipante non rappresentato nel diagramma per {case_id}"
+            )
+    return errors
+
+
 def main() -> int:
     errors: list[str] = []
     files = markdown_files()
@@ -433,6 +559,7 @@ def main() -> int:
     errors.extend(validate_roadmap_ids())
     errors.extend(validate_functional_requirements())
     errors.extend(validate_use_case_specs())
+    errors.extend(validate_use_case_diagram())
     errors.extend(validate_project_style())
     errors.extend(validate_mermaid_descriptions())
     errors.extend(validate_document_structure())
@@ -442,7 +569,11 @@ def main() -> int:
         print("\n".join(errors), file=sys.stderr)
         return 1
 
-    print(f"Documentazione valida: link, ancore, struttura, milestone, requisiti, casi d’uso, tracciabilità e stile del nome verificati in {len(files)} file Markdown.")
+    print(
+        "Documentazione valida: link, ancore, struttura, milestone, requisiti, casi d’uso, "
+        "diagramma dei casi, tracciabilità, descrizioni accessibili e stile del nome "
+        f"verificati in {len(files)} file Markdown."
+    )
     return 0
 
 

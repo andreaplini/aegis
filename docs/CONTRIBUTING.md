@@ -12,6 +12,8 @@ Il repository contiene la documentazione RAD/SDD e l’esportazione DOCX. L’ap
 4. Collegare ogni requisito funzionale interessato a casi d’uso, moduli e verifiche. Specificare come vengono verificate accessibilità, privacy e sicurezza quando la modifica le influenza.
 5. Riportare nella pull request i controlli eseguiti e i risultati osservati. Non indicare test, prove con utenti, verifiche di ripristino o analisi non eseguite.
 
+Per modifiche documentali applicare la skill [aegis-antislop](../.agents/skills/aegis-antislop/SKILL.md) insieme alla skill [aegis-docs](../.agents/skills/aegis-docs/SKILL.md). Controllare che ogni affermazione sia sostenuta da una fonte o marcata come proposta o decisione aperta, che i termini restino coerenti e che il diagramma globale riporti tutti i casi d’uso e le relative associazioni.
+
 ## Controlli disponibili
 
 Per modifiche Markdown eseguire:
@@ -20,13 +22,13 @@ Per modifiche Markdown eseguire:
 make check-docs
 ```
 
-Il comando esegue i test del validatore e controlla percorsi e ancore locali, link esterni HTTPS, struttura numerata, unicità e riferimenti degli ID roadmap, campi FR/NFR, priorità e unicità dei requisiti, campi dei casi d’uso e tracciabilità tra RAD e moduli SDD. Verifica che gli ID architetturali esistano nel RAD e che i casi d’uso restino associati ai rispettivi requisiti funzionali. Per verificare anche l’esportazione installare Node.js 22.13 o successivo e Pandoc nella versione indicata in `config/tool-versions.env`. Installare i pacchetti Mermaid bloccati dal lockfile con `make install-doc-tools`, quindi eseguire:
+Il comando esegue i test del validatore e controlla percorsi e ancore locali, link esterni HTTPS, struttura numerata, ID roadmap, campi FR/NFR, priorità, casi d’uso, descrizioni accessibili dei diagrammi in tutta la documentazione e tracciabilità tra RAD e moduli SDD. Verifica che ogni caso d’uso dichiarato compaia una sola volta nel diagramma globale e abbia un’associazione con ciascun attore partecipante dichiarato. Per verificare anche l’esportazione installare Node.js 22.13 o successivo e Pandoc nella versione indicata in `config/tool-versions.env`. Installare i pacchetti Mermaid bloccati dal lockfile con `make install-doc-tools`, quindi eseguire:
 
 ```sh
 make docs
 ```
 
-I DOCX generati si trovano in `build/docs/` e non vanno aggiunti al repository. `make docs` verifica integrità del pacchetto, contenuto essenziale, nome, punteggiatura e diagrammi renderizzati negli export. Per modifiche applicative, eseguire i controlli della build e i test definiti quando ENG-03 introdurrà una build applicativa. Al momento tali comandi non esistono.
+I DOCX generati si trovano in `build/docs/` e non vanno aggiunti al repository. `make docs` verifica l’integrità del pacchetto, il contenuto richiesto, i metadati personali, nome e punteggiatura nel testo e nelle descrizioni alternative, le relazioni OOXML e le immagini dei diagrammi. Per modifiche applicative, eseguire i controlli della build e i test definiti quando ENG-03 introdurrà una build applicativa. Al momento tali comandi non esistono.
 
 ## Criteri di revisione
 

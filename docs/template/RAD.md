@@ -78,7 +78,7 @@ Descrivere situazioni concrete e rappresentative. Ogni scenario identifica attor
 
 #### 3.5.3 MODELLI DEI CASI D’USO
 
-Inserire un diagramma UML globale dei casi d’uso. Accompagnarlo con una descrizione testuale di attori, confine del sistema e relazioni rappresentate.
+Inserire un diagramma UML globale dei casi d’uso. Riportare ogni ID usato nelle specifiche e collegare ogni caso a tutti gli attori umani e ai sistemi esterni che vi partecipano. Accompagnare il diagramma con una descrizione testuale di attori, confine del sistema e relazioni rappresentate.
 
 ##### Diagramma globale
 
@@ -86,8 +86,12 @@ Descrizione del diagramma: da compilare.
 
 ```mermaid
 flowchart LR
-  actor[Attore] --> usecase((Caso d’uso))
-  usecase --> system[Confine del sistema da definire]
+  accDescr: Collegare gli attori ai casi d’uso inclusi nel confine del sistema.
+  actor[Attore]
+  subgraph SYSTEM[Confine del sistema]
+    UC01((UC-01 Caso d’uso))
+  end
+  actor --- UC01
 ```
 
 ##### Specifiche dei casi d’uso
