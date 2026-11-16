@@ -118,15 +118,17 @@ Descrivere limiti, controlli del tipo e del contenuto, scansione, quarantena, au
 
 Descrivere validazione, rate limiting, idempotenza, rilevamento di duplicati, moderazione e audit. Quantità e soglie restano da concordare finché non sono approvate.
 
-#### 3.5.5 SICUREZZA D'USO E PERICOLI OPERATIVI
-
-Distinguere i pericoli derivanti dalle informazioni o dal comportamento del sistema dalle minacce informatiche. Per ciascun pericolo indicare possibile danno, controllo progettato ed evidenza richiesta. Non dichiarare controlli validati senza prove e registrare il rischio residuo prima del rilascio.
+**Analisi delle minacce.**
 
 Analizzare gli scenari di minaccia rilevanti indicando bene esposto, impatto, controllo progettato, metodo di verifica e stato. Distinguere i controlli previsti da quelli implementati e verificati; non dichiarare mitigato un rischio senza evidenza.
 
 | Scenario di minaccia | Bene e impatto | Controllo progettato | Verifica richiesta |
 |---|---|---|---|
 | Da descrivere | Da valutare | Da approvare | Da pianificare |
+
+**Sicurezza d'uso e pericoli operativi.**
+
+Distinguere i pericoli derivanti dalle informazioni o dal comportamento del sistema dalle minacce informatiche. Per ciascun pericolo indicare possibile danno, controllo progettato ed evidenza richiesta. Non dichiarare controlli validati senza prove e registrare il rischio residuo prima del rilascio.
 
 | Pericolo d'uso | Possibile danno | Controllo progettato | Evidenza richiesta |
 |---|---|---|---|

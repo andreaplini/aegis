@@ -230,7 +230,7 @@ Gli upload sono limitati secondo parametri da definire, verificati per tipo e co
 
 Gli endpoint applicano rate limiting e validazione server-side. Le richieste non valide sono rifiutate senza effetti parziali. Gli errori non devono rivelare dati riservati o consentire l’enumerazione delle segnalazioni. I log strutturati escludono credenziali, codici di tracking e descrizioni personali. Le azioni amministrative sono sottoposte ad audit.
 
-La seguente analisi è iniziale e descrive controlli richiesti, non controlli già implementati o verificati. Limiti quantitativi, conservazione, provider d’identità e fonti autorizzate restano da approvare.
+**Analisi delle minacce.** La seguente valutazione è iniziale e descrive controlli richiesti, non controlli già implementati o verificati. Limiti quantitativi, conservazione, provider d’identità e fonti autorizzate restano da approvare.
 
 | Scenario di minaccia | Bene e impatto | Controllo progettato | Verifica richiesta |
 |---|---|---|---|
@@ -241,9 +241,7 @@ La seguente analisi è iniziale e descrive controlli richiesti, non controlli gi
 | Injection o consumo eccessivo di risorse | Compromissione dei dati o indisponibilità di API e database. | Usare query parametrizzate, validare input, limitare dimensioni e frequenza delle richieste e rendere le operazioni ripetibili in sicurezza. Le soglie sono da definire. | Analisi statica, prove di input ostile e carico con soglie concordate. |
 | Divulgazione di dati personali o segreti | Violazione di riservatezza attraverso log, backup, configurazione o risposta API. | Minimizzare i dati, escludere segreti e identificativi dai log, limitare accessi e definire conservazione e cancellazione prima del lancio. Configurazione e segreti sono separati dal codice. | Revisione di log e permessi, controlli di segreti in CI e prove di accesso, conservazione e cancellazione. |
 
-#### 3.5.5 SICUREZZA D'USO E PERICOLI OPERATIVI
-
-Questa analisi riguarda i danni che possono derivare dall'uso delle informazioni del servizio. È distinta dall'analisi delle minacce informatiche. I controlli descritti sono requisiti di progetto e non risultano implementati o validati. La valutazione del rischio residuo richiede area pilota, fonti e profili d'uso approvati.
+**Sicurezza d'uso e pericoli operativi.** Questa analisi riguarda i danni che possono derivare dall'uso delle informazioni del servizio. È distinta dall'analisi delle minacce informatiche. I controlli descritti sono requisiti di progetto e non risultano implementati o validati. La valutazione del rischio residuo richiede area pilota, fonti e profili d'uso approvati.
 
 | Pericolo | Possibile danno | Controllo progettato | Evidenza richiesta |
 |---|---|---|---|

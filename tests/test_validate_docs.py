@@ -148,6 +148,27 @@ class MarkdownValidationTests(unittest.TestCase):
                 errors = validate_docs.validate_project_style()
                 self.assertTrue(any("campo Progetto" in error for error in errors))
 
+    def test_numbered_document_structure_matches_template(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            templates = docs / "template"
+            templates.mkdir(parents=True)
+            for name in ("RAD.md", "SDD.md"):
+                (docs / name).write_text("## Introduzione\n### 1.1 Scopo\n### 3.1 Sistema\n", encoding="utf-8")
+                (templates / name).write_text("## Introduzione\n### 1.1 Scopo\n### 3.1 Sistema\n", encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_document_structure(), [])
+                path = docs / "SDD.md"
+                path.write_text(path.read_text(encoding="utf-8").replace("3.1", "3.2"), encoding="utf-8")
+                errors = validate_docs.validate_document_structure()
+                self.assertEqual(len(errors), 1)
+                self.assertIn("SDD.md", errors[0])
+                path.write_text(path.read_text(encoding="utf-8").replace("### 3.2", "#### 3.1"), encoding="utf-8")
+                errors = validate_docs.validate_document_structure()
+                self.assertEqual(len(errors), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

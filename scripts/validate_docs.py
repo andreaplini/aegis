@@ -18,6 +18,7 @@ TRACE_ID_PATTERN = re.compile(r"\b(?:FR|NFR|UC)-\d{2}\b")
 USE_CASE_HEADING_PATTERN = re.compile(r"^######\s+(UC-\d{2})\b")
 FUNCTIONAL_REQUIREMENT_ROW_PATTERN = re.compile(r"^\|\s*(FR-\d{2})\s*\|")
 CASE_FIELD_PATTERN = re.compile(r"^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|")
+NUMBERED_SECTION_PATTERN = re.compile(r"^(#{2,6})\s+(\d+(?:\.\d+)+)(?:\s|$)", re.MULTILINE)
 
 
 def markdown_files() -> list[Path]:
@@ -135,6 +136,31 @@ def validate_project_style() -> list[str]:
     return errors
 
 
+def validate_document_structure() -> list[str]:
+    errors: list[str] = []
+    for document in ("RAD.md", "SDD.md"):
+        actual_path = ROOT / "docs" / document
+        template_path = ROOT / "docs" / "template" / document
+        actual = [
+            (len(level), number)
+            for level, number in NUMBERED_SECTION_PATTERN.findall(
+                without_fenced_code(actual_path.read_text(encoding="utf-8"))
+            )
+        ]
+        template = [
+            (len(level), number)
+            for level, number in NUMBERED_SECTION_PATTERN.findall(
+                without_fenced_code(template_path.read_text(encoding="utf-8"))
+            )
+        ]
+        if actual != template:
+            errors.append(
+                f"docs/{document}: gerarchia delle sezioni numerate diversa dal modello "
+                f"docs/template/{document}"
+            )
+    return errors
+
+
 def validate_use_case_specs() -> list[str]:
     rad_path = ROOT / "docs/RAD.md"
     lines = rad_path.read_text(encoding="utf-8").splitlines()
@@ -199,12 +225,13 @@ def main() -> int:
     errors.extend(validate_traceability())
     errors.extend(validate_use_case_specs())
     errors.extend(validate_project_style())
+    errors.extend(validate_document_structure())
 
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1
 
-    print(f"Documentazione valida: link, ancore, requisiti, casi d’uso, tracciabilità e stile del nome verificati in {len(files)} file Markdown.")
+    print(f"Documentazione valida: link, ancore, struttura, requisiti, casi d’uso, tracciabilità e stile del nome verificati in {len(files)} file Markdown.")
     return 0
 
 
