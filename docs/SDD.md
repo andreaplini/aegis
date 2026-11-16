@@ -70,6 +70,7 @@ Questo documento descrive l’architettura software proposta per aegis e dettagl
 | [ADR-0002: Validità dei dati e coerenza della cache](adr/ADR-0002-data-freshness-and-cache-consistency.md) | Proposta non approvata per regole di validità per fonte e tipo e consistenza delle cache. |
 | [ADR-0003: Contratto del provider di routing accessibile](adr/ADR-0003-routing-provider-contract.md) | Proposta non approvata per il contratto, la compatibilità e il fallback del routing. |
 | [ADR-0004: Contratto di identità e autorizzazione](adr/ADR-0004-identity-and-authorization-contract.md) | Proposta non approvata per autorizzazione lato server, identità operative e accesso al tracking. |
+| [ADR-0005: Contratto di operabilità e ripristino](adr/ADR-0005-operability-and-recovery-contract.md) | Proposta non approvata per segnali operativi, recupero dei worker e prove di ripristino. |
 | Specifica OpenAPI | Da generare e versionare insieme all’API. |
 | Documentazione Jakarta EE e PostGIS | Riferimenti tecnici da associare alle versioni selezionate. |
 
@@ -178,7 +179,7 @@ In sviluppo è previsto Docker Compose con PostgreSQL/PostGIS e storage locale c
 
 La pipeline di rilascio dovrà compilare e verificare gli artefatti applicativi, eseguire test e scansioni delle dipendenze, creare immagini versionate e distribuire progressivamente. Le migrazioni devono mantenere la compatibilità con le versioni applicative attive durante il rilascio. La configurazione applicativa dovrà essere versionata e distinta per ambiente. I segreti non dovranno essere inclusi nel repository.
 
-Le procedure operative per rilascio, migrazione, rollback, incidenti e ripristino sono da redigere e provare in base al runtime e agli ambienti selezionati. Come struttura si può usare il [modello di runbook](template/RUNBOOK.md). Il modello non rappresenta procedure già operative.
+Le procedure operative per rilascio, migrazione, rollback, incidenti e ripristino sono da redigere e provare in base al runtime e agli ambienti selezionati. Come struttura si può usare il [modello di runbook](template/RUNBOOK.md). Il modello non rappresenta procedure già operative. La proposta per segnali, recupero dei lavori e coerenza del ripristino è descritta in [ADR-0005](adr/ADR-0005-operability-and-recovery-contract.md) e resta da approvare.
 
 ### 3.4 GESTIONE DEI DATI PERSISTENTI
 
@@ -300,7 +301,7 @@ Le API REST sono versionate e separate dal contratto delle viste. Un client cart
 
 #### 3.6.3 GESTIONE ASINCRONA ED EVENTI
 
-Le sincronizzazioni e le attività lente sono eseguite da worker. La transazione di pubblicazione registra anche il lavoro pendente di pulizia cache. Un worker recupera i lavori incompleti da `source_sync` e ne registra l’esito. Le chiavi cache includono la generazione attiva, così un arresto del worker non rende leggibili dati di una generazione superata. La politica di retry, backoff e allarme per lavori pendenti è da definire secondo OPEN-08. Le notifiche sono inviate tramite `NotificationPort` dopo il completamento del caso d’uso, con retry e deduplicazione da definire. Le chiamate a provider esterni non mantengono aperte transazioni database quando non necessario. Metriche e allarmi devono rendere osservabili disponibilità, latenza, ritardo delle fonti, errori di sincronizzazione, lavori di pulizia pendenti e dimensione e anzianità della coda di moderazione. Soglie e obiettivi di servizio sono da concordare.
+Le sincronizzazioni e le attività lente sono eseguite da worker. La transazione di pubblicazione registra anche il lavoro pendente di pulizia cache. Un worker recupera i lavori incompleti da `source_sync` e ne registra l’esito. Le chiavi cache includono la generazione attiva, così un arresto del worker non rende leggibili dati di una generazione superata. La politica di retry, backoff e allarme per lavori pendenti è da definire secondo OPEN-08. Le notifiche sono inviate tramite `NotificationPort` dopo il completamento del caso d’uso, con retry e deduplicazione da definire. Le chiamate a provider esterni non mantengono aperte transazioni database quando non necessario. Metriche e allarmi devono rendere osservabili disponibilità, latenza, ritardo delle fonti, errori di sincronizzazione, lavori di pulizia pendenti e dimensione e anzianità della coda di moderazione. Soglie e obiettivi di servizio sono da concordare. Il contratto proposto per recupero, riconciliazione degli effetti esterni e segnali operativi è in [ADR-0005](adr/ADR-0005-operability-and-recovery-contract.md).
 
 #### 3.6.4 GESTIONE DEGLI ERRORI
 
