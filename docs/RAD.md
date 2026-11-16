@@ -99,7 +99,7 @@ I criteri descrivono risultati osservabili ricavati dai flussi dei casi d’uso 
 | FR-04 | Una richiesta valida restituisce zero o più percorsi alternativi con tempi, cambi e stato di verifica secondo il contratto del provider e i profili approvati in OPEN-03. |
 | FR-05 | Ogni tratto del percorso distingue barriere note, compatibilità nota e stato non verificato. Un risultato del provider non dimostra da solo l’accessibilità secondo OPEN-03. |
 | FR-06 | La selezione di un luogo mostra dettaglio, caratteristiche note, fonte e validità secondo OPEN-02. Dati assenti o scaduti risultano sconosciuti. |
-| FR-07 | L’invio valido persiste segnalazione ed evento iniziale. Un errore non lascia una segnalazione parziale. La foto facoltativa resta non pubblicata finché non supera i controlli OPEN-15 e le policy di trattamento OPEN-05. |
+| FR-07 | L’invio valido persiste segnalazione ed evento iniziale. Un errore non lascia una segnalazione parziale. La foto facoltativa resta privata finché non supera i controlli OPEN-15 ed è collegata alla segnalazione. Consenso e ciclo di vita seguono OPEN-05. Un errore tra storage e database lascia l’upload recuperabile o eliminabile secondo OPEN-08 e OPEN-15. |
 | FR-08 | La creazione riuscita restituisce un codice di tracking. La consultazione mostra solo lo stato consentito dalla policy di accesso da approvare in OPEN-04. |
 | FR-09 | Solo una transizione presente nella matrice approvata in OPEN-12 aggiorna stato ed evento nella stessa transazione. Una transizione non ammessa non modifica i dati. Ruoli e attribuzione dell’attore seguono OPEN-04 e OPEN-05. |
 | FR-10 | Solo una generazione completa e validata secondo il contratto della fonte OPEN-14 viene pubblicata. Versione, timestamp, controlli ed esito sono registrati. Un errore mantiene i dati validi precedenti. Fonti e responsabili devono essere approvati in OPEN-01. |
@@ -137,10 +137,10 @@ Registrare l’esito effettivamente osservato e un collegamento consultabile all
 | NFR-04 | Privacy | Minimizzare i dati personali e separare identità e segnalazioni pubbliche. | Prima del lancio approvare finalità, accessi, conservazione e cancellazione secondo OPEN-05. Verificare autorizzazioni, scadenza e cancellazione con prove sui dati. | Responsabile privacy, da designare |
 | NFR-05 | Sicurezza | Proteggere le comunicazioni con TLS e le funzioni riservate con ruoli. | Verificare TLS sugli endpoint esposti secondo la configurazione per ambiente OPEN-08 e rifiuto lato server delle operazioni riservate per ruoli non autorizzati secondo OPEN-04. | Responsabile sicurezza, da designare |
 | NFR-06 | Sicurezza | Applicare rate limiting, validazione server-side e protezione da injection agli endpoint. | Provare input malformati e injection. Verificare il rifiuto senza effetti parziali e il comportamento del rate limiting rispetto alle regole da approvare in OPEN-15. | Responsabile sicurezza, da designare |
-| NFR-07 | Sicurezza | Controllare gli upload per tipo, dimensione e contenuto prima dell’uso o pubblicazione. | Provare file ammessi, non validi, con scansione fallita o indisponibile. Verificare rifiuto o quarantena e accesso controllato secondo OPEN-15 e OPEN-05. | Responsabile sicurezza, da designare |
+| NFR-07 | Sicurezza | Controllare gli upload per tipo, dimensione e contenuto prima dell’uso o pubblicazione. | Provare file ammessi, non validi, con scansione fallita o indisponibile. In caso di errore database dopo la scansione, verificare che l’oggetto resti privato e sia recuperato o eliminato secondo OPEN-05, OPEN-08 e OPEN-15. | Responsabile sicurezza, da designare |
 | NFR-08 | Affidabilità dati | Esporre provenienza e freschezza e applicare scadenze per fonte e tipo di dato. | Applicare i contratti di fonte OPEN-01 e OPEN-14 e le regole di validità OPEN-02. Testare dati assenti, scaduti e incoerenti e confermare che risultino sconosciuti. Con pubblicazioni concorrenti, verificare che ogni risposta e chiave cache usino un vettore coerente delle generazioni attive. | Responsabile dati, da designare |
 | NFR-09 | Operatività | Produrre log strutturati senza dati sensibili e metriche operative. | In ambiente concordato secondo OPEN-07 e OPEN-08 verificare log e metriche di disponibilità, latenza, sincronizzazioni, coda di moderazione e stato delle notifiche pendenti. Controllare che log e allarmi non espongano dati sensibili secondo OPEN-05. | Responsabile operativo, da designare |
-| NFR-10 | Continuità | Configurare allarmi e backup automatici e svolgere prove di ripristino. | Eseguire e registrare una prova di ripristino secondo OPEN-07 e OPEN-08. Verificare integrità, riferimenti tra dati e oggetti e ripresa dei lavori asincroni pendenti, inclusi gli esiti di notifica ambigui. Approvare gli obiettivi prima del lancio e applicare la conservazione OPEN-05. | Responsabile operativo, da designare |
+| NFR-10 | Continuità | Configurare allarmi e backup automatici e svolgere prove di ripristino. | Eseguire e registrare una prova di ripristino secondo OPEN-07 e OPEN-08. Verificare integrità, riferimenti tra dati e oggetti, intenti di upload pendenti e ripresa dei lavori asincroni, inclusi gli esiti di notifica ambigui. Approvare gli obiettivi prima del lancio e applicare la conservazione OPEN-05. | Responsabile operativo, da designare |
 | NFR-11 | Performance | Misurare e mantenere entro soglie concordate la latenza API e il caricamento delle viste principali. | Misurare p95 in staging con concorrenza e dataset approvati in OPEN-07. Il requisito non è valutabile finché target e carico non sono concordati. | Responsabile operativo, da designare |
 | NFR-12 | Compatibilità | Versionare le API e applicare migrazioni compatibili con le versioni applicative in distribuzione. | Verificare in prova di rilascio secondo la baseline e gli ambienti OPEN-08 che le versioni applicative attive durante la migrazione possano completare le operazioni previste. | Responsabile tecnico, da designare |
 | NFR-13 | Usabilità | Rendere i flussi principali comprensibili e coerenti, con feedback sul completamento delle operazioni. | Svolgere sessioni con compiti e criteri approvati in OPEN-06, registrare misure e problemi osservati e riportare gli esiti nel RAD. | Responsabile di prodotto, da designare |
@@ -290,7 +290,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | Condizioni d’uscita | Segnalazione ed evento iniziale persistiti. Codice di tracking restituito. In caso di errore non rimane una segnalazione parziale. Se una notifica prevista fallisce, il fallimento non annulla la segnalazione e resta osservabile e recuperabile secondo la policy da definire in OPEN-08. |
 | Requisiti qualitativi | Il modulo è accessibile. I dati identificativi sono minimizzati e separati dalla segnalazione. La foto non è pubblicata prima dei controlli previsti. |
 | Flusso degli eventi | Il segnalatore inserisce luogo, categoria, descrizione e data. Facoltativamente allega una foto. Il sistema valida i campi e controlla l’upload. Il sistema registra segnalazione ed evento iniziale e restituisce il codice di tracking. Dopo il completamento del caso, pianifica l’eventuale notifica secondo consenso e policy. Se il canale fallisce, registra l’esito per il recupero previsto in OPEN-08. |
-| Flussi alternativi e di errore | Input non valido, autorizzazione negata o limite superato: il sistema rifiuta la richiesta senza persistenza parziale secondo OPEN-04 e OPEN-15. File non valido, scansione fallita o scanner indisponibile: il file non è pubblicato e viene rifiutato o messo in quarantena secondo OPEN-15. Errore di persistenza: report ed evento iniziale non restano parziali. Notifica fallita o con esito ambiguo: la segnalazione resta registrata, l’esito non è presentato come consegna confermata e il recupero segue OPEN-08. |
+| Flussi alternativi e di errore | Input non valido, autorizzazione negata o limite superato: il sistema rifiuta la richiesta senza persistenza parziale secondo OPEN-04 e OPEN-15. File non valido, scansione fallita o scanner indisponibile: il file resta privato e viene rifiutato, messo in quarantena o eliminato secondo OPEN-15 e OPEN-05. Scrittura interrotta in object storage o errore database dopo la scansione: report ed evento non restano parziali e l’upload non diventa pubblico. L’intento durevole consente retry o pulizia idempotente secondo OPEN-08 e OPEN-15. Notifica fallita o con esito ambiguo: la segnalazione resta registrata, l’esito non è presentato come consegna confermata e il recupero segue OPEN-08. |
 
 ###### UC-04: Seguire segnalazione
 
@@ -334,7 +334,10 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | `Place` | Rappresenta luogo, fermata o stazione con identificativo, nome, tipo e geometria. |
 | `AccessibilityFeature` | Rappresenta una caratteristica con stato esplicito, fonte, timestamp e validità, associata a un luogo. |
 | `Report` | Rappresenta luogo/geometria, categoria, descrizione, stato, date e riferimento protetto per tracking. |
+| `ReportAttachment` | Registra l’intento durevole di upload, il riferimento privato all’oggetto, l’esito dei controlli e l’eventuale collegamento al report. Stati e conservazione seguono OPEN-05 e OPEN-15. |
 | `ReportEvent` | Registra in modo append-only attore, timestamp, decisione e riferimento a un eventuale duplicato. |
+| `ReportAttachment` | Registra l’intento durevole e il riferimento privato di un allegato. La pubblicazione richiede scansione valida e collegamento autorizzato al report. Stati e conservazione seguono OPEN-05 e OPEN-15. |
+| `AttachmentState` | Stato del ciclo di upload, scansione, associazione o pulizia. Valori e transizioni sono da approvare secondo OPEN-05 e OPEN-15. |
 | `NotificationIntent` | Rappresenta un’intenzione di notifica autorizzata, collegata all’evento che l’ha generata e con esito tecnico registrabile. |
 | `NotificationAttemptState` | Stato tecnico di un tentativo di notifica. Valori e transizioni sono da definire secondo OPEN-08. |
 | `SourceSync` | Registra fonte, versione, esito, timestamp e controlli di qualità. |
@@ -353,6 +356,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | API moderazione | Espone coda e operazioni di moderazione protette da autorizzazione. |
 | Interfaccia web | Presenta mappa, viste testuali, percorsi, moduli e pannello di moderazione. |
 | Gateway upload | Valida e inoltra le immagini al flusso controllato di storage e scansione. |
+| Archivio allegati | Registra gli intenti di upload e i riferimenti agli oggetti privati per consentire associazione, riconciliazione e pulizia. |
 
 ##### Oggetti control dei casi d’uso
 
@@ -367,7 +371,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 
 #### 3.5.5 DIAGRAMMA DELLE CLASSI
 
-Il diagramma riassume le associazioni concettuali tra luoghi, caratteristiche di accessibilità, segnalazioni, eventi, intenzioni di notifica, coordinate e fonti.
+Il diagramma riassume le associazioni concettuali tra luoghi, caratteristiche di accessibilità, segnalazioni, allegati, eventi, intenzioni di notifica, coordinate e fonti.
 
 ```mermaid
 classDiagram
@@ -394,6 +398,12 @@ classDiagram
     ReportEventId id
     ModerationDecision decision
     Instant occurredAt
+  }
+  class ReportAttachment {
+    AttachmentId id
+    String storageKey
+    AttachmentState state
+    Instant createdAt
   }
   class NotificationIntent {
     NotificationIntentId id
@@ -426,6 +436,7 @@ classDiagram
   Place --> TransitStop
   TransitLine --> TransitStop
   Report --> ReportEvent
+  Report "0..1" --> "0..*" ReportAttachment
   ReportEvent --> NotificationIntent
   Report --> GeoPoint
   Place --> GeoPoint
@@ -497,7 +508,7 @@ sequenceDiagram
 
 ##### Invio di una segnalazione
 
-Il diagramma mostra lo scambio tra segnalatore, API, caso d’uso e repository durante la creazione atomica di una segnalazione.
+Il diagramma mostra l’intento durevole dell’upload, la scansione privata e la transazione che collega allegato, segnalazione, evento e notifica. Object storage e database non condividono una transazione atomica.
 
 ```mermaid
 sequenceDiagram
@@ -506,31 +517,38 @@ sequenceDiagram
   participant API as Reports API
   participant UC as CreateReport
   participant Repo as ReportRepository
+  participant Attach as AttachmentRepository
   participant Upload as Storage e scanner
   participant W as NotificationWorker
   participant N as NotificationPort
   S->>API: POST segnalazione
-  API->>UC: input validato
+  API->>UC: input e policy per la validazione applicativa
   opt Foto allegata
-    UC->>Upload: Verifica tipo, dimensione e contenuto
+    UC->>Attach: Registra intento e chiave opaca privata
+    Attach-->>UC: UploadId e riferimento durevole
+    UC->>Upload: Scrive in area privata e richiede scansione
     alt Scansione superata
-      Upload-->>UC: File validato
-    else File non valido o scanner indisponibile
-      Upload-->>UC: File rifiutato o scansione non disponibile
+      Upload-->>UC: Oggetto privato validato
+    else File rifiutato o scanner indisponibile
+      Upload-->>UC: Esito negativo o non disponibile
+      UC->>Attach: Registra esito e lavoro di pulizia secondo policy
       break Upload non accettabile secondo OPEN-15
         UC-->>API: Rifiuto senza persistenza del report
         API-->>S: Upload non accettato
       end
     end
   end
-  alt Input e autorizzazione validi, upload conforme
-    UC->>Repo: salva Report + ReportEvent + intenzione autorizzata
+  alt Input validi, eventuale upload verificato e commit riuscito
+    UC->>Repo: salva Report + ReportEvent + riferimento allegato + intenzione autorizzata
     Repo-->>UC: commit completato
     UC-->>API: tracking code e stato
     API-->>S: conferma invio
-  else Validazione, autorizzazione o upload falliti
+  else Validazione o transazione database fallite
     UC-->>API: Rifiuto senza persistenza parziale
     API-->>S: Errore comprensibile
+    opt Intento upload presente senza report collegato
+      UC->>Attach: Mantiene il lavoro privato per retry o pulizia
+    end
   end
   opt Intenzione di notifica presente
     W->>Repo: Legge intenzione pendente

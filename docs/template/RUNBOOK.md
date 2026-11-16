@@ -57,7 +57,7 @@ Indicare controlli pre-rilascio, versione e provenienza degli artefatti, compati
 
 Indicare la fonte della copia, l’ambiente isolato, i passaggi di ripristino, la validazione d’integrità, i controlli applicativi e la registrazione dell’esito. Specificare l’obiettivo di punto di ripristino (Recovery Point Objective, RPO) e l’obiettivo di tempo di ripristino (Recovery Time Objective, RTO) solo dopo approvazione e misurazione.
 
-Durante il ripristino verificare anche riferimenti tra database e object storage, stato di cancellazione secondo OPEN-05, generazioni e cache, lavori pendenti di sincronizzazione e outbox notifiche. Definire come riconciliare ogni lavoro ripristinato prima di riattivare worker o canali esterni.
+Durante il ripristino verificare anche riferimenti tra database e object storage, intenti di upload pendenti, esiti di scansione, stato di cancellazione secondo OPEN-05, generazioni e cache, lavori pendenti di sincronizzazione e outbox notifiche. Definire come riconciliare ogni lavoro ripristinato prima di riattivare worker o canali esterni.
 
 ### Sincronizzazione delle fonti
 
@@ -65,7 +65,7 @@ Descrivere avvio, retry, idempotenza, validazione, invalidazione cache e verific
 
 ### Recupero dei lavori asincroni
 
-Documentare una procedura per ogni tipo di lavoro durevole, inclusi sincronizzazione, pulizia cache e invio notifiche nell'outbox. Indicare l'archivio autorevole dello stato, i passaggi per distinguere lavoro pendente, fallito e con esito ambiguo, le verifiche prima di un retry o replay, i controlli di idempotenza, le possibili duplicazioni, l'escalation e la registrazione dell'esito. Per la pulizia cache verificare la generazione attiva e non dichiarare incoerenti i dati solo perché la rimozione di chiavi superate è ancora pendente. Per una notifica ambigua, verificare il riscontro disponibile dal provider e applicare la regola approvata prima di ritentare. Non dichiarare consegna esattamente una volta e non registrare come riuscito un lavoro senza evidenza. Retry, backoff, scadenze e responsabilità restano da approvare secondo OPEN-08 e [ADR-0005](../adr/ADR-0005-operability-and-recovery-contract.md).
+Documentare una procedura per ogni tipo di lavoro durevole, inclusi sincronizzazione, pulizia cache, riconciliazione degli upload e invio notifiche nell'outbox. Indicare l'archivio autorevole dello stato, i passaggi per distinguere lavoro pendente, fallito e con esito ambiguo, le verifiche prima di un retry o replay, i controlli di idempotenza, le possibili duplicazioni, l'escalation e la registrazione dell'esito. Per la pulizia cache verificare la generazione attiva e non dichiarare incoerenti i dati solo perché la rimozione di chiavi superate è ancora pendente. Per gli upload verificare intento, esito della scansione, visibilità privata e collegamento al report. Rimuovere o riprendere gli oggetti non collegati secondo le policy OPEN-05, OPEN-08 e OPEN-15. Per una notifica ambigua, verificare il riscontro disponibile dal provider e applicare la regola approvata prima di ritentare. Non dichiarare consegna esattamente una volta e non registrare come riuscito un lavoro senza evidenza. Retry, backoff, scadenze e responsabilità restano da approvare secondo OPEN-08 e [ADR-0005](../adr/ADR-0005-operability-and-recovery-contract.md).
 
 ### Coda di moderazione
 

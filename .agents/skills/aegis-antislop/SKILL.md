@@ -31,12 +31,13 @@ Use this skill whenever creating, reviewing, or revising aegis documentation, di
 - Keep the overview diagram synchronized with the detailed cases. Show each use-case ID once, all participating human and external actors, and their associations.
 - Ensure diagram labels, descriptions, flows, failure behavior, and requirements agree.
 - State how missing, stale, contradictory, partial, or unavailable data is represented and handled.
+- For workflows crossing transaction boundaries, identify each authoritative store, the state exposed after partial failure, and the idempotent recovery or compensation path. Do not imply atomicity across systems that do not share a transaction.
 
 ## Review procedure
 
 1. Read affected documents, linked requirements, models, and source evidence.
 2. Check the status and source of each material claim. Correct, qualify, or remove unsupported claims.
-3. Check repetition, vague wording, inconsistent terms, missing actors, failure paths, and test evidence.
+3. Check repetition, vague wording, inconsistent terms, missing actors, failure paths, transaction boundaries, recovery behavior, and test evidence.
 4. Edit the source documents and diagrams while preserving structure and user-owned material.
 5. Run `make check-docs`. Run `make docs` when RAD, SDD, diagrams, export validation, or document tools change.
 6. Review the diff and rendered exports. Confirm use-case coverage, alt descriptions, metadata, and embedded images.
