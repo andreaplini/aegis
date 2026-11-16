@@ -61,9 +61,9 @@ Non approvata. Il proprietario del repository deve approvare il flusso di pull r
 
 | Evidenza richiesta | Criterio di accettazione | Responsabile | Esito e riferimento |
 |---|---|---|---|
-| Gate del workflow | Push e pull request verso `main` producono il check `Verifica documentazione` senza filtro sui percorsi | Responsabile repository, da designare | Non eseguito |
+| Gate del workflow | Il workflow senza filtri sui percorsi produce il check `Verifica documentazione` su push e pull request verso `main`. Il push è verificato. La prova con pull request resta da eseguire | Responsabile repository, da designare | In corso. [Check riuscito su main](https://github.com/kairosci/aegis/actions/runs/43967406617). Pull request non provata |
 | Approvazione OPEN-09 | Flusso di pull request, numero di approvazioni, bypass e policy di merge sono documentati | Proprietario del repository | In attesa |
-| Configurazione remota | Ruleset applicato al branch `main` con protezioni e check approvati | Maintainer, da designare | In attesa |
+| Configurazione remota | Ruleset applicato al branch `main` con protezioni e check approvati | Maintainer, da designare | Non superato. La protezione del branch restituisce `Branch not protected` e la lista ruleset è vuota, verificato il 16 novembre 2026 |
 | Pull request con check fallito | Il merge è rifiutato dalle regole configurate | Maintainer, da designare | Non eseguito |
 | Pull request con policy soddisfatta | Il merge è consentito e l’esito resta consultabile | Maintainer, da designare | Non eseguito |
 | Evoluzione ENG-07 | I check di build, test e analisi applicativa sono aggiunti e richiesti dopo ENG-03 | Responsabile tecnico, da designare | In attesa |
