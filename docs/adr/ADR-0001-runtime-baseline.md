@@ -16,7 +16,7 @@
 
 RAD e SDD prescrivono Java LTS, Jakarta EE, Jakarta Faces e Jakarta REST, ma il repository non ha ancora una versione Java, una versione Jakarta EE o un runtime configurati. La scelta determina la toolchain, le API disponibili, la build, il packaging, le immagini di esecuzione e le verifiche di compatibilità.
 
-La piattaforma Jakarta EE 11 supporta Java SE 17 o successivo. WildFly 42 standard dichiara compatibilità con Jakarta EE 11 Platform, Web Profile e Core Profile su Java SE 17 e Java SE 21. Il progetto WildFly raccomanda Java SE 25 per WildFly 42, ma dichiara di non rivendicare la compatibilità EE 11 su Java SE 25. Per una versione con evidenza TCK EE 11 indica Java SE 21 o 17. Oracle classifica Java 21 e Java 25 come LTS nella propria roadmap. La durata del supporto dipende dalla distribuzione Java scelta.
+La piattaforma Jakarta EE 11 supporta Java SE 17 o successivo. WildFly 42 standard dichiara compatibilità con Jakarta EE 11 Platform, Web Profile e Core Profile su Java SE 17 e Java SE 21. Il progetto WildFly raccomanda Java SE 25 per WildFly 42, ma dichiara di non rivendicare la compatibilità EE 11 su Java SE 25. Per una versione con evidenza TCK EE 11 indica Java SE 21 o 17. Lo stesso annuncio pianifica per WildFly 44, atteso nella primavera 2027, il passaggio della baseline a Java SE 21 e indica WildFly 43 come ultima versione che supporterà Java SE 17. L'opzione Java 21 evita quindi una migrazione immediata alla baseline successiva prevista. Oracle classifica Java 21 e Java 25 come LTS nella propria roadmap. La durata del supporto dipende dalla distribuzione Java scelta.
 
 Fonti consultate il 16 novembre 2026:
 
