@@ -54,6 +54,8 @@ Verifica di sola lettura del repository `kairosci/aegis` il 16 novembre 2026:
 | Dependabot security updates | Abilitati |
 | Aggiornamenti Dependabot | GitHub Actions e strumenti Node documentali, controllo settimanale |
 | Secret scanning e push protection | Abilitati |
+| Rilevamento di pattern non provider | Disabilitato |
+| Verifica di validità dei segreti rilevati | Disabilitata |
 | Segnalazione privata delle vulnerabilità GitHub | Abilitata |
 | Collegamento al report privato nel flusso issue | Configurato in `.github/ISSUE_TEMPLATE/config.yml` |
 | Release | Nessuna release pubblicata |
