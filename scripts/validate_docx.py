@@ -310,25 +310,20 @@ def validate_document(
 
 def main(argv: list[str]) -> int:
     paths = [Path(value) for value in argv[1:]]
-    if len(paths) not in {2, 3}:
+    if len(paths) != 3:
         print(
-            "Uso: python3 scripts/validate_docx.py RAD.docx SDD.docx [template.docx]",
+            "Uso: python3 scripts/validate_docx.py RAD.docx SDD.docx template.docx",
             file=sys.stderr,
         )
         return 2
 
     errors = [error for path in paths[:2] for error in validate_document(path)]
-    if len(paths) == 3:
-        errors.extend(validate_reference_template(paths[2]))
+    errors.extend(validate_reference_template(paths[2]))
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1
 
-    print(
-        "DOCX validi: archivio, contenuto, nome aegis, punteggiatura e diagrammi verificati."
-        if len(paths) == 2
-        else "DOCX validi: export, template di riferimento, punteggiatura e risorse estratte verificati."
-    )
+    print("DOCX validi: export, template di riferimento, punteggiatura e risorse estratte verificati.")
     return 0
 
 

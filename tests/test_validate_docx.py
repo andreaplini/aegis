@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import io
 import sys
 import tempfile
 import unittest
 import zipfile
+from contextlib import redirect_stderr
 from pathlib import Path
 from unittest.mock import patch
 from xml.etree import ElementTree
@@ -136,6 +138,14 @@ def write_docx(
 
 
 class DocxValidationTests(unittest.TestCase):
+    def test_cli_requires_reference_template(self) -> None:
+        error_output = io.StringIO()
+        with redirect_stderr(error_output):
+            result = validate_docx.main(["validate_docx.py", "rad.docx", "sdd.docx"])
+
+        self.assertEqual(result, 2)
+        self.assertIn("template.docx", error_output.getvalue())
+
     def test_requires_rendered_diagrams_without_mermaid_source(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "rad-is.docx"
