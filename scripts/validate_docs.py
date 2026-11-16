@@ -537,6 +537,19 @@ def validate_runbook_operational_coverage() -> list[str]:
     label = path.relative_to(ROOT).as_posix()
     lines = path.read_text(encoding="utf-8").splitlines()
     required_sections = {
+        "## Segnali e diagnosi": [
+            "pulizia cache pendente",
+            "notifica pendente o con esito ambiguo",
+            "coda di moderazione in crescita",
+        ],
+        "### Ripristino da backup": [
+            "object storage",
+            "OPEN-05",
+            "cache",
+            "sincronizzazione",
+            "outbox notifiche",
+            "worker",
+        ],
         "### Recupero dei lavori asincroni": [
             "sincronizzazione",
             "pulizia cache",
@@ -555,8 +568,9 @@ def validate_runbook_operational_coverage() -> list[str]:
     errors: list[str] = []
     for heading, required_terms in required_sections.items():
         indexes = [index for index, line in enumerate(lines) if line.strip() == heading]
+        section_name = heading.lstrip("#").strip()
         if len(indexes) != 1:
-            errors.append(f"{label}: deve contenere una sola sezione {heading[4:]}")
+            errors.append(f"{label}: deve contenere una sola sezione {section_name}")
             continue
 
         start = indexes[0] + 1
@@ -572,7 +586,7 @@ def validate_runbook_operational_coverage() -> list[str]:
         missing = [term for term in required_terms if term.casefold() not in section]
         if missing:
             errors.append(
-                f"{label}: sezione {heading[4:]} priva di copertura per {', '.join(missing)}"
+                f"{label}: sezione {section_name} priva di copertura per {', '.join(missing)}"
             )
 
     return errors
