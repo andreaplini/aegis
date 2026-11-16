@@ -30,7 +30,7 @@ Installare la versione Pandoc indicata in `config/tool-versions.env` e lanciare:
 make docs
 ```
 
-La generazione esegue prima `make check-docs`, che verifica test del validatore, collegamenti e ancore locali, struttura dei modelli, tracciabilità RAD/SDD, casi d'uso e stile del progetto. Dopo la conversione controlla integrità, contenuto, nome e punteggiatura nei DOCX. `make check-docs` può essere lanciato separatamente e non richiede Pandoc.
+La generazione esegue prima `make check-docs`, che verifica test del validatore, collegamenti e ancore locali, struttura dei modelli, completezza e unicità dei requisiti, tracciabilità RAD/SDD, casi d'uso e stile del progetto. Dopo la conversione controlla integrità, contenuto, nome e punteggiatura nei DOCX. `make check-docs` può essere lanciato separatamente e non richiede Pandoc.
 
 `make docs` verifica anche che la versione locale di Pandoc corrisponda a quella configurata, così lo stesso convertitore viene usato localmente e in CI.
 

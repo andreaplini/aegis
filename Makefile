@@ -11,6 +11,7 @@ help:
 	@printf '%s\n' \
 	  'make docs       Generate and validate RAD and SDD DOCX files in $(OUTPUT_DIR)' \
 	  'make check-docs  Test and validate docs, structure, traceability, and style' \
+	  'make check-pandoc Check local Pandoc against config/tool-versions.env' \
 	  'Set PANDOC=/path/to/pandoc to select a Pandoc executable'
 
 check-docs:

@@ -44,6 +44,37 @@ VALID_SDD = """# SDD
 
 
 class MarkdownValidationTests(unittest.TestCase):
+    def test_functional_requirements_have_complete_unique_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            docs.mkdir()
+            rad = docs / "RAD.md"
+            valid = (
+                "### 3.2 REQUISITI FUNZIONALI\n"
+                "| ID | Responsabile dell’azione | Azione richiesta | Priorità | Caso d’uso |\n"
+                "|---|---|---|---|---|\n"
+                "| FR-01 | Sistema | Mostrare i luoghi richiesti. | Must | UC-01 |\n"
+                "### 3.3 REQUISITI NON FUNZIONALI\n"
+            )
+            rad.write_text(valid, encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_functional_requirements(), [])
+
+                invalid = valid.replace(
+                    "### 3.3 REQUISITI NON FUNZIONALI\n",
+                    "| FR-02 |  | Descrivere il luogo. | Urgent | UC-X |\n"
+                    "| FR-01 | Sistema | Mostrare i luoghi richiesti. | Must | UC-01 |\n"
+                    "### 3.3 REQUISITI NON FUNZIONALI\n",
+                )
+                rad.write_text(invalid, encoding="utf-8")
+                errors = validate_docs.validate_functional_requirements()
+                self.assertTrue(any("responsabile, azione, priorità e caso d’uso" in error for error in errors))
+                self.assertTrue(any("priorità non valida" in error for error in errors))
+                self.assertTrue(any("senza caso d’uso valido" in error for error in errors))
+                self.assertTrue(any("duplicati" in error for error in errors))
+
     def test_non_functional_requirements_have_action_and_verification_criterion(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
