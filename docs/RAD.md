@@ -5,10 +5,10 @@
 | Dato | Valore |
 |---|---|
 | Progetto | aegis |
-| Corso | Da compilare |
-| Docenti | Da compilare |
-| Candidati | Da compilare |
-| Anno accademico | Da confermare |
+| Corso | Da confermare in OPEN-13 |
+| Docenti | Da confermare in OPEN-13 |
+| Candidati | Da confermare in OPEN-13 |
+| Anno accademico | Da confermare in OPEN-13 |
 
 Bozza aggiornata il 16 novembre 2026. I requisiti sono da convalidare con persone con disabilità, enti di trasporto e responsabili delle fonti dati. Il prodotto non è ancora implementato. Decisioni e prove mancanti sono tracciate nella [roadmap](MILESTONES.md).
 

@@ -5,10 +5,10 @@
 | Dato | Valore |
 |---|---|
 | Progetto | aegis |
-| Corso | Da compilare |
-| Docenti | Da compilare |
-| Candidati | Da compilare |
-| Anno accademico | Da confermare |
+| Corso | Da confermare in OPEN-13 |
+| Docenti | Da confermare in OPEN-13 |
+| Candidati | Da confermare in OPEN-13 |
+| Anno accademico | Da confermare in OPEN-13 |
 
 Bozza aggiornata il 16 novembre 2026. L’architettura è iniziale e descrive il sistema proposto. Il prodotto non è ancora implementato. Le descrizioni dei componenti e dei flussi indicano comportamenti attesi e non attestano funzionalità realizzate o verificate. Runtime Jakarta EE, fonti dati, area pilota e servizi gestiti sono da convalidare secondo la [roadmap](MILESTONES.md).
 
