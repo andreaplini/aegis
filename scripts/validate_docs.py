@@ -560,6 +560,40 @@ def validate_non_functional_requirements() -> list[str]:
     return errors
 
 
+def validate_nfr_template() -> list[str]:
+    path = ROOT / "docs/template/RAD.md"
+    if not path.is_file():
+        return ["docs/template/RAD.md: modello RAD non trovato"]
+
+    lines = path.read_text(encoding="utf-8").splitlines()
+    section_start = "### 3.3 REQUISITI NON FUNZIONALI"
+    section_end = "### 3.4 VINCOLI"
+    if section_start not in lines or section_end not in lines:
+        return ["docs/template/RAD.md: sezione requisiti non funzionali non trovata"]
+
+    section = lines[lines.index(section_start) + 1 : lines.index(section_end)]
+    requirement_headers = ["ID", "Qualità", "Azione richiesta", "Criterio di verifica", "Responsabile dell’accettazione"]
+    evidence_headers = ["ID", "Esito osservato", "Riferimento evidenza"]
+    header_lines = [line for line in section if line.startswith("| ID |")]
+    errors: list[str] = []
+    if len(header_lines) != 2:
+        return ["docs/template/RAD.md: il modello richiede una tabella NFR e un registro verifiche"]
+    actual_headers = [[cell.strip() for cell in line.strip().strip("|").split("|")] for line in header_lines]
+    if actual_headers != [requirement_headers, evidence_headers]:
+        errors.append("docs/template/RAD.md: intestazioni NFR non conformi al modello RAD")
+
+    sample_rows = [line for line in section if line.startswith("| NFR-XX |")]
+    if len(sample_rows) != 2:
+        errors.append("docs/template/RAD.md: servono un esempio NFR e la relativa riga nel registro")
+    for index, row in enumerate(sample_rows):
+        expected_count = len(requirement_headers) if index == 0 else len(evidence_headers)
+        cells = [cell.strip() for cell in row.strip().strip("|").split("|")]
+        if len(cells) != expected_count or not all(cells[1:]):
+            errors.append("docs/template/RAD.md: esempio NFR o registro verifiche incompleto")
+            break
+    return errors
+
+
 def validate_functional_requirements() -> list[str]:
     path = ROOT / "docs/RAD.md"
     lines = path.read_text(encoding="utf-8").splitlines()
@@ -792,6 +826,7 @@ def main() -> int:
     errors.extend(validate_glossaries())
     errors.extend(validate_runbook_revision_history())
     errors.extend(validate_non_functional_requirements())
+    errors.extend(validate_nfr_template())
 
     if errors:
         print("\n".join(errors), file=sys.stderr)

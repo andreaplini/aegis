@@ -361,6 +361,34 @@ class MarkdownValidationTests(unittest.TestCase):
                 errors = validate_docs.validate_non_functional_requirements()
                 self.assertTrue(any("stato di verifica NFR non valido" in error for error in errors))
 
+    def test_nfr_template_preserves_requirement_and_evidence_tables(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            template_dir = root / "docs/template"
+            template_dir.mkdir(parents=True)
+            template = template_dir / "RAD.md"
+            valid_template = (
+                "### 3.3 REQUISITI NON FUNZIONALI\n"
+                "| ID | Qualità | Azione richiesta | Criterio di verifica | Responsabile dell’accettazione |\n"
+                "|---|---|---|---|---|\n"
+                "| NFR-XX | Qualità | Azione | Criterio | Ruolo, da designare |\n"
+                "#### REGISTRO DELLE VERIFICHE NFR\n"
+                "| ID | Esito osservato | Riferimento evidenza |\n"
+                "|---|---|---|\n"
+                "| NFR-XX | Non eseguito | Da registrare |\n"
+                "### 3.4 VINCOLI\n"
+            )
+            template.write_text(valid_template, encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_nfr_template(), [])
+                template.write_text(
+                    valid_template.replace("| ID | Esito osservato | Riferimento evidenza |", "| ID | Esito | Evidenza |"),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_nfr_template()
+                self.assertTrue(any("intestazioni NFR" in error for error in errors))
+
     def test_fenced_code_is_ignored_when_scanning_links(self) -> None:
         text = """[valid](docs.md)
 ```md
