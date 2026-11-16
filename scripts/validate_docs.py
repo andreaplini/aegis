@@ -15,6 +15,9 @@ LINK_PATTERN = re.compile(r"!?\[[^\]]*\]\((<[^>]+>|[^)]+)\)")
 HEADING_PATTERN = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$")
 FENCE_PATTERN = re.compile(r"^\s*(`{3,}|~{3,})")
 TRACE_ID_PATTERN = re.compile(r"\b(?:FR|NFR|UC)-\d{2}\b")
+USE_CASE_HEADING_PATTERN = re.compile(r"^######\s+(UC-\d{2})\b")
+FUNCTIONAL_REQUIREMENT_ROW_PATTERN = re.compile(r"^\|\s*(FR-\d{2})\s*\|")
+CASE_FIELD_PATTERN = re.compile(r"^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|")
 
 
 def markdown_files() -> list[Path]:
@@ -109,6 +112,53 @@ def validate_traceability() -> list[str]:
     return [f"docs/SDD.md: requisiti o casi d’uso RAD non mappati a un modulo: {', '.join(missing)}"]
 
 
+def validate_use_case_specs() -> list[str]:
+    rad_path = ROOT / "docs/RAD.md"
+    lines = rad_path.read_text(encoding="utf-8").splitlines()
+    headings = [(index, match.group(1)) for index, line in enumerate(lines) if (match := USE_CASE_HEADING_PATTERN.match(line))]
+    case_ids = [case_id for _, case_id in headings]
+    errors: list[str] = []
+
+    duplicates = sorted({case_id for case_id in case_ids if case_ids.count(case_id) > 1})
+    if duplicates:
+        errors.append(f"docs/RAD.md: casi d’uso duplicati: {', '.join(duplicates)}")
+
+    required_fields = {
+        "attori partecipanti",
+        "condizioni d’ingresso",
+        "condizioni d’uscita",
+        "requisiti qualitativi",
+        "flusso degli eventi",
+    }
+    for index, (start, case_id) in enumerate(headings):
+        end = headings[index + 1][0] if index + 1 < len(headings) else len(lines)
+        section = lines[start + 1 : end]
+        fields = {
+            match.group(1).strip().lower(): match.group(2).strip()
+            for line in section
+            if (match := CASE_FIELD_PATTERN.match(line))
+        }
+        missing = sorted(field for field in required_fields if not fields.get(field))
+        if missing:
+            errors.append(f"docs/RAD.md: {case_id} senza campi compilati: {', '.join(missing)}")
+
+    table_case_ids: set[str] = set()
+    for line in lines:
+        if FUNCTIONAL_REQUIREMENT_ROW_PATTERN.match(line):
+            table_case_ids.update(re.findall(r"UC-\d{2}", line))
+            if not re.search(r"UC-\d{2}", line):
+                errors.append(f"docs/RAD.md: requisito funzionale senza caso d’uso: {line.strip()}")
+
+    undefined = sorted(table_case_ids - set(case_ids))
+    unreferenced = sorted(set(case_ids) - table_case_ids)
+    if undefined:
+        errors.append(f"docs/RAD.md: casi d’uso referenziati ma non specificati: {', '.join(undefined)}")
+    if unreferenced:
+        errors.append(f"docs/RAD.md: casi d’uso non collegati a requisiti funzionali: {', '.join(unreferenced)}")
+
+    return errors
+
+
 def main() -> int:
     errors: list[str] = []
     files = markdown_files()
@@ -124,12 +174,13 @@ def main() -> int:
             if error:
                 errors.append(error)
     errors.extend(validate_traceability())
+    errors.extend(validate_use_case_specs())
 
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1
 
-    print(f"Documentazione valida: link, ancore e tracciabilità RAD/SDD verificati in {len(files)} file Markdown.")
+    print(f"Documentazione valida: link, ancore, requisiti, casi d’uso e tracciabilità RAD/SDD verificati in {len(files)} file Markdown.")
     return 0
 
 
