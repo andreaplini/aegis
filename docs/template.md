@@ -1,6 +1,6 @@
 # Template RAD e SDD
 
-Trascrizione strutturata del [documento Word originale](../templates/template.docx), con la gerarchia espressa in Markdown. Le voci degli indici del DOCX ripetono o azzerano alcuni numeri di sezione; qui la numerazione segue l'ordine logico delle sezioni. Le immagini sono collegate ai file estratti dal pacchetto originale.
+Trascrizione strutturata del [documento Word originale](template/template.docx), con la gerarchia espressa in Markdown. Le voci degli indici del DOCX ripetono o azzerano alcuni numeri di sezione; qui la numerazione segue l'ordine logico delle sezioni. Le immagini sono collegate ai file estratti dal pacchetto originale.
 
 Per la struttura dei documenti basati sugli esempi accademici, usare i modelli anonimizzati [RAD](template/RAD.md) e [SDD](template/SDD.md). Questa trascrizione resta il riferimento del template Word generico.
 
@@ -34,7 +34,7 @@ Descrivere il sistema proposto e i principali obiettivi.
 >
 > **FR2:** …
 
-![Esempio tabellare di requisiti funzionali](../assets/template_assets/package/word/media/image1.png)
+![Esempio tabellare di requisiti funzionali](template/assets/package/word/media/image1.png)
 
 #### 3.3 Requisiti non funzionali
 
@@ -46,7 +46,7 @@ Anche questi requisiti possono essere presentati in forma tabellare oppure come 
 >
 > **NFR2:** …
 
-![Esempio tabellare di requisiti non funzionali](../assets/template_assets/package/word/media/image2.png)
+![Esempio tabellare di requisiti non funzionali](template/assets/package/word/media/image2.png)
 
 #### 3.4 Vincoli (pseudo-requisiti)
 
@@ -62,17 +62,17 @@ Descrivere gli utenti, i ruoli e il contesto di utilizzo.
 
 Descrivere gli scenari, gli utenti, i ruoli e il contesto di utilizzo.
 
-![Esempio tabellare di attori e flussi degli eventi](../assets/template_assets/package/word/media/image3.png)
+![Esempio tabellare di attori e flussi degli eventi](template/assets/package/word/media/image3.png)
 
 ##### Modello dei casi d'uso
 
 Inserire il diagramma UML globale dei casi d'uso.
 
-![Esempio di diagramma UML dei casi d'uso](../assets/template_assets/package/word/media/image4.png)
+![Esempio di diagramma UML dei casi d'uso](template/assets/package/word/media/image4.png)
 
 Specificare i casi d'uso in forma tabellare.
 
-![Esempio di specifica tabellare di un caso d'uso](../assets/template_assets/package/word/media/image5.png)
+![Esempio di specifica tabellare di un caso d'uso](template/assets/package/word/media/image5.png)
 
 ##### Modello degli oggetti
 
@@ -80,25 +80,25 @@ Definire le caratteristiche strutturali e le astrazioni del dominio applicativo.
 
 **Oggetti entity dei casi d'uso**
 
-![Esempio di oggetti entity](../assets/template_assets/package/word/media/image6.png)
+![Esempio di oggetti entity](template/assets/package/word/media/image6.png)
 
 **Oggetti boundary dei casi d'uso**
 
-![Esempio di oggetti boundary](../assets/template_assets/package/word/media/image7.png)
+![Esempio di oggetti boundary](template/assets/package/word/media/image7.png)
 
 **Oggetti control dei casi d'uso**
 
-![Esempio di oggetti control](../assets/template_assets/package/word/media/image8.png)
+![Esempio di oggetti control](template/assets/package/word/media/image8.png)
 
 **Diagrammi delle classi**
 
-![Esempio di diagramma delle classi](../assets/template_assets/package/word/media/image9.png)
+![Esempio di diagramma delle classi](template/assets/package/word/media/image9.png)
 
 ##### Modelli dinamici
 
 Descrivere i diagrammi di sequenza dei casi d'uso più importanti. I modelli dinamici possono comprendere anche diagrammi degli stati e delle attività.
 
-![Esempio di diagramma dinamico](../assets/template_assets/package/word/media/image10.png)
+![Esempio di diagramma dinamico](template/assets/package/word/media/image10.png)
 
 ### 4. Interfaccia utente
 
@@ -129,7 +129,7 @@ Il template richiede di documentare:
 
 Valutare i principi di ISO 9241-110 e, se possibile, confrontare il sistema con uno simile. Il modello propone un punteggio da 0 a 4 per ciascun principio e la rappresentazione dei punteggi medi in un diagramma a stella.
 
-![Esempio di diagramma a stella per la valutazione dell'usabilità](../assets/template_assets/package/word/media/image11.png)
+![Esempio di diagramma a stella per la valutazione dell'usabilità](template/assets/package/word/media/image11.png)
 
 ### 5. Allegati
 

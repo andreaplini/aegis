@@ -4,7 +4,7 @@
 
 La roadmap riguarda esclusivamente i documenti del progetto. Non pianifica né dichiara completati codice, infrastruttura, prototipi, prove con utenti o attività operative. Gli esiti di attività non svolte restano esplicitamente da raccogliere. Questo è l’unico file di milestone e roadmap del progetto.
 
-Gli artefatti governati sono `docs/RAD.md`, `docs/SDD.md`, `docs/template/RAD.md`, `docs/template/SDD.md`, `docs/template.md` e le informazioni documentali in `README.md`.
+Gli artefatti governati sono `docs/RAD.md`, `docs/SDD.md`, `docs/template/RAD.md`, `docs/template/SDD.md`, `docs/template.md`, il riferimento Word `docs/template/template.docx`, i materiali estratti in `docs/template/assets/` e le informazioni documentali in `README.md`.
 
 ## Roadmap
 
@@ -19,7 +19,7 @@ Gli sprint sono ordinati per dipendenza e non assegnano date o durate non concor
 | DOC-05 | Architettura e dati | SDD | Moduli, mappatura di distribuzione, persistenza, fonti, integrazioni, flussi, condizioni limite e servizi coerenti con i requisiti. | Applicato |
 | DOC-06 | Accessibilità, usabilità, sicurezza e privacy | RAD e SDD | Requisiti e metodi di verifica documentati; nessun esito di test o punteggio inventato; decisioni non convalidate registrate. | Applicato |
 | DOC-07 | Operatività e rilascio | RAD e SDD | Sincronizzazione, freschezza, monitoraggio, backup, incidenti, ambienti e processo di rilascio descritti con valori irrisolti marcati. | Applicato |
-| DOC-08 | Revisione editoriale e consegna documentale | Tutti gli artefatti elencati | Struttura, collegamenti, terminologia e tracciabilità verificati; in `docs/` sono versionati solo Markdown. | Applicato |
+| DOC-08 | Revisione editoriale e consegna documentale | Tutti gli artefatti elencati | Struttura, collegamenti, terminologia e tracciabilità verificati; fonti e supporti documentali sono in `docs/`, mentre le esportazioni generate sono escluse dal versionamento. | Applicato |
 
 ## Applicazione degli sprint
 
@@ -32,7 +32,7 @@ Gli sprint sono ordinati per dipendenza e non assegnano date o durate non concor
 | DOC-05 | Collegati moduli SDD e requisiti/casi d’uso; esplicitati catalogo delle fonti, cache geografica, provider di geocodifica, persistenza e adattatori. Le scelte non ancora approvate restano da convalidare. |
 | DOC-06 | Esplicitati ascensori, rampe, accessi e annunci come caratteristiche consultabili. Uniformata la regola per cui dati assenti o scaduti sono sconosciuti. Il RAD mantiene metodo, misure individuali e aggregate, analisi, interviste e valutazione ISO senza risultati fittizi. |
 | DOC-07 | Descritti ambienti separati, obiettivi di produzione, pipeline, compatibilità delle migrazioni, metriche e allarmi e requisiti per prove di ripristino e procedure incidenti. Runbook, soglie, responsabili e fornitori non concordati restano aperti. |
-| DOC-08 | Controllati struttura, tracciabilità tra requisiti e architettura, collegamenti Markdown, coerenza del glossario e formattazione delle modifiche. Le verifiche non dichiarano completate prove funzionali, accessibilità o ripristino. |
+| DOC-08 | Controllati struttura, tracciabilità tra requisiti e architettura, collegamenti Markdown, coerenza del glossario e formattazione delle modifiche. Riferimento Word e materiali estratti sono mantenuti in `docs/template/`; generazione e pubblicazione degli export sono automatizzate. Le verifiche non dichiarano completate prove funzionali, accessibilità o ripristino. |
 
 ## Decisioni documentali ancora aperte
 

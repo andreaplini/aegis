@@ -11,10 +11,10 @@ help:
 
 docs: $(OUTPUT_DIR)/rad-is.docx $(OUTPUT_DIR)/sdd-is.docx
 
-$(OUTPUT_DIR)/rad-is.docx: docs/RAD.md templates/template.docx
+$(OUTPUT_DIR)/rad-is.docx: docs/RAD.md docs/template/template.docx
 	mkdir -p "$(OUTPUT_DIR)"
-	$(PANDOC) --from=gfm --to=docx --standalone --reference-doc=templates/template.docx docs/RAD.md --output="$@"
+	$(PANDOC) --from=gfm --to=docx --standalone --reference-doc=docs/template/template.docx docs/RAD.md --output="$@"
 
-$(OUTPUT_DIR)/sdd-is.docx: docs/SDD.md templates/template.docx
+$(OUTPUT_DIR)/sdd-is.docx: docs/SDD.md docs/template/template.docx
 	mkdir -p "$(OUTPUT_DIR)"
-	$(PANDOC) --from=gfm --to=docx --standalone --reference-doc=templates/template.docx docs/SDD.md --output="$@"
+	$(PANDOC) --from=gfm --to=docx --standalone --reference-doc=docs/template/template.docx docs/SDD.md --output="$@"
