@@ -304,7 +304,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | Campo | Specifica |
 |---|---|
 | Attori partecipanti | Moderatore, sistema, canale di notifica. |
-| Condizioni d’ingresso | Moderatore autenticato e autorizzato secondo OPEN-04. Report esistente. La matrice di transizione di OPEN-12 è approvata e consente l’azione richiesta. Motivazione presente quando richiesta dalla matrice. |
+| Condizioni d’ingresso | Moderatore autenticato e autorizzato secondo OPEN-04. Report esistente. La matrice di transizione di OPEN-12 è approvata e consente l’azione richiesta. La proposta [ADR-0011](adr/ADR-0011-report-moderation-state-machine.md) elenca le dimensioni da decidere. Motivazione presente quando richiesta dalla matrice. |
 | Condizioni d’uscita | Stato ed evento append-only aggiornati nella stessa transazione, con attore e timestamp. Una transizione non valida non modifica i dati. Se una notifica prevista fallisce, il fallimento non annulla la transizione registrata e resta osservabile e recuperabile secondo la policy da definire in OPEN-08. |
 | Requisiti qualitativi | Ogni decisione è tracciabile. Gli eventi precedenti restano consultabili e non sono sovrascritti. |
 | Flusso degli eventi | Il moderatore apre il report. Il sistema mostra i dati e la cronologia autorizzati. Il moderatore sceglie conferma, rifiuto, risoluzione o unione e inserisce la motivazione richiesta. Il sistema valida la transizione e registra stato ed evento nella stessa transazione. Dopo il completamento del caso, pianifica l’eventuale notifica secondo consenso e policy. Se il canale fallisce, registra l’esito per il recupero previsto in OPEN-08. |
