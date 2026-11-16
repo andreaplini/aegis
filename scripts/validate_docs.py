@@ -90,8 +90,23 @@ def validate_link(source: Path, destination: str) -> str | None:
         destination = destination[1:-1]
 
     parsed = urlsplit(destination)
-    if parsed.scheme or destination.startswith("//"):
+    if parsed.scheme:
+        try:
+            valid_port = parsed.port is None or 0 <= parsed.port <= 65535
+            valid_https = (
+                parsed.scheme.lower() == "https"
+                and parsed.hostname is not None
+                and valid_port
+            )
+            has_credentials = parsed.username is not None or parsed.password is not None
+        except ValueError:
+            valid_https = False
+            has_credentials = False
+        if not valid_https or has_credentials:
+            return f"{source.relative_to(ROOT)}: usare un URL HTTPS valido senza credenziali: {destination}"
         return None
+    if destination.startswith("//"):
+        return f"{source.relative_to(ROOT)}: usare un URL HTTPS esplicito: {destination}"
 
     raw_path = unquote(parsed.path)
     target = (source.parent / raw_path).resolve() if raw_path else source.resolve()

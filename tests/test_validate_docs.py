@@ -157,6 +157,27 @@ class MarkdownValidationTests(unittest.TestCase):
                 self.assertIn("inesistente", validate_docs.validate_link(source, "missing.md"))
                 self.assertIn("ancora inesistente", validate_docs.validate_link(source, "target.md#missing"))
 
+    def test_external_links_require_valid_https_without_credentials(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            docs.mkdir()
+            source = docs / "source.md"
+            source.write_text("# Source\n", encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertIsNone(validate_docs.validate_link(source, "https://example.org/path"))
+                for destination in (
+                    "http://example.org/path",
+                    "javascript:alert(1)",
+                    "//example.org/path",
+                    "https://user:password@example.org/path",
+                    "https://example.org:invalid/path",
+                    "https:///path",
+                ):
+                    with self.subTest(destination=destination):
+                        self.assertIn("URL HTTPS", validate_docs.validate_link(source, destination))
+
     def test_module_traceability_rejects_missing_unknown_and_mismatched_ids(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
