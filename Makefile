@@ -6,7 +6,7 @@ MERMAID ?= config/documentation/node_modules/.bin/mmdc
 PUPPETEER ?= config/documentation/node_modules/.bin/puppeteer
 PUPPETEER_CONFIG ?=
 OUTPUT_DIR ?= build/docs
-DOCX_TOOL_INPUTS = Makefile config/tool-versions.env config/documentation/package.json config/documentation/package-lock.json
+DOCX_TOOL_INPUTS = Makefile config/tool-versions.env config/documentation/package.json config/documentation/package-lock.json $(PUPPETEER_CONFIG)
 
 .DEFAULT_GOAL := help
 .PHONY: help install-doc-tools audit-doc-tools check-docs check-pandoc check-mermaid render-docs docs
