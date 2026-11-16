@@ -71,6 +71,7 @@ Questo documento descrive l’architettura software proposta per aegis e dettagl
 | [ADR-0003: Contratto del provider di routing accessibile](adr/ADR-0003-routing-provider-contract.md) | Proposta non approvata per il contratto, la compatibilità e il fallback del routing. |
 | [ADR-0004: Contratto di identità e autorizzazione](adr/ADR-0004-identity-and-authorization-contract.md) | Proposta non approvata per autorizzazione lato server, identità operative e accesso al tracking. |
 | [ADR-0005: Contratto di operabilità e ripristino](adr/ADR-0005-operability-and-recovery-contract.md) | Proposta non approvata per segnali operativi, recupero dei worker e prove di ripristino. |
+| [ADR-0006: Ciclo di vita dei dati e semantica dell’audit](adr/ADR-0006-data-lifecycle-and-audit-semantics.md) | Proposta non approvata per minimizzazione, correzione, cancellazione e coerenza dell’audit. |
 | Specifica OpenAPI | Da generare e versionare insieme all’API. |
 | Documentazione Jakarta EE e PostGIS | Riferimenti tecnici da associare alle versioni selezionate. |
 
@@ -214,12 +215,12 @@ La matrice seguente descrive il trattamento progettato. Non definisce basi giuri
 |---|---|
 | Identità e ruoli | Definire identificativi persistiti, finalità, accessi, revoca e cancellazione secondo OPEN-04 e OPEN-05. |
 | Segnalazione | Definire campi pubblici, minimizzazione, correzione, scadenza e cancellazione secondo OPEN-05. |
-| Eventi di moderazione | Definire pseudonimizzazione e rimozione o anonimizzazione dei riferimenti personali senza invalidare la cronologia. Approvare la regola in OPEN-05. |
+| Eventi di moderazione | Definire contenuto minimo, riferimenti all’attore e rimozione dei dati personali senza dichiarare anonimizzazione non dimostrata. Rivedere la proposta [ADR-0006](adr/ADR-0006-data-lifecycle-and-audit-semantics.md) e approvare la regola in OPEN-05. |
 | Credenziale di tracking | Definire memorizzazione, revoca, scadenza e cancellazione secondo OPEN-04 e OPEN-05. |
 | Immagine allegata | Definire consenso, rimozione dei metadati non necessari, conservazione, revoca e cancellazione secondo OPEN-05. |
 | Log operativi | Escludere descrizioni personali, credenziali e codici di tracking. Definire accesso, durata e cancellazione secondo OPEN-05 e OPEN-08. |
 
-La separazione tra identità, contenuto e cronologia è un confine architetturale, non una garanzia di anonimato. Descrizioni, coordinate, immagini e riferimenti agli autori possono identificare una persona. La regola di cancellazione deve includere database, object storage, indici, cache, log e copie di backup e deve preservare una semantica di audit approvata.
+La separazione tra identità, contenuto e cronologia è un confine architetturale, non una garanzia di anonimato. Descrizioni, coordinate, immagini e riferimenti agli autori possono identificare una persona. La regola di cancellazione deve includere database, object storage, indici, cache, log e copie di backup e deve preservare una semantica di audit approvata. Le opzioni per minimizzare il journal e coordinare il ciclo di vita sono proposte nell’[ADR-0006](adr/ADR-0006-data-lifecycle-and-audit-semantics.md), che non definisce obblighi giuridici o tempi.
 
 Le relazioni sono protette da chiavi esterne e vincoli. Le ricerche geografiche usano indici spaziali. Ulteriori indici sono definiti in base alle query validate. Le coordinate di dominio sono rappresentate da `GeoPoint`, value object immutabile con controlli di validità.
 
