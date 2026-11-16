@@ -1,12 +1,12 @@
 # Architectural Decision Record
 
-Usare un file per ogni decisione architetturale che modifica requisiti, qualità, confini o operatività del sistema. Numerare gli ADR in modo progressivo e non riutilizzare un numero. Una decisione superata resta nel registro con stato e riferimento alla decisione che la sostituisce.
+Usare un file per ogni decisione architetturale che modifica requisiti, qualità, confini o operatività del sistema. Numerare gli ADR progressivamente nel formato `ADR-NNNN` e non riutilizzare un numero. Una decisione superata resta nel registro con stato e riferimento alla decisione che la sostituisce.
 
 ## Metadati
 
 | Campo | Valore |
 |---|---|
-| ID | ADR-NNN |
+| ID | ADR-NNNN |
 | Titolo | Da compilare |
 | Stato | Proposto / Accettato / Rifiutato / Sostituito |
 | Data | Da compilare |
