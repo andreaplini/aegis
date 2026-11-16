@@ -507,7 +507,7 @@ def validate_non_functional_requirements() -> list[str]:
     start = lines.index(section_start) + 1
     end = lines.index(section_end)
     section = lines[start:end]
-    expected_headers = ["ID", "Qualità", "Azione richiesta", "Criterio di verifica"]
+    expected_headers = ["ID", "Qualità", "Azione richiesta", "Criterio di verifica", "Responsabile dell’accettazione"]
     header_line = next((line for line in section if line.startswith("| ID |")), None)
     if header_line is None:
         return ["docs/RAD.md: tabella NFR senza intestazione"]
@@ -526,8 +526,8 @@ def validate_non_functional_requirements() -> list[str]:
         if len(cells) != len(expected_headers):
             errors.append(f"docs/RAD.md: {requirement_id} ha un numero di colonne non valido")
             continue
-        if not cells[1] or not cells[2] or not cells[3]:
-            errors.append(f"docs/RAD.md: {requirement_id} deve avere qualità, azione e criterio di verifica")
+        if not cells[1] or not cells[2] or not cells[3] or not cells[4]:
+            errors.append(f"docs/RAD.md: {requirement_id} deve avere qualità, azione, criterio di verifica e responsabile dell’accettazione")
 
     if not ids:
         errors.append("docs/RAD.md: tabella NFR senza requisiti")
