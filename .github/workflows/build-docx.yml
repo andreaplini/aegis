@@ -69,6 +69,8 @@ jobs:
           version: ${{ steps.tool-versions.outputs.pandoc }}
 
       - name: Genera e verifica i DOCX
+        env:
+          PUPPETEER_CONFIG: config/documentation/puppeteer-ci.json
         run: make docs OUTPUT_DIR=build/docs
 
       - name: Pubblica i DOCX come artifact
