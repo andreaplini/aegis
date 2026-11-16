@@ -54,7 +54,7 @@ Questo documento descrive l’architettura software proposta per aegis e dettagl
 | DTO | Oggetto di trasferimento usato ai confini applicativi. |
 | SRID | Identificatore del sistema di riferimento spaziale. |
 | PostGIS | Estensione spaziale di PostgreSQL. |
-| Jakarta EE | Piattaforma Enterprise Java scelta come base applicativa, versione da convalidare. |
+| Jakarta EE | Piattaforma Enterprise Java proposta come base applicativa. Versione e runtime sono da convalidare secondo OPEN-08 e la proposta ADR-0001. |
 | Jakarta Faces | Tecnologia Jakarta EE per interfacce server-side basate su componenti. |
 | Facelets | Tecnologia di viste XHTML usata da Jakarta Faces. |
 | Jakarta REST | API Jakarta EE per risorse HTTP REST. |
@@ -93,9 +93,9 @@ Non è stato fornito un sistema software esistente. Il progetto è greenfield. D
 
 aegis è una web app responsive per consultare l’accessibilità di luoghi e servizi di trasporto, pianificare spostamenti e inviare segnalazioni. Le viste server-side usano Jakarta Faces e Facelets. Le API REST usano Jakarta REST. La persistenza geografica usa PostgreSQL con PostGIS. Le immagini sono archiviate in object storage e le sincronizzazioni e attività lente sono svolte da worker.
 
-La versione Jakarta EE e il runtime compatibile saranno selezionati in base ai requisiti di distribuzione e alle dipendenze del progetto. La proposta [ADR-0001](adr/ADR-0001-runtime-baseline.md) è in attesa di approvazione. Provider di routing, fonti di trasporto, canali di notifica e servizi gestiti restano sostituibili e da selezionare.
+La versione Jakarta EE e il runtime compatibile saranno selezionati in base ai requisiti di distribuzione e alle dipendenze del progetto. La proposta [ADR-0001](adr/ADR-0001-runtime-baseline.md) è in attesa di approvazione secondo OPEN-08. Provider di routing e fonti di trasporto seguono OPEN-03 e OPEN-01. Canali di notifica e servizi gestiti seguono OPEN-08. Le integrazioni restano sostituibili tramite porte applicative.
 
-Il browser riceve HTML per le viste e JSON per le API. La mappa usa una libreria cartografica client-side, ma i dati cartografici e di accessibilità provengono dall’API. La consultazione può essere pubblica. Invio delle segnalazioni e moderazione applicano le policy di identità e ruolo ancora da definire.
+Il browser riceve HTML per le viste e JSON per le API. La mappa usa una libreria cartografica client-side, ma i dati cartografici e di accessibilità provengono dall’API. La consultazione può essere pubblica. Invio e tracking delle segnalazioni applicano la policy di identità e autorizzazione da approvare in OPEN-04. Ruoli e transizioni di moderazione seguono OPEN-04 e OPEN-12.
 
 ### 3.2 DECOMPOSIZIONE DEL SISTEMA
 
@@ -173,14 +173,14 @@ flowchart TB
 | Nodo | Hardware e software | Responsabilità |
 |---|---|---|
 | Dispositivo client | Browser desktop o mobile e tecnologie assistive. | Renderizzare le viste, interagire con la mappa e inviare richieste HTTPS. |
-| Container applicativo | Runtime Jakarta EE da selezionare. Jakarta Faces, Facelets e Jakarta REST. | Servire viste e API e coordinare i casi d’uso. |
+| Container applicativo | Runtime Jakarta EE da selezionare secondo OPEN-08 e ADR-0001. Jakarta Faces, Facelets e Jakarta REST. | Servire viste e API e coordinare i casi d’uso. |
 | Container worker | Processo Java compatibile con la piattaforma scelta. | Sincronizzare fonti e gestire attività lente e retry. |
 | Database | PostgreSQL con PostGIS. | Conservare entità, eventi e geometrie. |
 | Object storage | Servizio compatibile con il protocollo S3. Implementazione da selezionare. | Conservare immagini in modo controllato e con scadenza. |
 | Ingress e distribuzione | Terminazione TLS e CDN secondo l’ambiente. | Instradare il traffico verso l’applicazione e distribuire risorse statiche. |
 | Servizi esterni | Fonti ufficiali, provider di routing e canali di notifica da selezionare. | Fornire dati e capacità integrate tramite adattatori. |
 
-In sviluppo è previsto Docker Compose con PostgreSQL/PostGIS e storage locale compatibile S3. Staging e produzione sono ambienti separati. L’obiettivo di produzione prevede container applicativi gestiti, database con backup automatici, object storage, CDN e gestione centralizzata dei segreti. Fornitori, topologia di rete, dimensionamento e obiettivi di ripristino restano da selezionare o concordare.
+In sviluppo è previsto Docker Compose con PostgreSQL/PostGIS e storage locale compatibile S3. Staging e produzione sono ambienti separati. L’obiettivo di produzione prevede container applicativi gestiti, database con backup automatici, object storage, CDN e gestione centralizzata dei segreti. Provider e topologia seguono OPEN-08. Dimensionamento e obiettivi di ripristino seguono OPEN-07 e OPEN-08. La proposta non attesta la disponibilità di questi ambienti.
 
 La pipeline di rilascio dovrà compilare e verificare gli artefatti applicativi, eseguire test e scansioni delle dipendenze, creare immagini versionate e distribuire progressivamente. Le migrazioni devono mantenere la compatibilità con le versioni applicative attive durante il rilascio. La configurazione applicativa dovrà essere versionata e distinta per ambiente. I segreti non dovranno essere inclusi nel repository.
 
@@ -230,13 +230,13 @@ La separazione tra identità, contenuto e cronologia è un confine architettural
 
 Le relazioni sono protette da chiavi esterne e vincoli. Le ricerche geografiche usano indici spaziali. Ulteriori indici sono definiti in base alle query validate. Le coordinate di dominio sono rappresentate da `GeoPoint`, value object immutabile con controlli di validità.
 
-La politica di backup, la conservazione delle copie e gli obiettivi di ripristino sono da definire con il responsabile operativo. Le procedure di ripristino devono essere provate prima del lancio e dopo modifiche rilevanti all’infrastruttura.
+La politica di backup e la conservazione delle copie seguono OPEN-05 e OPEN-08. Gli obiettivi di ripristino seguono OPEN-07. Il responsabile operativo deve approvare le regole e registrare le prove di ripristino prima del lancio e dopo modifiche rilevanti all’infrastruttura.
 
 Ogni caratteristica di accessibilità registra fonte, stato, data di aggiornamento e validità. L’assenza o la scadenza produce lo stato sconosciuto. Ogni operazione di moderazione aggiorna lo stato corrente e inserisce l’evento corrispondente nella stessa transazione. Gli eventi non sono modificati né eliminati dall’applicazione ordinaria.
 
 #### 3.4.2 OBJECT STORAGE
 
-Le foto sono conservate fuori dal database in object storage. Prima della pubblicazione devono essere verificati tipo effettivo, dimensione e contenuto e deve essere eseguita la scansione prevista. L’accesso è controllato. La conservazione e la scadenza dipendono dalla policy privacy ancora da definire. Il database conserva riferimenti e metadati necessari, non i byte dell’immagine.
+Le foto sono conservate fuori dal database in object storage. Prima della pubblicazione devono essere verificati tipo effettivo, dimensione e contenuto e deve essere eseguita la scansione prevista secondo OPEN-15. L’accesso è controllato. Consenso, conservazione, scadenza e cancellazione seguono OPEN-05. Il database conserva riferimenti e metadati necessari, non i byte dell’immagine.
 
 #### 3.4.3 MECCANISMI DI SINCRONIZZAZIONE
 
@@ -298,7 +298,7 @@ Le porte applicative includono repository per luoghi e segnalazioni, provider pe
 
 #### 3.6.1 GESTIONE DELLA SESSIONE UTENTE
 
-La sessione è necessaria solo per le funzioni protette. Il runtime e il meccanismo di identità scelti determineranno durata, rinnovo e terminazione della sessione. La consultazione pubblica non deve dipendere da una sessione autenticata. Le policy di sessione sono da definire insieme al provider d’identità.
+La sessione è necessaria solo per le funzioni protette. Il runtime e il meccanismo di identità scelti determineranno durata, rinnovo e terminazione della sessione. La consultazione pubblica non deve dipendere da una sessione autenticata. La policy di sessione e il provider d’identità sono decisioni OPEN-04, da coordinare con la baseline runtime OPEN-08.
 
 #### 3.6.2 NAVIGAZIONE TRA VISTE
 
@@ -320,7 +320,7 @@ La procedura operativa per gli incidenti deve definire rilevazione, escalation, 
 
 #### 3.7.1 UTENTE NON AUTENTICATO
 
-La consultazione pubblica di luoghi e percorsi resta disponibile. Se un utente non autenticato richiede un’operazione protetta, il sistema rifiuta l’operazione e comunica come accedere alla funzione secondo la policy di identità da definire. L’autorizzazione è verificata lato server.
+La consultazione pubblica di luoghi e percorsi resta disponibile. Se un utente non autenticato richiede un’operazione protetta, il sistema rifiuta l’operazione e comunica come accedere alla funzione secondo la policy OPEN-04. L’autorizzazione è verificata lato server.
 
 #### 3.7.2 LUOGO NON TROVATO O IDENTIFICATIVO NON VALIDO
 
@@ -370,11 +370,11 @@ Il caso d’uso `PlanRoute` valida origine, destinazione e vincoli, invoca `Rout
 
 ### 4.6 GEOLOCALIZZAZIONE, SINCRONIZZAZIONE E NOTIFICHE
 
-La ricerca consente di usare coordinate quando disponibili e un inserimento testuale alternativo quando la persona nega la geolocalizzazione. Worker e `TransitDataProvider` importano fonti ufficiali, eseguono controlli di qualità e registrano versione, timestamp ed esito. `NotificationPort` inoltra notifiche in modo asincrono secondo autorizzazioni e consensi. Provider di geocodifica, fonti, frequenze, canali, retry e livelli di servizio sono da selezionare e convalidare.
+La ricerca consente di usare coordinate quando disponibili e un inserimento testuale alternativo quando la persona nega la geolocalizzazione. Worker e `TransitDataProvider` importano fonti autorizzate secondo OPEN-01, applicano i contratti OPEN-14 ed eseguono controlli di qualità e registrano versione, timestamp ed esito. Fonti, frequenze e validità seguono OPEN-02. Il routing segue OPEN-03. `NotificationPort` inoltra notifiche in modo asincrono secondo autorizzazioni e consensi. Canali, provider gestiti, retry e procedure operative seguono OPEN-08. Profili di capacità, disponibilità e ripristino seguono OPEN-07.
 
 ## GLOSSARIO
 
-I termini di cache e generazione descrivono invarianti del comportamento progettato. La rappresentazione fisica e la tecnologia di cache restano da selezionare.
+I termini di cache e generazione descrivono invarianti del comportamento progettato. La rappresentazione fisica e la tecnologia di cache sono da selezionare secondo ADR-0002 e OPEN-08, mantenendo le regole di validità definite per fonte e tipo di dato.
 
 | Termine | Definizione |
 |---|---|

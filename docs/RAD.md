@@ -629,7 +629,7 @@ Le viste iniziali sono: ricerca e preferenze di viaggio. Risultati e alternative
 
 ### 4.1 DESCRIZIONE DEL PROTOTIPO REALIZZATO
 
-**Stato:** non ancora realizzato. Da documentare al completamento.
+**Stato:** non ancora realizzato. Da documentare al completamento. Scopo, fedeltà, completezza e durata saranno descritti sulla base del prototipo effettivamente prodotto nell’ambito di OPEN-06.
 
 | Aspetto | Da specificare |
 |---|---|
@@ -649,7 +649,7 @@ Valutare se le persone riescono a pianificare un viaggio, interpretare freschezz
 
 #### 4.2.2 METODOLOGIA USATA
 
-Il test non è ancora stato condotto. Numero, esperienza e caratteristiche dei partecipanti, compiti, scenari, ambiente, strumenti, modalità e durata delle sessioni per partecipante e nel complesso sono da definire con persone con disabilità. Prima delle sessioni vanno concordati consenso, misure raccolte, ruolo degli osservatori e metodo di analisi.
+Il test non è ancora stato condotto. Numero, esperienza e caratteristiche dei partecipanti, compiti, scenari, ambiente, strumenti, modalità e durata delle sessioni per partecipante e nel complesso sono da definire con persone con disabilità secondo OPEN-06. Prima delle sessioni vanno concordati consenso, misure raccolte, ruolo degli osservatori e metodo di analisi. Questi campi descrivono un protocollo da completare, non risultati disponibili.
 
 | Elemento metodologico | Definizione |
 |---|---|
@@ -678,11 +678,11 @@ Risultati non disponibili perché il test non è stato eseguito. Le misure saran
 | Inviare e seguire una segnalazione | Da calcolare | Da calcolare | Da raccogliere |
 | Completare i flussi con tecnologie assistive | Da calcolare | Da calcolare | Da raccogliere |
 
-Unità, soglie e modalità di aggregazione sono da concordare prima del test.
+Unità e modalità di aggregazione sono da concordare prima del test secondo OPEN-06. Le soglie, se necessarie, devono essere motivate e approvate prima della raccolta. Nessun risultato o valore di soglia è attualmente disponibile.
 
 #### 4.2.4 ANALISI DEI RISULTATI
 
-Analisi non disponibile perché il test non è stato eseguito. La tabella seguente raccoglie i campi da compilare per ogni partecipante e compito.
+Analisi non disponibile perché il test non è stato eseguito. La tabella seguente raccoglie i campi da compilare per ogni partecipante e compito dopo l’approvazione del protocollo OPEN-06. Non contiene osservazioni raccolte.
 
 | Partecipante e compito | Problema osservato | Evidenza o screenshot | Gravità | Reazione o commento | Intervento necessario |
 |---|---|---|---|---|---|
@@ -690,11 +690,11 @@ Analisi non disponibile perché il test non è stato eseguito. La tabella seguen
 
 #### 4.2.5 SINTESI DELLE INTERVISTE
 
-Le interviste successive al test non sono state svolte. Le evidenze saranno sintetizzate dopo la raccolta, distinguendo osservazioni e interpretazioni.
+Le interviste successive al test non sono state svolte. Modalità e domande saranno concordate nel protocollo OPEN-06. Le evidenze saranno sintetizzate dopo la raccolta, distinguendo osservazioni e interpretazioni.
 
 #### 4.2.6 RACCOMANDAZIONI FINALI
 
-Raccomandazioni non disponibili prima delle prove. Saranno ordinate per priorità e collegate ai problemi osservati.
+Raccomandazioni non disponibili prima delle prove. Dopo le sessioni OPEN-06 saranno ordinate per priorità e collegate ai problemi osservati.
 
 | Problema collegato | Intervento migliorativo | Priorità | Stato |
 |---|---|---|---|
