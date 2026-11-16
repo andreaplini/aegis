@@ -174,7 +174,7 @@ def validate_project_style() -> list[str]:
         label = source.relative_to(ROOT)
         if chr(0x2014) in content:
             errors.append(f"{label}: usare punteggiatura semplice, senza trattino lungo")
-        if (source == ROOT / "README.md" or ROOT / "docs" in source.parents) and ";" in content:
+        if ";" in content:
             errors.append(f"{label}: evitare il punto e virgola nella documentazione di progetto")
         if any(match.group(0) != "aegis" for match in re.finditer(r"\baegis\b", content, re.IGNORECASE)):
             errors.append(f"{label}: il nome del prodotto deve essere scritto esattamente aegis")

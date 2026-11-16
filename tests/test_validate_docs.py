@@ -232,6 +232,13 @@ class MarkdownValidationTests(unittest.TestCase):
                 errors = validate_docs.validate_project_style()
                 self.assertTrue(any("punto e virgola" in error for error in errors))
 
+                readme.write_text("# aegis\n", encoding="utf-8")
+                agents = root / "AGENTS.md"
+                agents.write_text("## aegis; regole\n", encoding="utf-8")
+                errors = validate_docs.validate_project_style()
+                self.assertTrue(any("AGENTS.md" in error and "punto e virgola" in error for error in errors))
+                agents.write_text("## Skill aegis\n", encoding="utf-8")
+
                 readme.write_text("# " + chr(65) + "egis\n", encoding="utf-8")
                 errors = validate_docs.validate_project_style()
                 self.assertTrue(any("README.md" in error for error in errors))
