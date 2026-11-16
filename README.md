@@ -10,7 +10,7 @@ Il repository contiene la baseline documentale e l'esportazione automatizzata di
 
 | Percorso | Contenuto |
 |---|---|
-| `docs/` | [RAD](docs/RAD.md), [SDD](docs/SDD.md), [modelli anonimizzati e riferimento Word](docs/template/) e [roadmap documentale](docs/MILESTONES.md). |
+| `docs/` | [RAD](docs/RAD.md), [SDD](docs/SDD.md), [modelli e riferimenti](docs/template.md), [roadmap](docs/MILESTONES.md) e [guida ai contributi](docs/CONTRIBUTING.md). |
 | `config/data/` | Dati e configurazioni del progetto. |
 | `src/` | Codice applicativo. |
 | `.agents/skills/` | Skill Codex specifiche del progetto. |

@@ -4,7 +4,7 @@
 
 Questo è il file di riferimento per milestone documentali e di ingegneria del prodotto. Gli stati dei milestone DOC descrivono il completamento editoriale; gli stati ENG descrivono il lavoro sul prodotto e sulle evidenze necessarie. Nessun milestone editoriale implica che codice, infrastruttura, prototipi, prove con utenti o attività operative siano stati completati.
 
-Gli artefatti governati sono `docs/RAD.md`, `docs/SDD.md`, i modelli in `docs/template/`, il riferimento Word `docs/template/template.docx`, i materiali estratti in `docs/template/assets/`, gli ADR che saranno approvati e le informazioni documentali in `README.md`.
+Gli artefatti governati sono `docs/RAD.md`, `docs/SDD.md`, i modelli in `docs/template/`, il riferimento Word `docs/template/template.docx`, i materiali estratti in `docs/template/assets/`, gli ADR proposti o approvati, `docs/CONTRIBUTING.md` e le informazioni documentali in `README.md`.
 
 ## Roadmap
 
@@ -48,6 +48,7 @@ Questi elementi non impediscono di completare la stesura, ma devono essere risol
 | OPEN-06 | Standard e livello di conformità accessibile da adottare e protocollo delle prove con utenti. | Referente accessibilità con partecipanti e team di prodotto | Criteri approvati, sessioni svolte e risultati documentati nel RAD. |
 | OPEN-07 | Target di performance, disponibilità, concorrenza, dimensione dei dati e obiettivi di ripristino. | Responsabile operativo | Soglie approvate e misure o prove registrate in ambiente concordato. |
 | OPEN-08 | Runtime Java/Jakarta EE, provider gestiti, canali di notifica, dimensionamento e procedure di incidente. | Responsabile tecnico e operativo | Decisioni approvate, configurazioni per ambiente e procedure revisionate. |
+| OPEN-09 | Protezione di `main`, review e status check obbligatori, policy di merge, aggiornamenti Dependabot di sicurezza e canale privato di disclosure. | Proprietario del repository e maintainer | Regole GitHub configurate e verificate; responsabile e canale di disclosure pubblicati. |
 
 ## Criterio di completamento della roadmap
 
@@ -69,7 +70,7 @@ Le fasi sono ordinate per dipendenza. “Pianificato” indica che il lavoro non
 | ENG-04 | Consegnare la prima vertical slice di luoghi e accessibilità | ENG-03; fonti approvate | Importazione idempotente di una fonte concordata, query e API con provenienza e validità, stato sconosciuto per dato assente/scaduto, persistenza e test automatizzati; requisiti e moduli tracciati a codice e prove. | Pianificato |
 | ENG-05 | Consegnare pianificazione e consultazione accessibili | ENG-04; provider e profili convalidati | Flussi di consultazione e percorso implementati dietro porte sostituibili; alternative testuali, tastiera e tecnologie assistive verificate; errori e risultati incerti documentati; prove automatizzate e sessioni con utenti registrate. | Pianificato |
 | ENG-06 | Consegnare segnalazioni, tracking e moderazione | ENG-03; policy OPEN-04 e OPEN-05 approvate | Creazione atomica, codice di tracking non enumerabile, upload controllato, autorizzazione server-side, transizioni esplicite e storico append-only; test funzionali, autorizzativi e di abuso. | Pianificato |
-| ENG-07 | Stabilire il quality gate di rilascio | ENG-03–ENG-06 | CI applica formattazione, compilazione, test, analisi dipendenze e vulnerabilità, controlli statici e scansione immagini/container secondo strumenti approvati; report e soglie sono versionati, senza risultati simulati. | Pianificato |
+| ENG-07 | Stabilire il quality gate di rilascio | ENG-03–ENG-06; OPEN-09 | CI applica formattazione, compilazione, test, analisi dipendenze e vulnerabilità, controlli statici e scansione immagini/container secondo strumenti approvati; branch protection richiede i controlli concordati. La configurazione Dependabot per GitHub Actions è versionata; gli aggiornamenti di sicurezza e la policy di merge richiedono approvazione del proprietario. | Pianificato |
 | ENG-08 | Provare operabilità e recupero | ENG-03; OPEN-07 e OPEN-08 | Ambienti separati e configurati; log, metriche e allarmi verificati; backup ripristinato in prova; runbook per incidenti, migrazioni e rollback revisionati; obiettivi operativi misurati e approvati. | Pianificato |
 | ENG-09 | Autorizzare il pilota e il rilascio | ENG-01–ENG-08 | Criteri di accettazione RAD superati, rischio residuo approvato, fonti e operatori autorizzati, accessibilità e privacy revisionate, monitoraggio attivo e piano di supporto assegnato; verbale di go/no-go e versione rilasciata. | Pianificato |
 
