@@ -21,6 +21,18 @@ VALID_RAD = """# RAD
 |---|---|---|---|---|
 | FR-01 | Sistema | Consultare un luogo. | Must | UC-01 |
 
+#### CRITERI DI ACCETTAZIONE FR
+
+| ID | Criterio di accettazione |
+|---|---|
+| FR-01 | Il luogo e i dati noti vengono mostrati. |
+
+#### REGISTRO DELLE VERIFICHE FR
+
+| ID | Esito osservato | Riferimento evidenza |
+|---|---|---|
+| FR-01 | Non eseguito | Da registrare |
+
 ### 3.3 REQUISITI NON FUNZIONALI
 
 | ID | Qualità | Azione richiesta | Criterio di verifica | Responsabile dell’accettazione |
@@ -269,6 +281,53 @@ class MarkdownValidationTests(unittest.TestCase):
                     encoding="utf-8",
                 )
                 self.assertEqual(validate_docs.validate_mermaid_descriptions(), [])
+
+    def test_functional_acceptance_criteria_and_evidence_cover_each_requirement(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            docs.mkdir()
+            rad = docs / "RAD.md"
+            rad.write_text(VALID_RAD, encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_functional_acceptance(), [])
+                rad.write_text(
+                    VALID_RAD.replace("| FR-01 | Il luogo e i dati noti vengono mostrati. |", "| FR-01 |  |"),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_functional_acceptance()
+                self.assertTrue(any("criterio di accettazione osservabile" in error for error in errors))
+                rad.write_text(
+                    VALID_RAD.replace("| FR-01 | Non eseguito | Da registrare |", "| FR-02 | Non eseguito | Da registrare |"),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_functional_acceptance()
+                self.assertTrue(any("corrispondere ai requisiti funzionali" in error for error in errors))
+                rad.write_text(
+                    VALID_RAD.replace("| FR-01 | Non eseguito | Da registrare |", "| FR-01 | Superato | Da registrare |"),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_functional_acceptance()
+                self.assertTrue(any("collegare un’evidenza consultabile" in error for error in errors))
+
+    def test_fr_template_preserves_acceptance_and_verification_tables(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            template_dir = root / "docs/template"
+            template_dir.mkdir(parents=True)
+            template = template_dir / "RAD.md"
+            content = (validate_docs.ROOT / "docs/template/RAD.md").read_text(encoding="utf-8")
+            template.write_text(content, encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_fr_template(), [])
+                template.write_text(
+                    content.replace("| ID | Criterio di accettazione |", "| ID | Criterio |"),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_fr_template()
+                self.assertTrue(any("intestazioni FR" in error for error in errors))
 
     def test_functional_requirements_have_complete_unique_fields(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

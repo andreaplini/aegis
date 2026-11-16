@@ -37,7 +37,7 @@ Generare e verificare gli export con:
 make docs
 ```
 
-La generazione esegue prima `make check-docs`. Il comando esegue i test del validatore e verifica link e ancore locali, struttura dei modelli, schema NFR del template RAD, ID della roadmap, metadati e completezza degli ADR, requisiti inclusi responsabili, esiti e riferimenti di evidenza NFR, tracciabilità RAD/SDD, glossari completi, registro delle revisioni del runbook e copertura dei casi d’uso nel diagramma globale. Controlla anche nome e punteggiatura nei file Markdown. Può essere eseguito separatamente e non richiede Node.js o Pandoc.
+La generazione esegue prima `make check-docs`. Il comando esegue i test del validatore e verifica link e ancore locali, struttura dei modelli, criteri e registri FR, schema dei requisiti e del registro NFR nel template RAD, ID della roadmap, metadati e completezza degli ADR, requisiti inclusi responsabili, esiti e riferimenti alle evidenze, tracciabilità RAD/SDD, glossari completi, registro delle revisioni del runbook e copertura dei casi d’uso nel diagramma globale. Controlla anche nome e punteggiatura nei file Markdown. Può essere eseguito separatamente e non richiede Node.js o Pandoc.
 
 Mermaid CLI converte i diagrammi in immagini accessibili. Pandoc incorpora immagini e testo nei DOCX. Il validatore verifica pacchetto, contenuto, metadati, nome e punteggiatura nel testo e nelle descrizioni alternative, associazioni OOXML e immagini incorporate.
 

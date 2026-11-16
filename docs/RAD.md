@@ -68,6 +68,8 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 
 ### 3.2 REQUISITI FUNZIONALI
 
+Ogni requisito indica chi avvia o esegue l’azione, la priorità e i casi d’uso collegati. I criteri di accettazione derivano dai flussi UC. Il registro conserva gli esiti e le evidenze delle verifiche senza dichiarare prove non eseguite.
+
 | ID | Responsabile dell’azione | Azione richiesta | Priorità | Caso d’uso |
 |---|---|---|---|---|
 | FR-01 | Sistema | Mostrare luoghi e informazioni di accessibilità per l’area richiesta. | Must | UC-02 |
@@ -83,6 +85,47 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 | FR-11 | Sistema | Invalidare la cache dell’area interessata quando riceve un aggiornamento urgente. | Should | UC-06 |
 | FR-12 | Sistema | Inviare notifiche secondo preferenze, autorizzazioni e consensi configurati. | Could | UC-03, UC-05, UC-06 |
 | FR-13 | Sistema | Autenticare gli utenti e verificare i ruoli per le operazioni riservate, mantenendo pubblica la consultazione. | Must | UC-03, UC-05, UC-06 |
+
+
+#### CRITERI DI ACCETTAZIONE FR
+
+I criteri descrivono risultati osservabili ricavati dai flussi dei casi d’uso collegati. Policy o valori ancora aperti restano esplicitamente da convalidare.
+
+| ID | Criterio di accettazione |
+|---|---|
+| FR-01 | Per l’area richiesta sono mostrati i luoghi pertinenti e i relativi dati di accessibilità disponibili. |
+| FR-02 | Ogni caratteristica mostrata espone stato, fonte, aggiornamento e validità quando disponibili. |
+| FR-03 | Dati assenti e scaduti sono mostrati come sconosciuti e non sono usati per dichiarare compatibilità. |
+| FR-04 | Una richiesta valida restituisce zero o più percorsi alternativi con tempi, cambi e stato di verifica. |
+| FR-05 | Ogni tratto del percorso distingue barriere note, compatibilità nota e stato non verificato. |
+| FR-06 | La selezione di un luogo mostra dettaglio, caratteristiche note, fonte e validità. Dati assenti o scaduti risultano sconosciuti. |
+| FR-07 | L’invio valido persiste segnalazione ed evento iniziale. Un errore non lascia una segnalazione parziale. La foto facoltativa resta non pubblicata finché non supera i controlli previsti. |
+| FR-08 | La creazione riuscita restituisce un codice di tracking. La consultazione mostra solo lo stato consentito dalla policy di accesso da approvare in OPEN-04. |
+| FR-09 | Una transizione ammessa aggiorna stato ed evento nella stessa transazione. Una transizione non valida non modifica i dati. |
+| FR-10 | Solo una generazione completa e validata viene pubblicata. Versione, timestamp, controlli ed esito sono registrati. Un errore mantiene i dati validi precedenti. |
+| FR-11 | Dopo la pubblicazione di un aggiornamento urgente viene invalidata la cache dell’area interessata. L’operazione resta recuperabile in caso di interruzione. |
+| FR-12 | Una notifica è inviata solo quando preferenze, autorizzazioni e consensi configurati la consentono. Canali e policy restano da definire. |
+| FR-13 | La consultazione pubblica non richiede autenticazione. Le operazioni riservate sono rifiutate lato server quando identità o ruolo non sono autorizzati. |
+
+#### REGISTRO DELLE VERIFICHE FR
+
+Registrare l’esito effettivamente osservato e un collegamento consultabile all’evidenza. Usare uno stato tra `Non eseguito`, `In corso`, `Superato`, `Non superato` e `Bloccato`. Per `Non eseguito` usare il riferimento `Da registrare`. Per gli altri stati collegare l’evidenza che documenta risultato o impedimento.
+
+| ID | Esito osservato | Riferimento evidenza |
+|---|---|---|
+| FR-01 | Non eseguito | Da registrare |
+| FR-02 | Non eseguito | Da registrare |
+| FR-03 | Non eseguito | Da registrare |
+| FR-04 | Non eseguito | Da registrare |
+| FR-05 | Non eseguito | Da registrare |
+| FR-06 | Non eseguito | Da registrare |
+| FR-07 | Non eseguito | Da registrare |
+| FR-08 | Non eseguito | Da registrare |
+| FR-09 | Non eseguito | Da registrare |
+| FR-10 | Non eseguito | Da registrare |
+| FR-11 | Non eseguito | Da registrare |
+| FR-12 | Non eseguito | Da registrare |
+| FR-13 | Non eseguito | Da registrare |
 
 ### 3.3 REQUISITI NON FUNZIONALI
 

@@ -34,11 +34,27 @@ Descrivere la soluzione, gli utenti, le funzionalità principali, i componenti p
 
 ### 3.2 REQUISITI FUNZIONALI
 
-Ogni requisito descrive un’azione osservabile, indica chi la avvia o la esegue e dichiara la priorità. Usare identificativi stabili e collegare i requisiti ai casi d’uso.
+Ogni requisito descrive un’azione osservabile, indica chi la avvia o la esegue e dichiara la priorità. Usare identificativi stabili e collegare i requisiti ai casi d’uso. Derivare un criterio di accettazione osservabile dal flusso del caso d’uso e registrare esito e riferimento a ogni prova.
 
 | ID | Attore o sistema responsabile | Azione richiesta | Priorità | Caso d’uso collegato |
 |---|---|---|---|---|
 | FR-XX | Da definire | Da descrivere con un verbo osservabile e un esito verificabile | Da assegnare | Da collegare |
+
+#### CRITERI DI ACCETTAZIONE FR
+
+Per ogni requisito descrivere un risultato osservabile coerente con il caso d’uso collegato.
+
+| ID | Criterio di accettazione |
+|---|---|
+| FR-XX | Risultato osservabile ricavato dal flusso del caso d’uso |
+
+#### REGISTRO DELLE VERIFICHE FR
+
+Registrare l’esito effettivamente osservato e un collegamento consultabile all’evidenza. Usare uno stato tra `Non eseguito`, `In corso`, `Superato`, `Non superato` e `Bloccato`. Per `Non eseguito` usare il riferimento `Da registrare`. Per gli altri stati collegare l’evidenza che documenta risultato o impedimento.
+
+| ID | Esito osservato | Riferimento evidenza |
+|---|---|---|
+| FR-XX | Non eseguito | Da registrare |
 
 ### 3.3 REQUISITI NON FUNZIONALI
 

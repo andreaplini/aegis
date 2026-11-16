@@ -38,7 +38,7 @@ ROADMAP_ROW_PATTERN = re.compile(r"^\|\s*((?:DOC|OPEN|ENG)-\d{2})\s*\|", re.MULT
 ROADMAP_REFERENCE_PATTERN = re.compile(r"\b(?:DOC|OPEN|ENG)-\d{2}\b")
 ADR_FILENAME_PATTERN = re.compile(r"ADR-(\d{4})(?:-[a-z0-9-]+)?\.md$")
 ADR_STATUSES = {"Proposto", "Accettato", "Rifiutato", "Sostituito"}
-NFR_VERIFICATION_STATUSES = {"Non eseguito", "In corso", "Superato", "Non superato", "Bloccato"}
+VERIFICATION_STATUSES = {"Non eseguito", "In corso", "Superato", "Non superato", "Bloccato"}
 
 
 def markdown_files() -> list[Path]:
@@ -538,7 +538,7 @@ def validate_non_functional_requirements() -> list[str]:
                 errors.append(f"docs/RAD.md: {requirement_id} deve avere esito osservato e riferimento evidenza")
                 continue
             result, evidence_reference = cells[1:]
-            if result not in NFR_VERIFICATION_STATUSES:
+            if result not in VERIFICATION_STATUSES:
                 errors.append(f"docs/RAD.md: {requirement_id} ha uno stato di verifica NFR non valido")
             if result == "Non eseguito":
                 if evidence_reference != "Da registrare":
@@ -605,6 +605,9 @@ def validate_functional_requirements() -> list[str]:
     start = lines.index(section_start) + 1
     end = lines.index(section_end)
     section = lines[start:end]
+    acceptance_heading = "#### CRITERI DI ACCETTAZIONE FR"
+    if acceptance_heading in section:
+        section = section[: section.index(acceptance_heading)]
     expected_headers = ["ID", "Responsabile dell’azione", "Azione richiesta", "Priorità", "Caso d’uso"]
     header_line = next((line for line in section if line.startswith("| ID |")), None)
     if header_line is None:
@@ -638,6 +641,115 @@ def validate_functional_requirements() -> list[str]:
     duplicates = sorted({requirement_id for requirement_id in ids if ids.count(requirement_id) > 1})
     if duplicates:
         errors.append(f"docs/RAD.md: requisiti funzionali duplicati: {', '.join(duplicates)}")
+    return errors
+
+
+def validate_functional_acceptance() -> list[str]:
+    path = ROOT / "docs/RAD.md"
+    lines = path.read_text(encoding="utf-8").splitlines()
+    section_start = "### 3.2 REQUISITI FUNZIONALI"
+    criteria_heading = "#### CRITERI DI ACCETTAZIONE FR"
+    evidence_heading = "#### REGISTRO DELLE VERIFICHE FR"
+    section_end = "### 3.3 REQUISITI NON FUNZIONALI"
+    if any(heading not in lines for heading in (section_start, criteria_heading, evidence_heading, section_end)):
+        return ["docs/RAD.md: criteri di accettazione o registro delle verifiche FR non trovati"]
+
+    section = lines[lines.index(section_start) + 1 : lines.index(section_end)]
+    criteria_start = section.index(criteria_heading) + 1
+    evidence_start = section.index(evidence_heading)
+    criteria_lines = section[criteria_start:evidence_start]
+    evidence_lines = section[evidence_start + 1 :]
+    criteria_headers = ["ID", "Criterio di accettazione"]
+    evidence_headers = ["ID", "Esito osservato", "Riferimento evidenza"]
+    errors: list[str] = []
+
+    def table_header(block: list[str], expected: list[str], label: str) -> None:
+        header = next((line for line in block if line.startswith("| ID |")), None)
+        actual = [cell.strip() for cell in header.strip().strip("|").split("|")] if header else []
+        if actual != expected:
+            errors.append(f"docs/RAD.md: intestazione {label} non conforme al modello")
+
+    table_header(criteria_lines, criteria_headers, "criteri FR")
+    table_header(evidence_lines, evidence_headers, "registro verifiche FR")
+
+    primary_header = "| ID | Responsabile dell’azione | Azione richiesta | Priorità | Caso d’uso |"
+    if primary_header not in section:
+        return errors + ["docs/RAD.md: tabella principale dei requisiti FR non trovata"]
+    rad_start = section.index(primary_header)
+    primary_lines = section[rad_start + 1 : section.index(criteria_heading)]
+    requirement_ids: list[str] = []
+    for line in primary_lines:
+        if FUNCTIONAL_REQUIREMENT_ROW_PATTERN.match(line):
+            requirement_ids.append(line.strip().strip("|").split("|")[0].strip())
+
+    def data_rows(block: list[str], pattern: re.Pattern[str]) -> list[list[str]]:
+        return [
+            [cell.strip() for cell in line.strip().strip("|").split("|")]
+            for line in block
+            if pattern.match(line)
+        ]
+
+    criteria_rows = data_rows(criteria_lines, FUNCTIONAL_REQUIREMENT_ROW_PATTERN)
+    evidence_rows = data_rows(evidence_lines, FUNCTIONAL_REQUIREMENT_ROW_PATTERN)
+    for row in criteria_rows:
+        if len(row) != len(criteria_headers) or not row[1]:
+            errors.append(f"docs/RAD.md: {row[0]} deve avere un criterio di accettazione osservabile")
+    for row in evidence_rows:
+        if len(row) != len(evidence_headers) or not all(row[1:]):
+            errors.append(f"docs/RAD.md: {row[0]} deve avere esito osservato e riferimento evidenza")
+            continue
+        result, evidence_reference = row[1:]
+        if result not in VERIFICATION_STATUSES:
+            errors.append(f"docs/RAD.md: {row[0]} ha uno stato di verifica FR non valido")
+        if result == "Non eseguito":
+            if evidence_reference != "Da registrare":
+                errors.append(f"docs/RAD.md: {row[0]} non eseguito deve avere il riferimento `Da registrare`")
+        elif not LINK_PATTERN.search(evidence_reference):
+            errors.append(f"docs/RAD.md: {row[0]} con verifica avviata deve collegare un’evidenza consultabile")
+
+    criteria_ids = [row[0] for row in criteria_rows]
+    evidence_ids = [row[0] for row in evidence_rows]
+    for label, identifiers in (("criteri", criteria_ids), ("registro verifiche", evidence_ids)):
+        duplicates = sorted(identifier for identifier, count in Counter(identifiers).items() if count > 1)
+        if duplicates:
+            errors.append(f"docs/RAD.md: ID FR duplicati nei {label}: {', '.join(duplicates)}")
+        if sorted(identifiers) != sorted(requirement_ids):
+            errors.append(f"docs/RAD.md: gli ID FR dei {label} devono corrispondere ai requisiti funzionali")
+    return errors
+
+
+def validate_fr_template() -> list[str]:
+    path = ROOT / "docs/template/RAD.md"
+    if not path.is_file():
+        return ["docs/template/RAD.md: modello RAD non trovato"]
+    lines = path.read_text(encoding="utf-8").splitlines()
+    section_start = "### 3.2 REQUISITI FUNZIONALI"
+    criteria_heading = "#### CRITERI DI ACCETTAZIONE FR"
+    evidence_heading = "#### REGISTRO DELLE VERIFICHE FR"
+    section_end = "### 3.3 REQUISITI NON FUNZIONALI"
+    if any(heading not in lines for heading in (section_start, criteria_heading, evidence_heading, section_end)):
+        return ["docs/template/RAD.md: criteri e registro verifiche FR non trovati"]
+
+    section = lines[lines.index(section_start) + 1 : lines.index(section_end)]
+    expected_headers = [
+        ["ID", "Attore o sistema responsabile", "Azione richiesta", "Priorità", "Caso d’uso collegato"],
+        ["ID", "Criterio di accettazione"],
+        ["ID", "Esito osservato", "Riferimento evidenza"],
+    ]
+    header_lines = [line for line in section if line.startswith("| ID |")]
+    errors: list[str] = []
+    actual_headers = [[cell.strip() for cell in line.strip().strip("|").split("|")] for line in header_lines]
+    if actual_headers != expected_headers:
+        errors.append("docs/template/RAD.md: intestazioni FR non conformi al modello RAD")
+
+    samples = [line for line in section if line.startswith("| FR-XX |")]
+    if len(samples) != 3:
+        errors.append("docs/template/RAD.md: servono esempio FR, criterio e riga del registro verifiche")
+    for index, sample in enumerate(samples):
+        cells = [cell.strip() for cell in sample.strip().strip("|").split("|")]
+        if len(cells) != len(expected_headers[index]) or not all(cells[1:]):
+            errors.append("docs/template/RAD.md: esempio FR, criterio o registro verifiche incompleto")
+            break
     return errors
 
 
@@ -827,6 +939,8 @@ def main() -> int:
     errors.extend(validate_runbook_revision_history())
     errors.extend(validate_non_functional_requirements())
     errors.extend(validate_nfr_template())
+    errors.extend(validate_functional_acceptance())
+    errors.extend(validate_fr_template())
 
     if errors:
         print("\n".join(errors), file=sys.stderr)
