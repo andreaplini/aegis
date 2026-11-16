@@ -1,6 +1,6 @@
 # Segnalazione aegis
 
-Prima di inviare, rimuovere credenziali, token, codici di tracking, dati personali e coordinate che identifichino persone. Non pubblicare dettagli di una vulnerabilità: usare il canale privato indicato dai maintainer. Il canale di disclosure aegis è ancora da definire.
+Prima di inviare, rimuovere credenziali, token, codici di tracking, dati personali e coordinate che identifichino persone. Per le vulnerabilità non aprire issue pubbliche: usare la segnalazione privata disponibile nella scheda Security del repository. Per gli altri problemi, verificare prima le issue esistenti e descrivere solo dati ripuliti da informazioni sensibili.
 
 ## Tipo
 

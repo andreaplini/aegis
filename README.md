@@ -18,6 +18,10 @@ Il repository contiene la baseline documentale e l'esportazione automatizzata di
 
 La documentazione e tutti i relativi template e materiali di supporto risiedono in `docs/`. Il DOCX sorgente è il riferimento di stile e struttura; i DOCX esportati non sono versionati: il target `make docs` li genera e ne verifica archivio, contenuto e stile in `build/docs/`. La GitHub Action esegue lo stesso target e pubblica i due DOCX come artifact.
 
+## Segnalazioni
+
+Per bug e richieste, consultare le [issue aperte](https://github.com/kairosci/aegis/issues) prima di inviarne una nuova. Per segnalare una vulnerabilità, non aprire un'issue pubblica: usare la funzione privata nella scheda Security del repository. Prima di condividere log o esempi, rimuovere credenziali, token, dati personali e codici di tracking.
+
 ## Esportazione DOCX
 
 Installare Pandoc e lanciare:
