@@ -21,6 +21,7 @@ Gli sprint sono ordinati per dipendenza e non assegnano date o durate non concor
 | DOC-07 | Operatività e rilascio | RAD e SDD | Sincronizzazione, freschezza, monitoraggio, backup, incidenti, ambienti e processo di rilascio descritti con valori irrisolti marcati. | Applicato |
 | DOC-08 | Revisione editoriale e consegna documentale | Tutti gli artefatti elencati | Struttura, collegamenti, terminologia e tracciabilità verificati; fonti e supporti documentali sono in `docs/`, mentre le esportazioni generate sono escluse dal versionamento. | Applicato |
 | DOC-09 | Analisi della sicurezza d'uso | SDD e template SDD | Pericoli dovuti a dati incerti, percorsi non verificati, sincronizzazioni e presentazione degli avvisi descritti con danno, controllo e prova richiesta; nessun rischio dichiarato validato senza evidenza. | Applicato |
+| DOC-10 | Validazione dei documenti esportati | Makefile, validatore DOCX, CI | Ogni export è controllato per integrità del pacchetto, componenti OOXML richiesti, contenuto essenziale, nome `aegis` e punteggiatura prima della pubblicazione come artifact. | Applicato |
 
 ## Applicazione degli sprint
 
@@ -35,6 +36,7 @@ Gli sprint sono ordinati per dipendenza e non assegnano date o durate non concor
 | DOC-07 | Descritti ambienti separati, obiettivi di produzione, pipeline, compatibilità delle migrazioni, metriche e allarmi e requisiti per prove di ripristino e procedure incidenti. Runbook, soglie, responsabili e fornitori non concordati restano aperti. |
 | DOC-08 | Controllati struttura, tracciabilità tra requisiti e architettura, collegamenti Markdown, coerenza del glossario e formattazione delle modifiche. Riferimento Word e materiali estratti sono mantenuti in `docs/template/`; generazione e pubblicazione degli export sono automatizzate. Le verifiche non dichiarano completate prove funzionali, accessibilità o ripristino. |
 | DOC-09 | Aggiunta in SDD e nel template una valutazione iniziale dei pericoli d'uso separata dalle minacce informatiche. Sono esplicitati i danni potenziali, i controlli progettati e le evidenze da raccogliere prima del pilota. |
+| DOC-10 | La generazione locale e la CI usano `make docs`. Il validatore controlla l'archivio DOCX e i componenti OOXML principali, i marcatori di contenuto previsti, il nome canonico e la punteggiatura. Test automatici coprono archivi validi, incompleti e contenuti non conformi. La run CI sul commit `370ee27` ha generato e verificato entrambi gli export. |
 
 ## Decisioni documentali ancora aperte
 
@@ -59,7 +61,7 @@ La roadmap documentale è applicata quando tutti gli sprint hanno raggiunto il c
 
 ## Baseline ingegneristica
 
-Alla revisione del 16 novembre 2026, `src/` contiene solo `.gitkeep` e `config/data/` è vuota. Non sono presenti build applicativa, moduli software, ambienti container o test applicativi. L'unica build automatizzata genera i documenti DOCX; la GitHub Action è stata verificata con successo durante questa revisione. Questa baseline separa il funzionamento della documentazione dallo stato del prodotto.
+Alla revisione del 16 novembre 2026, `src/` contiene solo `.gitkeep` e `config/data/` è vuota. Non sono presenti build applicativa, moduli software, ambienti container o test applicativi. L'unico target automatizzato produce e verifica i documenti DOCX con controlli documentali e test standard library; la GitHub Action ha generato e verificato entrambi gli export. Questa baseline separa il funzionamento della documentazione dallo stato del prodotto.
 
 ## Milestone di ingegneria del prodotto
 
