@@ -17,7 +17,7 @@ Il repository contiene la baseline documentale e l'esportazione automatizzata di
 | `.agents/skills/` | Skill Codex specifiche del progetto. |
 | `.github/` | Workflow CI, Dependabot e collegamento issue alla segnalazione privata delle vulnerabilità. |
 
-La documentazione e tutti i relativi template e materiali di supporto risiedono in `docs/`. Il DOCX sorgente è il riferimento di stile e struttura. I DOCX esportati non sono versionati: il target `make docs` li genera e ne verifica archivio, contenuto e stile in `build/docs/`. La GitHub Action esegue lo stesso target e pubblica i due DOCX come artifact.
+La documentazione e tutti i relativi template e materiali di supporto risiedono in `docs/`. Il DOCX sorgente è il riferimento di stile e struttura. I DOCX esportati non sono versionati: il gate `make verify-docs` esegue audit, test, generazione e validazione in `build/docs/`. La GitHub Action usa lo stesso gate e pubblica i due DOCX come artifact.
 
 ## Segnalazioni
 

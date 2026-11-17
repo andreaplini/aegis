@@ -68,9 +68,6 @@ jobs:
       - name: Installa gli strumenti Mermaid
         run: npm ci --prefix config/documentation
 
-      - name: Verifica vulnerabilità degli strumenti Node
-        run: make audit-doc-tools
-
       - name: Installa Chromium headless
         run: npm exec --prefix config/documentation -- puppeteer browsers install chrome-headless-shell
 
@@ -82,7 +79,7 @@ jobs:
       - name: Genera e verifica i DOCX
         env:
           PUPPETEER_CONFIG: config/documentation/puppeteer-ci.json
-        run: make docs OUTPUT_DIR=build/docs
+        run: make verify-docs OUTPUT_DIR=build/docs
 
       - name: Pubblica i DOCX come artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
