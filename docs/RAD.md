@@ -351,7 +351,7 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 | Oggetto | Responsabilità |
 |---|---|
 | API luoghi/accessibilità | Riceve richieste di ricerca e dettaglio e restituisce dati con fonte e freschezza. |
-| API percorsi | Riceve origine, destinazione e vincoli e restituisce alternative con incertezza esplicita. |
+| API percorsi | Riceve origine, destinazione e soli vincoli necessari al calcolo e restituisce alternative con incertezza esplicita. Esclude identificativi dell’account e codici di tracking. |
 | API segnalazioni e tracking | Riceve segnalazioni e richieste di tracking. Restituisce conferma o stato consentito. |
 | API moderazione | Espone coda e operazioni di moderazione protette da autorizzazione. |
 | Interfaccia web | Presenta mappa, viste testuali, percorsi, moduli e pannello di moderazione. |

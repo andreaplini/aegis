@@ -68,6 +68,7 @@ Non approvata. Il responsabile tecnico e il referente mobilità devono valutare 
 | Evidenza richiesta | Criterio di accettazione | Responsabile | Esito e riferimento |
 |---|---|---|---|
 | Matrice comparativa dei candidati | Copertura, profili, dettaglio per tratto, provenienza, campi trasmessi, identificativi esclusi, log, telemetria, destinatari, conservazione, licenza e vincoli operativi sono documentati per l’area pilota approvata e revisionati secondo OPEN-05 | Responsabile tecnico, referente mobilità e responsabile privacy, da designare | In attesa |
+| Prova di minimizzazione della richiesta | La richiesta inviata contiene solo campi del contratto approvato e non include identificativi dell’account, codici di tracking o attributi non necessari | Responsabile tecnico, da designare | Non eseguito |
 | Prova di dato mancante, scaduto o contraddittorio | Il tratto è sconosciuto o non verificato e non è dichiarato compatibile | Responsabile tecnico, da designare | Non eseguito |
 | Prova di timeout e indisponibilità | L’errore è visibile e l’eventuale fallback è marcato non verificato | Responsabile tecnico, da designare | Non eseguito |
 | Prova di risposta parziale e profilo non supportato | Il sistema non completa silenziosamente la risposta né attribuisce compatibilità senza evidenza | Responsabile tecnico, da designare | Non eseguito |
