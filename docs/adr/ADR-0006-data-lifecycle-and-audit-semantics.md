@@ -14,7 +14,9 @@
 
 ## Contesto e problema
 
-RAD richiede minimizzazione, separazione delle identità, tracking limitato e storico delle decisioni di moderazione. SDD descrive eventi append-only e rileva che la cancellazione può coinvolgere database, object storage, indici, cache, log e backup. OPEN-05 lascia da approvare finalità, accessi, correzione, conservazione, cancellazione e semantica dell’audit.
+RAD richiede minimizzazione, separazione delle identità, tracking limitato e storico delle decisioni di moderazione. SDD descrive eventi append-only e rileva che la cancellazione può coinvolgere database, object storage, indici, cache, log e backup. L’inventario comprende anche richieste di percorso, coordinate e preferenze di accessibilità, che possono essere trasferite al provider selezionato. Se associate a una persona, alcune preferenze possono rivelare informazioni sulla disabilità o sulla salute. Il considerando 35 del GDPR include la disabilità tra gli esempi di informazioni relative alla salute e l’articolo 9 disciplina il trattamento di categorie particolari. L’articolo 35 richiede una valutazione d’impatto quando il trattamento è suscettibile di presentare un rischio elevato, inclusi i casi previsti dal paragrafo 3. La qualificazione dei campi e l’applicabilità delle condizioni devono essere determinate dal responsabile privacy nel contesto concreto. OPEN-05 lascia da approvare finalità, basi giuridiche, accessi, correzione, conservazione, cancellazione e semantica dell’audit.
+
+Riferimenti normativi per la revisione, consultati il 17 novembre 2026: [Regolamento (UE) 2016/679, considerando 35 e articoli 9 e 35](https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX%3A32016R0679).
 
 Un evento di moderazione utile alla ricostruzione delle transizioni non deve diventare un contenitore permanente di descrizioni, identificativi o altri dettagli personali. Allo stesso tempo, la cancellazione di una segnalazione non può essere descritta come completa se restano copie accessibili, allegati o log. Il contratto applicativo deve distinguere i fatti minimi della transizione dai contenuti e riferimenti soggetti a regole di ciclo di vita.
 
@@ -47,12 +49,13 @@ Separare il journal delle transizioni dai contenuti della segnalazione e dai rif
 - La correzione dei dati del report aggiorna il contenuto corrente secondo la policy approvata e registra una transizione di correzione con il minimo di informazioni necessario. Il valore precedente non viene copiato nel journal salvo approvazione esplicita di finalità, accesso e conservazione.
 - I dati di identità e le associazioni tra identità e report sono conservati separatamente dai contenuti pubblici e dagli eventi. Rimuovere un’associazione non deve essere descritto come anonimizzazione senza una valutazione specifica del rischio di reidentificazione.
 - La richiesta di cancellazione è una procedura tracciata e autorizzata che usa la matrice OPEN-05 per determinare dati coinvolti, eccezioni approvate, responsabili e criteri di completamento. Il sistema non dichiara conclusa la procedura finché le componenti previste non hanno registrato l’esito.
-- La matrice di ciclo di vita elenca per categoria finalità, campi, titolare, accessi, conservazione, correzione, cancellazione, copie e prova richiesta. Comprende almeno identità, report, eventi, credenziale di tracking, immagini, cache, indici, log e backup.
+- La matrice di ciclo di vita elenca per categoria finalità, campi, titolare, accessi, destinatari, basi giuridiche, conservazione, correzione, cancellazione, copie e prova richiesta. Comprende almeno identità, richieste di percorso, coordinate, preferenze di accessibilità, report, eventi, credenziale di tracking, immagini, cache, indici, log, dati trasferiti ai provider e backup.
+- Il responsabile privacy valuta nel contesto se richieste, coordinate e preferenze associate a una persona rivelino dati relativi alla salute. Documenta le condizioni applicabili ai sensi dell’articolo 9 e se è necessaria una valutazione d’impatto secondo l’articolo 35. La documentazione non presume che ogni preferenza sia una categoria particolare né sceglie una base giuridica.
 - La cancellazione coordinata considera record relazionali, oggetti, indici derivati, cache e log. Le copie di backup seguono una regola approvata di conservazione e scadenza, con un processo per evitare che un ripristino ripubblichi dati cancellati secondo la policy.
 - Audit di moderazione e audit della procedura di cancellazione hanno contenuti minimizzati e accesso ristretto. L’identità degli operatori è conservata o rimossa secondo le decisioni OPEN-04 e OPEN-05.
 - Le prove usano dati sintetici e verificano l’assenza dei valori trattati nelle componenti elencate, l’accesso residuo e l’esito dopo un ripristino di prova. I risultati non dimostrano la conformità normativa, che richiede revisione dei responsabili competenti.
 
-Campi obbligatori, tempi, eccezioni, basi di trattamento, diritto di accesso, modalità di correzione e regole per i backup restano da decidere in OPEN-05. La proposta non impone la cancellazione di una transizione d’audit né autorizza la conservazione indefinita dei dati.
+Campi obbligatori, tempi, eccezioni, basi giuridiche, diritto di accesso, classificazione dei dati di percorso, condizioni applicabili ai sensi dell’articolo 9, necessità di una valutazione d’impatto ai sensi dell’articolo 35, modalità di correzione e regole per i backup restano da decidere in OPEN-05. La proposta non impone la cancellazione di una transizione d’audit né autorizza la conservazione indefinita dei dati.
 
 ## Decisione
 
@@ -71,7 +74,8 @@ Non approvata. Il responsabile privacy deve approvare la matrice e la semantica 
 
 | Evidenza richiesta | Criterio di accettazione | Responsabile | Esito e riferimento |
 |---|---|---|---|
-| Matrice OPEN-05 approvata | Ogni categoria ha finalità, accessi, responsabile, regole di conservazione, correzione e cancellazione approvate | Responsabile privacy, da designare | In attesa |
+| Matrice OPEN-05 approvata | Ogni categoria ha finalità, base giuridica, destinatari, accessi, responsabile, regole di conservazione, correzione e cancellazione approvate | Responsabile privacy, da designare | In attesa |
+| Classificazione delle richieste di percorso | Campi, coordinate, preferenze, trasferimenti al provider e telemetria sono classificati nel contesto d’uso. Applicabilità degli articoli 9 e 35 del GDPR motivata senza inferire una base giuridica | Responsabile privacy e consulente competente, da designare | In attesa |
 | Schema e campioni del journal | Gli eventi rispettano i campi minimizzati approvati e non includono testo libero o credenziali | Responsabile tecnico e privacy, da designare | Non eseguito |
 | Prova di correzione e cancellazione | L’esito è verificabile per database, storage oggetti, indici, cache e log previsti dalla matrice | Responsabile tecnico e responsabile dati, da designare | Non eseguito |
 | Prova su backup e ripristino | Dopo il ripristino di prova, dati e associazioni rispettano lo stato atteso secondo la policy approvata | Responsabile operativo e privacy, da designare | Non eseguito |

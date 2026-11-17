@@ -212,6 +212,7 @@ La matrice seguente descrive il trattamento progettato. Non definisce basi giuri
 | Categoria | Dati previsti e uso | Accesso progettato |
 |---|---|---|
 | Identità e ruoli | Riferimento al provider d’identità e ruoli applicativi per autenticare e autorizzare le funzioni riservate. Il provider non è selezionato. | Identity e operazioni amministrative autorizzate. |
+| Richieste di percorso e geolocalizzazione | Origine e destinazione testuali o coordinate, preferenze e vincoli di accessibilità per calcolare un percorso. Sono elaborati durante la richiesta e non persistiti nel dominio dopo la risposta. Il provider selezionato può ricevere i soli campi necessari secondo il contratto OPEN-03. Log, telemetria, accesso, conservazione e trattamento del provider restano da approvare in OPEN-05 e OPEN-08. | Viaggiatore e servizi applicativi. Il provider riceve solo i campi necessari previsti dal contratto approvato. |
 | Segnalazione | Luogo, categoria, descrizione, data e stato per moderare e comunicare informazioni sulle barriere. Testo e posizione possono identificare una persona. | Moderatori autorizzati e viste pubbliche limitate ai campi approvati. |
 | Eventi di moderazione | Riferimento all’autore, data, decisione e segnalazione per mantenere la cronologia append-only. | Moderatori e ruoli operativi autorizzati. |
 | Credenziale di tracking | Codice restituito al segnalatore per consultare lo stato consentito. Memorizzazione e scadenza non sono definite. | Possessore autorizzato secondo OPEN-04. Il codice non va registrato nei log. |
@@ -221,14 +222,15 @@ La matrice seguente descrive il trattamento progettato. Non definisce basi giuri
 | Categoria | Decisioni di ciclo di vita |
 |---|---|
 | Identità e ruoli | Definire identificativi persistiti, finalità, accessi, revoca e cancellazione secondo OPEN-04 e OPEN-05. |
+| Richieste di percorso e geolocalizzazione | Definire minimizzazione, eventuale persistenza, trasferimenti al provider, log e telemetria, accesso, conservazione e cancellazione. Il responsabile privacy deve classificare i campi nel contesto d’uso e stabilire se rivelano dati personali relativi alla salute, quali condizioni dell’articolo 9 si applicano e se è necessaria una valutazione d’impatto secondo l’articolo 35. Rivedere OPEN-03, OPEN-05 e OPEN-08. |
 | Segnalazione | Definire campi pubblici, minimizzazione, correzione, scadenza e cancellazione secondo OPEN-05. |
 | Eventi di moderazione | Definire contenuto minimo, riferimenti all’attore e rimozione dei dati personali senza dichiarare anonimizzazione non dimostrata. Rivedere la proposta [ADR-0006](adr/ADR-0006-data-lifecycle-and-audit-semantics.md) e approvare la regola in OPEN-05. |
 | Intenzioni di notifica | Definire destinatari, contenuto, accessi, conservazione, cancellazione e trattamento degli esiti secondo OPEN-04, OPEN-05 e OPEN-08. Evitare credenziali e dati personali non necessari. |
 | Credenziale di tracking | Definire memorizzazione, revoca, scadenza e cancellazione secondo OPEN-04 e OPEN-05. |
 | Immagine allegata | Definire consenso, rimozione dei metadati non necessari, conservazione, revoca e cancellazione secondo OPEN-05. |
-| Log operativi | Escludere descrizioni personali, credenziali e codici di tracking. Definire accesso, durata e cancellazione secondo OPEN-05 e OPEN-08. |
+| Log operativi | Escludere per impostazione predefinita descrizioni personali, credenziali, codici di tracking, coordinate, preferenze e richieste di percorso. Definire eccezioni motivate, accesso, durata e cancellazione secondo OPEN-05 e OPEN-08. |
 
-La separazione tra identità, contenuto e cronologia è un confine architetturale, non una garanzia di anonimato. Descrizioni, coordinate, immagini e riferimenti agli autori possono identificare una persona. La regola di cancellazione deve includere database, object storage, indici, cache, log e copie di backup e deve preservare una semantica di audit approvata. Le opzioni per minimizzare il journal e coordinare il ciclo di vita sono proposte nell’[ADR-0006](adr/ADR-0006-data-lifecycle-and-audit-semantics.md), che non definisce obblighi giuridici o tempi.
+La separazione tra identità, contenuto e cronologia è un confine architetturale, non una garanzia di anonimato. Descrizioni, coordinate, preferenze di percorso, immagini e riferimenti agli autori possono identificare una persona. Le richieste di percorso non sono persistite nel dominio dopo la risposta, ma il provider e la telemetria possono trattarne una copia secondo i contratti da approvare. Il responsabile privacy deve valutare se i campi, associati a una persona, rivelano informazioni sulla disabilità o sulla salute e determinare gli obblighi applicabili. La regola di cancellazione deve includere database, object storage, indici, cache, log, provider e copie di backup secondo i rispettivi confini di controllo e deve preservare una semantica di audit approvata. Le opzioni per minimizzare il journal e coordinare il ciclo di vita sono proposte nell’[ADR-0006](adr/ADR-0006-data-lifecycle-and-audit-semantics.md), che non definisce obblighi giuridici o tempi.
 
 Le relazioni sono protette da chiavi esterne e vincoli. Le ricerche geografiche usano indici spaziali. Ulteriori indici sono definiti in base alle query validate. Le coordinate di dominio sono rappresentate da `GeoPoint`, value object immutabile con controlli di validità.
 
@@ -395,6 +397,7 @@ I termini di cache e generazione descrivono invarianti del comportamento progett
 | Generazione attiva | Insieme completo e validato dei dati di una fonte selezionato dal repository per le letture correnti. |
 | Generazione candidata | Insieme di dati importato e validato in isolamento prima della sua eventuale pubblicazione. |
 | GeoPoint | Value object immutabile per coordinate valide con riferimento spaziale esplicito. |
+| GDPR | Regolamento generale sulla protezione dei dati, Regolamento (UE) 2016/679. |
 | Jakarta EE | Piattaforma Enterprise Java di riferimento per runtime, API web e servizi applicativi. |
 | Jakarta Faces | API Jakarta EE per viste server-side basate su componenti. |
 | Jakarta REST | API Jakarta EE per l’esposizione di risorse HTTP. |
