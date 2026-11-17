@@ -16,6 +16,8 @@ Per modifiche documentali applicare la skill [aegis-antislop](../.agents/skills/
 
 ## Controlli disponibili
 
+I prerequisiti per i gate locali e le versioni richieste per l'esportazione sono descritti nei [prerequisiti documentali del README](../README.md#prerequisiti-documentali).
+
 Per modifiche Markdown eseguire:
 
 ```sh
