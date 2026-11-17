@@ -323,55 +323,59 @@ Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requis
 
 #### 3.5.4 MODELLO DEGLI OGGETTI
 
-##### Oggetti entity dei casi d’uso
+##### Oggetti entity principali
 
-| Oggetto | Responsabilità |
-|---|---|
-| `Place` | Rappresenta luogo, fermata o stazione con identificativo, nome, tipo e geometria. |
-| `AccessibilityFeature` | Rappresenta una caratteristica con stato esplicito, fonte, timestamp e validità, associata a un luogo. |
-| `Report` | Rappresenta luogo/geometria, categoria, descrizione, stato, date e riferimento protetto per tracking. |
-| `ReportSubmission` | Prenota in modo durevole e univoco la chiave e l’impronta del payload prima degli effetti esterni. Registra lo stato dell’operazione e il report completato per riconciliare retry e richieste concorrenti. Scope, durata e replay seguono OPEN-04, OPEN-05 e OPEN-08. |
-| `ReportAttachment` | Registra l’intento durevole di upload, il riferimento privato all’oggetto, l’esito dei controlli e l’eventuale collegamento autorizzato al report. La pubblicazione richiede una scansione valida. Stati e conservazione seguono OPEN-05 e OPEN-15. |
-| `ReportEvent` | Registra in modo append-only attore, timestamp, decisione e riferimento a un eventuale duplicato. |
-| `AttachmentState` | Stato del ciclo di upload, scansione, associazione o pulizia. Valori e transizioni sono da approvare secondo OPEN-05 e OPEN-15. |
-| `NotificationIntent` | Rappresenta un’intenzione di notifica autorizzata, collegata all’evento che l’ha generata e con esito tecnico registrabile. |
-| `NotificationAttemptState` | Stato tecnico di un tentativo di notifica. Valori e transizioni sono da definire secondo OPEN-08. |
-| `SourceSync` | Registra fonte, versione, esito, timestamp e controlli di qualità. |
-| `UserAccount` | Rappresenta identità e ruoli. I dati identificativi sono separati dai contenuti pubblici. |
-| `DataSource` | Rappresenta una fonte con identificativo, responsabile, versione e regola di validità da definire secondo OPEN-01, OPEN-02 e OPEN-14. |
-| `TransitLine` e `TransitStop` | Rappresentano linee e fermate importate, con geometria e riferimenti alla fonte. |
-| `GeoPoint` | Value object immutabile che rappresenta coordinate valide con riferimento spaziale esplicito. |
+Il catalogo include le entità di dominio centrali e collega ciascuna ai casi d’uso che la legge o modifica. `ReportSubmission`, `ReportAttachment` e `NotificationIntent` sono record tecnici durevoli descritti nel modello relazionale e nei flussi di creazione e moderazione delle segnalazioni. Non sono ripetuti qui come entità di dominio. Enumerazioni e `GeoPoint` sono tipi di supporto del diagramma.
+
+| Oggetto | Responsabilità | Casi d’uso |
+|---|---|---|
+| `Place` | Rappresenta un luogo, una fermata o una stazione consultabile. | UC-01, UC-02, UC-06 |
+| `AccessibilityFeature` | Rappresenta una caratteristica di accessibilità associata a un luogo, con fonte e validità. | UC-01, UC-02, UC-06 |
+| `Report` | Rappresenta una segnalazione con posizione, categoria, stato e date. | UC-03, UC-04, UC-05 |
+| `ReportEvent` | Registra in modo append-only autore, data e decisione relativa a una segnalazione. | UC-03, UC-05 |
+| `UserAccount` | Rappresenta l’identità e i ruoli di un utente autenticato. | UC-03, UC-05, UC-06 |
+| `DataSource` | Rappresenta una fonte autorizzata e la relativa configurazione. | UC-06 |
+| `SourceSync` | Registra versione, esito, timestamp e controlli di qualità di una sincronizzazione. | UC-06 |
+| `TransitLine` | Rappresenta una linea importata da una fonte autorizzata. | UC-01, UC-06 |
+| `TransitStop` | Rappresenta una fermata con geometria e riferimenti alle linee servite. | UC-01, UC-02, UC-06 |
 
 ##### Oggetti boundary dei casi d’uso
 
-| Oggetto | Responsabilità |
+I nomi dei boundary sono in inglese e in CamelCase. I servizi esterni sono dipendenze previste, non provider già selezionati.
+
+| Oggetto boundary | Responsabilità |
 |---|---|
-| API luoghi/accessibilità | Riceve richieste di ricerca e dettaglio e restituisce dati con fonte e freschezza. |
-| API percorsi | Riceve origine, destinazione e soli vincoli necessari al calcolo e restituisce alternative con incertezza esplicita. Esclude identificativi dell’account e codici di tracking. |
-| API segnalazioni e tracking | Riceve segnalazioni e richieste di tracking. Restituisce conferma o stato consentito. |
-| API moderazione | Espone coda e operazioni di moderazione protette da autorizzazione. |
-| Interfaccia web | Presenta mappa, viste testuali, percorsi, moduli e pannello di moderazione. |
-| Gateway upload | Valida e inoltra le immagini al flusso controllato di storage e scansione. |
-| Archivio allegati | Registra gli intenti di upload e i riferimenti agli oggetti privati per consentire associazione, riconciliazione e pulizia. |
+| `WebInterface` | Presenta mappa, viste testuali, percorsi, moduli di segnalazione e pannello di moderazione agli attori umani. |
+| `PlacesAccessibilityAPI` | Riceve richieste di ricerca e dettaglio sui luoghi e restituisce dati con fonte e freschezza. |
+| `RoutesAPI` | Riceve origine, destinazione e soli vincoli necessari al calcolo e restituisce alternative con incertezza esplicita, escludendo identificativi dell’account e codici di tracking. |
+| `ReportsTrackingAPI` | Riceve nuove segnalazioni e richieste di tracking, restituendo conferma o stato consentito. |
+| `ModerationAPI` | Espone la coda e le operazioni di moderazione protette da autorizzazione. |
+| `UploadGateway` | Valida la richiesta di upload e inoltra l’immagine al flusso controllato di archiviazione e scansione. |
+| `StorageScanAdapter` | Comunica con i sistemi di object storage e scansione da selezionare e mantiene privati gli oggetti fino all’esito previsto. |
+| `RoutingProviderAdapter` | Inoltra i parametri necessari al provider esterno di routing e acquisisce gli itinerari calcolati. |
+| `NotificationChannelAdapter` | Inoltra le notifiche autorizzate al canale esterno da selezionare e registra l’esito disponibile. |
+| `DataSourceAdapter` | Acquisisce i flussi dati autorizzati per aggiornare linee, fermate e caratteristiche di accessibilità. |
 
 ##### Oggetti control dei casi d’uso
 
+Il suffisso `Control` identifica gli oggetti che coordinano il flusso del caso d’uso.
+
 | Oggetto | Responsabilità |
 |---|---|
-| `PlanRoute` | Coordina validazione della richiesta, provider e classificazione dell’incertezza. |
-| `GetPlaceAccessibility` | Recupera le caratteristiche e applica le regole di freschezza. |
-| `CreateReport` | Applica le regole di creazione e persiste report ed evento iniziale. |
-| `TrackReport` | Recupera e limita le informazioni restituite tramite codice di tracking. |
-| `ModerateReport` | Valida transizioni e persiste stato ed evento append-only in modo atomico. |
-| `SynchronizeSource` | Coordina importazione, controlli di qualità e registrazione dell’esito. |
+| `PlanRouteControl` | Coordina validazione della richiesta, provider e classificazione dell’incertezza. |
+| `GetPlaceAccessibilityControl` | Recupera le caratteristiche e applica le regole di freschezza. |
+| `CreateReportControl` | Applica le regole di creazione e persiste report ed evento iniziale. |
+| `TrackReportControl` | Recupera e limita le informazioni restituite tramite codice di tracking. |
+| `ModerateReportControl` | Valida transizioni e persiste stato ed evento append-only in modo atomico. |
+| `SynchronizeSourceControl` | Coordina importazione, controlli di qualità e registrazione dell’esito. |
 
 #### 3.5.5 DIAGRAMMA DELLE CLASSI
 
-Il diagramma riassume le associazioni concettuali tra luoghi, caratteristiche di accessibilità, segnalazioni, prenotazioni idempotenti, allegati, eventi, intenzioni di notifica, coordinate e fonti.
+Il diagramma mostra le entità di dominio principali e le loro associazioni. Record tecnici di prenotazione, upload e outbox restano descritti nel modello relazionale del SDD.
 
 ```mermaid
 classDiagram
-  accDescr: Relazioni concettuali tra luoghi, caratteristiche, prenotazioni idempotenti, segnalazioni, eventi, intenzioni di notifica e fonti.
+  accDescr: Entità principali per luoghi, accessibilità, trasporto, segnalazioni e fonti, con le relative associazioni.
   class Place {
     PlaceId id
     String name
@@ -390,37 +394,10 @@ classDiagram
     ReportStatus status
     Instant createdAt
   }
-  class ReportSubmission {
-    SubmissionId id
-    String scope
-    String keyDigest
-    String payloadFingerprint
-    SubmissionState state
-  }
-  class SubmissionState {
-    <<enumeration>>
-  }
   class ReportEvent {
     ReportEventId id
     ModerationDecision decision
     Instant occurredAt
-  }
-  class ReportAttachment {
-    AttachmentId id
-    String storageKey
-    AttachmentState state
-    Instant createdAt
-  }
-  class AttachmentState {
-    <<enumeration>>
-  }
-  class NotificationIntent {
-    NotificationIntentId id
-    NotificationAttemptState state
-    Instant createdAt
-  }
-  class NotificationAttemptState {
-    <<enumeration>>
   }
   class UserAccount {
     UserId id
@@ -455,16 +432,9 @@ classDiagram
   Place --> TransitStop
   TransitLine --> TransitStop
   Report --> ReportEvent
-  ReportSubmission "0..*" --> "0..1" Report : report completato
-  ReportSubmission "1" --> "0..*" ReportAttachment : intenti upload
-  ReportSubmission "0..*" --> "1" SubmissionState : stato
-  Report "0..1" --> "0..*" ReportAttachment
   Report "0..*" --> "0..1" Place : luogo
   ReportEvent "0..*" --> "0..1" UserAccount : autore umano
   UserAccount "0..*" --> "0..*" Role : ruoli
-  ReportAttachment "0..*" --> "1" AttachmentState : stato
-  NotificationIntent "0..*" --> "1" NotificationAttemptState : stato
-  ReportEvent --> NotificationIntent
   Report --> GeoPoint
   Place --> GeoPoint
   TransitStop --> GeoPoint
@@ -486,10 +456,10 @@ Il diagramma descrive la richiesta di alternative, l’integrazione del provider
 sequenceDiagram
   accDescr: L'ospite o l'utente registrato invia la richiesta e riceve percorsi con l'incertezza evidenziata.
   actor U as Ospite o utente registrato
-  participant UI as Interfaccia web
-  participant API as API percorsi
-  participant UC as PlanRoute
-  participant RP as RoutingProvider
+  participant UI as WebInterface
+  participant API as RoutesAPI
+  participant UC as PlanRouteControl
+  participant RP as RoutingProviderAdapter
   U->>UI: Inserisce origine, destinazione ed esigenze
   UI->>API: Richiesta di percorso
   API->>UC: Richiesta validata
@@ -515,9 +485,9 @@ Il diagramma descrive il recupero dei dati di accessibilità e la valutazione de
 sequenceDiagram
   accDescr: Il sistema recupera luogo e caratteristiche, poi restituisce stato, fonte e validità.
   actor U as Ospite o utente registrato
-  participant UI as Interfaccia web
-  participant API as API luoghi
-  participant UC as GetPlaceAccessibility
+  participant UI as WebInterface
+  participant API as PlacesAccessibilityAPI
+  participant UC as GetPlaceAccessibilityControl
   participant Repo as PlaceRepository
   U->>UI: Seleziona un luogo
   UI->>API: Richiede il dettaglio
@@ -544,13 +514,13 @@ Il diagramma mostra la prenotazione univoca della richiesta prima degli effetti 
 sequenceDiagram
   accDescr: L'API salva segnalazione, evento e intenzione di notifica autorizzata in modo atomico. Un worker invia la notifica dopo il commit e registra gli esiti.
   actor U as Ospite o utente registrato
-  participant API as Reports API
-  participant UC as CreateReport
+  participant API as ReportsTrackingAPI
+  participant UC as CreateReportControl
   participant Repo as ReportRepository
   participant Attach as AttachmentRepository
-  participant Upload as Storage e scanner
+  participant Upload as StorageScanAdapter
   participant W as NotificationWorker
-  participant N as NotificationPort
+  participant N as NotificationChannelAdapter
   U->>API: POST segnalazione con chiave
   API->>UC: input, policy, chiave e impronta
   UC->>Repo: Prenota scope, chiave e impronta prima degli effetti esterni
@@ -619,9 +589,9 @@ Il diagramma descrive la consultazione dello stato tramite codice senza esporre 
 sequenceDiagram
   accDescr: Il codice di tracking consente la consultazione dello stato autorizzato.
   actor U as Ospite o utente registrato
-  participant UI as Interfaccia web
-  participant API as API tracking
-  participant UC as TrackReport
+  participant UI as WebInterface
+  participant API as ReportsTrackingAPI
+  participant UC as TrackReportControl
   participant Repo as ReportRepository
   U->>UI: Inserisce il codice di tracking
   UI->>API: Richiede lo stato
@@ -647,12 +617,12 @@ Il diagramma descrive la verifica della transizione e la registrazione atomica d
 sequenceDiagram
   accDescr: La moderazione registra transizione, evento e intenzione di notifica autorizzata in modo atomico. Un worker invia la notifica dopo il commit e registra gli esiti.
   actor A as Amministratore
-  participant UI as Pannello moderazione
-  participant API as API moderazione
-  participant UC as ModerateReport
+  participant UI as WebInterface
+  participant API as ModerationAPI
+  participant UC as ModerateReportControl
   participant Repo as ReportRepository
   participant W as NotificationWorker
-  participant N as NotificationPort
+  participant N as NotificationChannelAdapter
   A->>UI: Seleziona decisione e motivazione
   UI->>API: Invia decisione
   API->>UC: Comando

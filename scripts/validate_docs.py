@@ -622,7 +622,7 @@ def validate_entity_class_diagram() -> list[str]:
     path = ROOT / "docs/RAD.md"
     text = path.read_text(encoding="utf-8")
     lines = text.splitlines()
-    entity_heading = "##### Oggetti entity dei casi d’uso"
+    entity_heading = "##### Oggetti entity principali"
     heading_indices = [index for index, line in enumerate(lines) if line.strip() == entity_heading]
     if len(heading_indices) != 1:
         return ["docs/RAD.md: catalogo entity non trovato o duplicato"]
@@ -705,6 +705,58 @@ def validate_entity_class_diagram() -> list[str]:
     return []
 
 
+def validate_entity_use_case_mapping() -> list[str]:
+    path = ROOT / "docs/RAD.md"
+    text = path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    heading = "##### Oggetti entity principali"
+    heading_indices = [index for index, line in enumerate(lines) if line.strip() == heading]
+    if len(heading_indices) != 1:
+        return ["docs/RAD.md: catalogo delle entity principali non trovato o duplicato"]
+
+    start = heading_indices[0] + 1
+    end = next(
+        (
+            index
+            for index in range(start, len(lines))
+            if re.match(r"^#{1,5}\s", lines[index])
+        ),
+        len(lines),
+    )
+    rows = [line for line in lines[start:end] if line.startswith("|")]
+    if not rows:
+        return ["docs/RAD.md: tabella delle entity principali non trovata"]
+    header = [cell.strip() for cell in rows[0].strip().strip("|").split("|")]
+    if header != ["Oggetto", "Responsabilità", "Casi d’uso"]:
+        return ["docs/RAD.md: intestazione tabella entity non conforme"]
+
+    defined_cases = {
+        match.group(1)
+        for line in lines
+        if (match := USE_CASE_HEADING_PATTERN.match(line))
+    }
+    errors: list[str] = []
+    for line in rows[2:]:
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) != 3:
+            errors.append("docs/RAD.md: riga entity con numero di colonne non valido")
+            continue
+        identifier_match = re.search(r"`([A-Za-z][A-Za-z0-9]*)`", cells[0])
+        if not identifier_match:
+            continue
+        identifier = identifier_match.group(1)
+        mapped_cases = set(re.findall(r"UC-\d{2}", cells[2]))
+        if not mapped_cases:
+            errors.append(f"docs/RAD.md: entity {identifier} senza casi d’uso associati")
+        unknown = sorted(mapped_cases - defined_cases)
+        if unknown:
+            errors.append(
+                f"docs/RAD.md: entity {identifier} associata a casi d’uso inesistenti: "
+                + ", ".join(unknown)
+            )
+    return errors
+
+
 def validate_report_submission_contract() -> list[str]:
     errors: list[str] = []
     rad_path = ROOT / "docs/RAD.md"
@@ -742,16 +794,16 @@ def validate_report_submission_contract() -> list[str]:
     if len(use_case) != 2 or "ReportSubmission" not in use_case[1].split("###### UC-04:", 1)[0]:
         errors.append("docs/RAD.md: UC-03 deve descrivere la prenotazione della richiesta")
 
-    mermaid_diagrams = re.findall(r"```mermaid\s*\n(.*?)\n```", rad, re.DOTALL)
-    if not any(
-        "class ReportSubmission {" in diagram
-        and "ReportSubmission \"1\" --> \"0..*\" ReportAttachment" in diagram
-        for diagram in mermaid_diagrams
-    ):
+    attachment_row = next(
+        (line for line in sdd.splitlines() if line.startswith("| `report_attachment` |")),
+        "",
+    )
+    if not attachment_row or "prenotazione" not in attachment_row.casefold():
         errors.append(
-            "docs/RAD.md: il diagramma delle classi deve collegare la prenotazione agli allegati"
+            "docs/SDD.md: report_attachment deve essere collegato alla prenotazione durevole"
         )
 
+    mermaid_diagrams = re.findall(r"```mermaid\s*\n(.*?)\n```", rad, re.DOTALL)
     sequence_diagrams = [diagram for diagram in mermaid_diagrams if "sequenceDiagram" in diagram]
     create_report_diagram = next(
         (diagram for diagram in sequence_diagrams if "POST segnalazione con chiave" in diagram),
@@ -1395,6 +1447,7 @@ def main() -> int:
     errors.extend(validate_glossaries())
     errors.extend(validate_model_object_tables())
     errors.extend(validate_entity_class_diagram())
+    errors.extend(validate_entity_use_case_mapping())
     errors.extend(validate_report_submission_contract())
     errors.extend(validate_runbook_revision_history())
     errors.extend(validate_runbook_operational_coverage())

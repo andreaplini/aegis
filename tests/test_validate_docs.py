@@ -141,6 +141,7 @@ class MarkdownValidationTests(unittest.TestCase):
             (docs / "SDD.md").write_text(
                 "| `report_submission` | vincolo di unicità, impronta dell’intera richiesta, "
                 "prima di effetti esterni. |\n"
+                "| `report_attachment` | Intento correlato alla prenotazione della richiesta. |\n"
                 "### 4.5 SEGNALAZIONI E MODERAZIONE\n"
                 "`report_submission`\n### 4.6 GEOLOCALIZZAZIONE\n",
                 encoding="utf-8",
@@ -282,7 +283,7 @@ class MarkdownValidationTests(unittest.TestCase):
             docs.mkdir()
             rad = docs / "RAD.md"
             rad.write_text(
-                "##### Oggetti entity dei casi d’uso\n\n"
+                "##### Oggetti entity principali\n\n"
                 "| Oggetto | Responsabilità |\n|---|---|\n"
                 "| `ReportAttachment` | Conserva l’intento. |\n"
                 "| `ReportAttachment` | Conserva il riferimento. |\n",
@@ -301,7 +302,7 @@ class MarkdownValidationTests(unittest.TestCase):
             docs.mkdir()
             rad = docs / "RAD.md"
             rad.write_text(
-                "##### Oggetti entity dei casi d’uso\n\n"
+                "##### Oggetti entity principali\n\n"
                 "| Oggetto | Responsabilità |\n|---|---|\n"
                 "| `Place` | Luogo. |\n| `Report` | Segnalazione. |\n\n"
                 "```mermaid\nclassDiagram\n  class Place {\n  }\n```\n",
@@ -313,6 +314,35 @@ class MarkdownValidationTests(unittest.TestCase):
 
             self.assertTrue(any("entity non rappresentate" in error for error in errors))
 
+    def test_primary_entities_must_map_to_existing_use_cases(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            docs.mkdir()
+            rad = docs / "RAD.md"
+            rad.write_text(
+                "##### Oggetti entity principali\n\n"
+                "| Oggetto | Responsabilità | Casi d’uso |\n"
+                "|---|---|---|\n"
+                "| `Place` | Luogo. | UC-01, UC-02 |\n"
+                "###### UC-01: Pianificare un percorso\n"
+                "###### UC-02: Consultare un luogo\n",
+                encoding="utf-8",
+            )
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_entity_use_case_mapping(), [])
+
+                rad.write_text(
+                    rad.read_text(encoding="utf-8").replace("UC-01, UC-02", "UC-01, UC-09"),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_entity_use_case_mapping()
+
+            self.assertTrue(
+                any("associata a casi d’uso inesistenti: UC-09" in error for error in errors)
+            )
+
     def test_typed_entity_attributes_require_class_relationships(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -320,7 +350,7 @@ class MarkdownValidationTests(unittest.TestCase):
             docs.mkdir()
             rad = docs / "RAD.md"
             rad.write_text(
-                "##### Oggetti entity dei casi d’uso\n\n"
+                "##### Oggetti entity principali\n\n"
                 "| Oggetto | Responsabilità |\n|---|---|\n"
                 "| `Place` | Luogo. |\n| `Report` | Segnalazione. |\n\n"
                 "```mermaid\nclassDiagram\n"
