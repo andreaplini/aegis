@@ -37,13 +37,13 @@ Con i prerequisiti installati, predisporre Mermaid CLI e Chromium headless:
 make install-doc-tools
 ```
 
-Generare e verificare gli export con:
+Eseguire il gate documentale locale completo con:
 
 ```sh
-make docs
+make verify-docs
 ```
 
-La generazione esegue prima `make check-docs`. Il comando esegue i test del validatore e controlla link, requisiti, tracciabilità RAD/SDD, casi d’uso e diagrammi, catalogo delle entità e associazione ai casi d’uso, presenza di boundary e control nei diagrammi di sequenza, completezza degli ADR, registri delle verifiche, glossari, runbook, descrizioni accessibili e stile del nome. Il catalogo completo dei controlli è in [CONTRIBUTING](docs/CONTRIBUTING.md). Il comando può essere eseguito separatamente e non richiede Node.js o Pandoc.
+Il target esegue l’audit delle dipendenze, `make check-docs`, genera RAD e SDD e valida i DOCX. Per i soli controlli Markdown, senza Node.js o Pandoc, eseguire `make check-docs`. Per rigenerare gli export senza ripetere l’audit delle dipendenze, eseguire `make docs`. L’elenco dettagliato dei controlli è in [CONTRIBUTING](docs/CONTRIBUTING.md).
 
 Mermaid CLI converte i diagrammi in immagini accessibili. Pandoc incorpora immagini e testo nei DOCX. Il validatore verifica pacchetto, contenuto, metadati, nome e punteggiatura nel testo e nelle descrizioni alternative, associazioni OOXML, immagini incorporate, punteggiatura del template Word e corrispondenza tra il DOCX sorgente e il file XML estratto versionato.
 

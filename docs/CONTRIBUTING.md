@@ -36,13 +36,13 @@ Il comando esegue i test del validatore e controlla:
 - glossari, unicità dei nomi negli oggetti RAD, registro revisioni e copertura operativa del runbook
 - descrizioni accessibili dei diagrammi in tutta la documentazione e stile canonico del nome del progetto
 
-Per verificare anche l’esportazione installare le versioni Node.js e Pandoc indicate in `config/tool-versions.env`. Installare i pacchetti Mermaid bloccati dal lockfile con `make install-doc-tools`, quindi eseguire:
+Per eseguire in locale l’audit delle dipendenze, i controlli documentali e l’esportazione validata, installare le versioni Node.js e Pandoc indicate in `config/tool-versions.env`, installare i pacchetti Mermaid bloccati dal lockfile con `make install-doc-tools` ed eseguire:
 
 ```sh
-make docs
+make verify-docs
 ```
 
-I DOCX generati si trovano in `build/docs/` e non vanno aggiunti al repository. `make docs` verifica l’integrità del pacchetto, il contenuto richiesto, i metadati personali, nome e punteggiatura nel testo e nelle descrizioni alternative, le relazioni OOXML e le immagini dei diagrammi. Verifica anche la punteggiatura leggibile nel template Word e che `docs/template/assets/package/word/document.xml` corrisponda alla parte omonima del DOCX sorgente. Per modifiche applicative, eseguire i controlli della build e i test definiti quando ENG-03 introdurrà una build applicativa. Al momento tali comandi non esistono.
+Il comando esegue `make audit-doc-tools` e `make docs`. Gli export vengono salvati in `build/docs/` e non vanno aggiunti al repository. `make docs` verifica l’integrità del pacchetto, il contenuto richiesto, i metadati personali, nome e punteggiatura nel testo e nelle descrizioni alternative, le relazioni OOXML e le immagini dei diagrammi. Verifica anche la punteggiatura leggibile nel template Word e che `docs/template/assets/package/word/document.xml` corrisponda alla parte omonima del DOCX sorgente. Per modifiche applicative, eseguire i controlli della build e i test definiti quando ENG-03 introdurrà una build applicativa. Al momento tali comandi non esistono.
 
 ## Criteri di revisione
 
