@@ -10,11 +10,11 @@
 | Data | 16 novembre 2026 |
 | Responsabile | Responsabile tecnico, da designare |
 | Revisori | Referente mobilità e responsabile di prodotto, da designare |
-| Requisiti correlati | FR-04, FR-05, NFR-08, NFR-11, NFR-14, UC-01, OPEN-01, OPEN-03, OPEN-07 ed ENG-02 |
+| Requisiti correlati | FR-04, FR-05, NFR-04, NFR-08, NFR-11, NFR-14, UC-01, OPEN-01, OPEN-03, OPEN-05, OPEN-07, OPEN-08 ed ENG-02 |
 
 ## Contesto e problema
 
-Il caso UC-01 inoltra origine, destinazione ed esigenze a `RoutingProvider`. Il risultato deve essere combinato con dati di accessibilità con provenienza e validità. OPEN-03 lascia da selezionare provider, rete e profili supportati. OPEN-01 deve definire area pilota e fonti autorizzate.
+Il caso UC-01 inoltra origine, destinazione ed esigenze a `RoutingProvider`. Il risultato deve essere combinato con dati di accessibilità con provenienza e validità. OPEN-03 lascia da selezionare provider, rete e profili supportati. OPEN-01 deve definire area pilota e fonti autorizzate. Origine, destinazione e preferenze possono essere dati personali o rivelare informazioni sulla salute quando associati a una persona. OPEN-05 deve definire finalità, basi giuridiche, destinatari, accesso e ciclo di vita, compresi log e telemetria del provider.
 
 Senza un contratto esplicito, il sistema rischia di interpretare la presenza di un percorso come prova di accessibilità. Un provider può non supportare un profilo, restituire risultati parziali, non rispondere o fornire dati che non corrispondono all’area pilota. Nessuno di questi casi deve produrre una dichiarazione positiva non verificata.
 
@@ -28,6 +28,7 @@ Senza un contratto esplicito, il sistema rischia di interpretare la presenza di 
 | Compatibilità verificabile | La selezione considera area pilota, profili, provenienza, freschezza e granularità dei risultati. |
 | Degrado controllato | Errori e profili non supportati sono visibili e non vengono convertiti in compatibilità implicita. |
 | Privacy e sostenibilità | La valutazione considera dati trasmessi, licenza, limiti d’uso e costi operativi prima della selezione. |
+| Minimizzazione dei dati | Inviare al provider solo i campi e i vincoli necessari al calcolo richiesto. Escludere account ID, tracking ID e altri identificativi non necessari. |
 
 ## Opzioni considerate
 
@@ -41,14 +42,14 @@ Senza un contratto esplicito, il sistema rischia di interpretare la presenza di 
 
 Mantenere `RoutingProvider` come porta sostituibile e definire il contratto applicativo indipendentemente dal provider concreto.
 
-- L’adattatore riceve una richiesta validata con origine, destinazione e solo le esigenze necessarie al profilo scelto. Parametri e profili effettivamente supportati restano da definire in OPEN-03.
+- L’adattatore riceve una richiesta validata con origine, destinazione e solo le esigenze necessarie al profilo scelto. Esclude identificativi dell’account, codici di tracking e altri dati non necessari. Parametri e profili effettivamente supportati restano da definire in OPEN-03.
 - Ogni alternativa restituisce identificativo della fonte e, quando disponibile, gli attributi di percorso e la geometria dei tratti necessari a correlare i dati di accessibilità. La granularità minima da richiedere al provider va verificata durante la selezione.
 - Ogni tratto conserva uno stato esplicito: compatibile secondo evidenza valida, incompatibile secondo evidenza valida, oppure sconosciuto o non verificato. Un risultato del provider senza evidenza compatibile non autorizza a dichiarare il tratto accessibile.
 - Evidenze assenti, scadute o contraddittorie non sono usate per escludere un tratto né per dichiararlo compatibile. Il risultato espone fonte e freschezza disponibili secondo le regole di OPEN-02.
 - Timeout, indisponibilità, risposta incompleta e profilo non supportato producono uno stato esplicito. Un’eventuale alternativa di fallback è marcata non verificata e non viene presentata come equivalente a un percorso compatibile.
-- La valutazione dei candidati documenta per l’area pilota copertura, profili, dettaglio per tratto, provenienza, freschezza, comportamento in errore, dati trasmessi, licenza, limiti d’uso, disponibilità e costo operativo. I criteri e i valori sono approvati dai responsabili, non presunti in questo ADR.
+- La valutazione dei candidati documenta per l’area pilota copertura, profili, dettaglio per tratto, provenienza, freschezza, comportamento in errore, campi trasmessi, identificativi esclusi, log, telemetria, destinatari, conservazione, cancellazione, licenza, limiti d’uso, disponibilità e costo operativo. Il responsabile privacy valuta il trattamento e i trasferimenti secondo OPEN-05. I criteri e i valori sono approvati dai responsabili, non presunti in questo ADR.
 
-La proposta non seleziona un provider, una rete o profili di esigenze. La decisione dipende dall’area, dalle fonti e dai profili approvati in OPEN-01 e OPEN-03.
+La proposta non seleziona un provider, una rete o profili di esigenze. La decisione dipende dall’area, dalle fonti e dai profili approvati in OPEN-01 e OPEN-03. Campi inviati, log, telemetria, conservazione e destinatari sono riesaminati secondo OPEN-05 e OPEN-08 prima della selezione.
 
 ## Decisione
 
@@ -66,7 +67,7 @@ Non approvata. Il responsabile tecnico e il referente mobilità devono valutare 
 
 | Evidenza richiesta | Criterio di accettazione | Responsabile | Esito e riferimento |
 |---|---|---|---|
-| Matrice comparativa dei candidati | Copertura, profili, dettaglio per tratto, provenienza, licenza e vincoli operativi sono documentati per l’area pilota approvata | Responsabile tecnico e referente mobilità, da designare | In attesa |
+| Matrice comparativa dei candidati | Copertura, profili, dettaglio per tratto, provenienza, campi trasmessi, identificativi esclusi, log, telemetria, destinatari, conservazione, licenza e vincoli operativi sono documentati per l’area pilota approvata e revisionati secondo OPEN-05 | Responsabile tecnico, referente mobilità e responsabile privacy, da designare | In attesa |
 | Prova di dato mancante, scaduto o contraddittorio | Il tratto è sconosciuto o non verificato e non è dichiarato compatibile | Responsabile tecnico, da designare | Non eseguito |
 | Prova di timeout e indisponibilità | L’errore è visibile e l’eventuale fallback è marcato non verificato | Responsabile tecnico, da designare | Non eseguito |
 | Prova di risposta parziale e profilo non supportato | Il sistema non completa silenziosamente la risposta né attribuisce compatibilità senza evidenza | Responsabile tecnico, da designare | Non eseguito |
