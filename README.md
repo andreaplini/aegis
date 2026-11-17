@@ -25,7 +25,7 @@ Per bug e richieste, consultare le [issue aperte](https://github.com/kairosci/ae
 
 ## Prerequisiti documentali
 
-Per eseguire i controlli sono necessari Python 3 e GNU Make. `make check-docs` usa solo la libreria standard di Python e non richiede Node.js o Pandoc.
+Per eseguire i controlli sono necessari Python `3.9` o successivo e GNU Make. La versione minima è definita in `config/tool-versions.env` e controllata da `make check-docs`. Il comando usa solo la libreria standard di Python e non richiede Node.js o Pandoc.
 
 Per generare i DOCX servono anche Node.js `24.22.3` e Pandoc `3.14`, riportati in `config/tool-versions.env`. Installare queste versioni e renderle disponibili nel `PATH` prima di installare gli strumenti Mermaid. `make install-doc-tools` installa le dipendenze Node bloccate dal lockfile e Chromium headless. Non installa Node.js né Pandoc.
 

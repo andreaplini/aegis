@@ -1,6 +1,7 @@
 include config/tool-versions.env
 
-export NODE_VERSION PANDOC_VERSION
+export NODE_VERSION PANDOC_VERSION PYTHON_MIN_VERSION
+PYTHON ?= python3
 PANDOC ?= pandoc
 MERMAID ?= config/documentation/node_modules/.bin/mmdc
 PUPPETEER ?= config/documentation/node_modules/.bin/puppeteer
@@ -9,7 +10,7 @@ OUTPUT_DIR ?= build/docs
 DOCX_TOOL_INPUTS = Makefile config/tool-versions.env config/documentation/package.json config/documentation/package-lock.json $(PUPPETEER_CONFIG)
 
 .DEFAULT_GOAL := help
-.PHONY: help install-doc-tools audit-doc-tools check-docs check-node check-pandoc check-mermaid render-docs docs
+.PHONY: help install-doc-tools audit-doc-tools check-docs check-python check-node check-pandoc check-mermaid render-docs docs
 
 help:
 	@printf '%s\n' \
@@ -17,6 +18,7 @@ help:
 	  'make install-doc-tools  Install pinned Node tools and Chromium for Mermaid exports' \
 	  'make audit-doc-tools  Check documentation tool dependencies for high severity vulnerabilities' \
 	  'make check-docs  Test and validate docs, structure, traceability, and style' \
+	  'make check-python Check local Python against config/tool-versions.env' \
 	  'make check-node Check local Node.js against config/tool-versions.env' \
 	  'make check-pandoc Check local Pandoc against config/tool-versions.env' \
 	  'Set PANDOC and MERMAID to select alternate executables'
@@ -28,9 +30,12 @@ install-doc-tools: check-node
 audit-doc-tools: check-node
 	npm audit --prefix config/documentation --audit-level=high
 
-check-docs:
-	python3 -m unittest discover -s tests
-	python3 scripts/validate_docs.py
+check-docs: check-python
+	$(PYTHON) -m unittest discover -s tests
+	$(PYTHON) scripts/validate_docs.py
+
+check-python:
+	$(PYTHON) scripts/check_python.py $(PYTHON_MIN_VERSION)
 
 check-node:
 	@actual="$$(node --version | sed 's/^v//')"; \
@@ -70,7 +75,7 @@ render-docs: check-mermaid
 
 docs: check-docs check-node check-pandoc
 	$(MAKE) --no-print-directory $(OUTPUT_DIR)/rad-is.docx $(OUTPUT_DIR)/sdd-is.docx
-	python3 scripts/validate_docx.py "$(OUTPUT_DIR)/rad-is.docx" "$(OUTPUT_DIR)/sdd-is.docx" docs/template/template.docx
+	$(PYTHON) scripts/validate_docx.py "$(OUTPUT_DIR)/rad-is.docx" "$(OUTPUT_DIR)/sdd-is.docx" docs/template/template.docx
 
 $(OUTPUT_DIR)/rad-is.docx: docs/RAD.md docs/template/template.docx scripts/validate_docx.py $(DOCX_TOOL_INPUTS) | render-docs
 	$(PANDOC) --from=gfm --to=docx --standalone --reference-doc=docs/template/template.docx --resource-path=".:$(OUTPUT_DIR)" "$(OUTPUT_DIR)/rad-rendered.md" --output="$@"
