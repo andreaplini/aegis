@@ -15,6 +15,8 @@
 1. Introduzione
    - 1.1 Scopo del sistema
    - 1.2 Area di dominio
+   - 1.3 Definizioni, acronimi e abbreviazioni
+   - 1.4 Panoramica
 2. Sistema corrente
 3. Sistema proposto
    - 3.1 Panoramica
@@ -32,6 +34,7 @@
    - 4.1 Descrizione del prototipo realizzato
    - 4.2 Test di usabilità
    - 4.3 Valutazione dell’usabilità secondo ISO 9241-110
+   - 4.4 Allegati
 5. Glossario
 
 ---
@@ -57,6 +60,35 @@ Gli obiettivi principali sono trovare e confrontare percorsi accessibili, consul
 ### 1.2 AREA DI DOMINIO
 
 Il dominio comprende la pianificazione della mobilità urbana, i dati geospaziali del trasporto pubblico, il monitoraggio dell’accessibilità delle infrastrutture e il *crowdsourcing* moderato delle segnalazioni. L’area geografica di riferimento comprende la rete metropolitana, ferroviaria urbana e di superficie della città di Napoli, integrando i dataset ufficiali dell’azienda di trasporto locale con le segnalazioni georeferenziate degli utenti.
+
+### 1.3 DEFINIZIONI, ACRONIMI E ABBREVIAZIONI
+
+I termini di dominio e tecnici sono raccolti nel Glossario (capitolo 5). Le abbreviazioni usate per identificare gli elementi del documento sono le seguenti.
+
+| Abbreviazione | Significato |
+|---|---|
+| FR | Requisito funzionale (*Functional Requirement*), identificato da FR-nn. |
+| NFR | Requisito non funzionale (*Non-Functional Requirement*), identificato da NFR-nn. |
+| UC | Caso d’uso (*Use Case*), identificato da UC-nn. |
+| TPL | Trasporto Pubblico Locale. |
+| GTFS | *General Transit Feed Specification*, formato dei dati ufficiali di trasporto. |
+| WCAG | *Web Content Accessibility Guidelines*, livello di conformità AA. |
+| GDPR | Regolamento Europeo sulla protezione dei dati personali. |
+| RBAC | *Role-Based Access Control*, controllo degli accessi basato sui ruoli. |
+
+*Tabella 1.2: Abbreviazioni usate nel documento*
+
+### 1.4 PANORAMICA
+
+Il documento è organizzato come segue:
+
+- **Capitolo 1** definisce scopo, obiettivi e area di dominio del sistema.
+- **Capitolo 2** descrive la situazione attuale, assente di un sistema dedicato.
+- **Capitolo 3** presenta il sistema proposto: requisiti funzionali e non funzionali, vincoli e modelli (utenti, scenari, casi d’uso, oggetti, classi e sequenze).
+- **Capitolo 4** descrive l’interfaccia utente, il prototipo, i test di usabilità e la valutazione secondo ISO 9241-110.
+- **Capitolo 5** raccoglie il glossario dei termini.
+
+L’architettura e le scelte progettuali che realizzano questi requisiti sono documentate nel System Design Document (SDD).
 
 ## SISTEMA CORRENTE
 
@@ -89,7 +121,7 @@ La piattaforma offre consultazione pubblica con ricerca per area, mappa interatt
 | FR-11 | Sistema | Aggiornare i dati visibili dell’area interessata al termine di ogni sincronizzazione validata. | Should | UC-06 |
 | FR-12 | Sistema | Inviare notifiche agli utenti registrati che hanno dato il consenso (autori delle segnalazioni e utenti che seguono un luogo) al cambio di stato di una segnalazione. | Could | UC-05, UC-08 |
 | FR-13 | Sistema | Autenticare gli utenti e verificare i ruoli per le operazioni riservate, mantenendo pubblici consultazione, invio e tracking. | Must | UC-05, UC-06, UC-07, UC-08 |
-| FR-14 | Utente non registrato e sistema | Consentire la registrazione e l’accesso con credenziali personali e la gestione dei luoghi preferiti e dei consensi per le notifiche. | Should | UC-07, UC-08 |
+| FR-14 | Ospite e sistema | Consentire la registrazione e l’accesso con credenziali personali e la gestione dei luoghi preferiti e dei consensi per le notifiche. | Should | UC-07, UC-08 |
 | FR-15 | Utente registrato e sistema | Consentire la consultazione dello storico delle proprie segnalazioni con il relativo stato. | Should | UC-08 |
 
 *Tabella 3.1: Requisiti funzionali*
@@ -147,7 +179,7 @@ La baseline di accessibilità proposta per il prodotto è **[WCAG 2.2 livello AA
 | Struttura software | Architettura disaccoppiata tra presentazione, casi d’uso, dominio e adattatori esterni, documentata con OpenAPI. |
 | Accesso e ruoli | Consultazione, invio di segnalazioni e tracking liberi anche per l’Ospite. Autenticazione e controllo dei ruoli (Utente registrato, Amministratore) per preferiti, notifiche, storico personale e moderazione. |
 | Qualità dei dati | Ogni proprietà di accessibilità registra fonte e timestamp, dati assenti o oltre la soglia di validità (30 giorni dall’osservazione, salvo diversa scadenza della fonte) sono classificati come *Sconosciuti*. |
-| Normativa | Trattamenti di dati personali da valutare secondo GDPR. I requisiti legali di accessibilità applicabili, inclusa la Legge 4/2004 (Legge Stanca), sono da verificare in OPEN-06. WCAG 2.2 livello AA è il target di prodotto proposto e non costituisce una dichiarazione di conformità legale. |
+| Normativa | Trattamenti di dati personali da valutare secondo GDPR. Esigenze di percorso, descrizioni e immagini delle segnalazioni possono rivelare, se associate a una persona, informazioni sulla disabilità o sulla salute (art. 9 GDPR): minimizzazione dei dati e valutazione d’impatto sono a cura del responsabile del trattamento. I requisiti legali di accessibilità applicabili, inclusa la Legge 4/2004 (Legge Stanca), sono da verificare in OPEN-06. WCAG 2.2 livello AA è il target di prodotto proposto e non costituisce una dichiarazione di conformità legale. |
 
 *Tabella 3.4: Vincoli di progetto*
 
@@ -180,7 +212,7 @@ Gli scenari seguenti, inventati a scopo illustrativo, rappresentano una validazi
 | **Consultazione di un luogo** | Ospite | Conoscere caratteristiche, stato e provenienza dei dati di una stazione. | Elena è non vedente e usa uno screen reader. Cerca la stazione dalla vista elenco testuale, naviga da tastiera fino alla scheda di dettaglio e ascolta per ogni caratteristica (ascensore, percorso tattile, annunci sonori) lo stato, la fonte e la data di aggiornamento. Il percorso tattile risulta “sconosciuto”: Elena sa che non è confermato. |
 | **Invio di una segnalazione** | Ospite | Comunicare un guasto e ottenere un riferimento per seguirlo. | Sara trova fuori servizio l’ascensore di una fermata. Apre il modulo di segnalazione, seleziona il luogo, la categoria “ascensore guasto”, descrive il problema e allega una foto. Il sistema valida i dati e le mostra un codice di tracking, che lei salva. |
 | **Tracking di una segnalazione** | Ospite | Verificare lo stato senza esporre dati riservati. | Dopo due giorni Sara inserisce il codice nella pagina di tracking e vede che la sua segnalazione è passata da “In verifica” a “Confermata”, con una nota pubblica dell’operatore. Non vede alcun dato personale, né altre segnalazioni. |
-| **Registrazione e preferiti** | Utente non registrato, Utente registrato | Seguire i luoghi usati abitualmente e ricevere avvisi. | Giorgio crea un account, aggiunge ai preferiti la fermata sotto casa e attiva il consenso alle notifiche. Quando una segnalazione su quella fermata viene confermata, riceve un avviso. Dall’area personale consulta lo storico delle sue segnalazioni. |
+| **Registrazione e preferiti** | Ospite, Utente registrato | Seguire i luoghi usati abitualmente e ricevere avvisi. | Giorgio crea un account, aggiunge ai preferiti la fermata sotto casa e attiva il consenso alle notifiche. Quando una segnalazione su quella fermata viene confermata, riceve un avviso. Dall’area personale consulta lo storico delle sue segnalazioni. |
 | **Moderazione di una segnalazione** | Amministratore | Valutare le segnalazioni in modo autorizzato e tracciabile. | Davide, operatore dell’ente di trasporto, accede al pannello di moderazione, apre la segnalazione di Sara con la foto e la cronologia e la conferma indicando la motivazione. Un’altra segnalazione sullo stesso guasto viene unita come duplicato. Ogni decisione resta nello storico. |
 | **Aggiornamento di una fonte** | Amministratore, Fonte dati autorizzata | Mantenere aggiornati e validati i dataset ufficiali. | Davide avvia la sincronizzazione del nuovo pacchetto GTFS. Il sistema controlla formato, chiavi e coerenza geografica. Un primo tentativo fallisce perché il file è corrotto: i dati precedenti restano visibili e l’errore è registrato. Il secondo tentativo ha successo e le nuove fermate compaiono su mappa ed elenco. |
 
@@ -190,7 +222,7 @@ Gli scenari seguenti, inventati a scopo illustrativo, rappresentano una validazi
 
 ##### Diagramma globale
 
-Il confine di sistema separa i casi d’uso di aegis dagli attori umani e dai sistemi esterni. L’Utente registrato specializza l’Ospite, quindi eredita UC-01, UC-02, UC-03 e UC-04. Le funzioni riservate includono UC-07 (Autenticarsi).
+Il confine di sistema separa i casi d’uso di aegis dagli attori umani e dai sistemi esterni. L’Utente registrato specializza l’Ospite, quindi eredita UC-01, UC-02, UC-03 e UC-04. UC-05 e UC-08 includono UC-07 (Autenticarsi). Anche UC-06 richiede UC-07, ma solo per l’avvio manuale: l’esecuzione schedulata non prevede un’autenticazione umana.
 
 ```plantuml
 @startuml
@@ -929,9 +961,86 @@ sequenceDiagram
 
 ---
 
-## GLOSSARIO
+## INTERFACCIA UTENTE
 
-*(Da inserire in fondo al documento, dopo il capitolo 4.)*
+### 4.1 DESCRIZIONE DEL PROTOTIPO REALIZZATO
+
+| Aspetto | Descrizione |
+|---|---|
+| Scopo (ruolo, interfaccia, implementazione) | [Da completare: cosa verifica il prototipo, ad esempio i flussi UC-01, UC-02, UC-03 e UC-04, e quali parti di interfaccia e implementazione rappresenta.] |
+| Modo d’uso (statico, dinamico, interattivo) | [Da completare.] |
+| Fedeltà (bassa o alta) | [Da completare, con motivazione.] |
+| Completezza funzionale (orizzontale o verticale) | [Da completare: quali funzionalità e quali livelli sono realizzati.] |
+| Durata (usa e getta, evolutivo, incrementale, interattivo) | [Da completare.] |
+
+*Tabella 4.1: Caratteristiche del prototipo*
+
+### 4.2 TEST DI USABILITÀ
+
+#### 4.2.1 Obiettivi del test
+
+[Da completare.] Gli obiettivi devono verificare i criteri del RAD: completamento dei flussi da tastiera e con screen reader (NFR-01, NFR-02) e tasso di completamento ≥ 85% nei compiti assegnati (NFR-11).
+
+#### 4.2.2 Metodologia
+
+[Da completare: numero e profilo dei partecipanti, livello di esperienza, contesto e strumentazione, durata per utente e complessiva, misure raccolte, ruolo degli osservatori, modalità di analisi dei risultati.]
+
+Compiti proposti, derivati dagli scenari della Tabella 3.7:
+
+| Compito | Scenario di riferimento | Caso d’uso |
+|---|---|---|
+| Trovare un percorso accessibile tra due punti e riconoscere i tratti non verificati. | Pianificazione di un percorso | UC-01 |
+| Consultare stato, fonte e aggiornamento di una caratteristica di una stazione. | Consultazione di un luogo | UC-02 |
+| Inviare una segnalazione con foto e annotare il codice di tracking. | Invio di una segnalazione | UC-03 |
+| Consultare lo stato di una segnalazione tramite codice. | Tracking di una segnalazione | UC-04 |
+
+*Tabella 4.2: Compiti del test*
+
+#### 4.2.3 Sintesi delle misure
+
+| Utente | Compito | Tempo | Completato (sì/no) | Note |
+|---|---|---|---|---|
+| [U1] | [Da completare] | [ ] | [ ] | [ ] |
+
+*Tabella 4.3: Misure raccolte, per utente e complessive (tempi e percentuale di compiti completati)*
+
+#### 4.2.4 Analisi dei risultati
+
+[Da completare: per ogni utente e compito, problemi incontrati, numerati (P-01, P-02…), con livello di gravità, eventuali screenshot, reazioni e commenti registrati.]
+
+#### 4.2.5 Sintesi delle interviste
+
+[Da completare: risultati delle interviste svolte dopo il test.]
+
+#### 4.2.6 Raccomandazioni finali
+
+[Da completare: interventi migliorativi numerati e raggruppati per priorità (1 indispensabili, 2 necessari, 3 auspicabili), ciascuno con riferimento al problema corrispondente.]
+
+### 4.3 VALUTAZIONE DELL’USABILITÀ SECONDO ISO 9241-110
+
+Ogni principio è valutato da ciascun valutatore con un voto da 0 (minimo) a 4 (massimo). Il voto riportato è la media degli n valutatori. I voti sono visualizzati in un diagramma a stella che rappresenta il profilo di qualità del sistema e, se possibile, di un sistema simile per confronto.
+
+| Principio | Voto medio aegis | Voto medio sistema di confronto | Commento |
+|---|---|---|---|
+| Adeguatezza al compito | [ ] | [ ] | [ ] |
+| Autodescrizione | [ ] | [ ] | [ ] |
+| Conformità alle aspettative | [ ] | [ ] | [ ] |
+| Apprendibilità | [ ] | [ ] | [ ] |
+| Controllabilità | [ ] | [ ] | [ ] |
+| Robustezza agli errori d’uso | [ ] | [ ] | [ ] |
+| Adattabilità all’individualizzazione | [ ] | [ ] | [ ] |
+
+*Tabella 4.4: Valutazione per principi ISO 9241-110*
+
+*Figura 4.1: Diagramma a stella del profilo di usabilità*
+
+Nota: la revisione ISO 9241-110:2020 ha rinominato l’ultimo principio in “coinvolgimento dell’utente”. Usare la denominazione indicata dalla prof.
+
+### 4.4 ALLEGATI
+
+[Da completare: questionari, griglie di osservazione, registrazioni e altri dati raccolti durante i test.]
+
+## GLOSSARIO
 
 | Termine | Definizione |
 |---|---|
