@@ -757,6 +757,68 @@ def validate_entity_use_case_mapping() -> list[str]:
     return errors
 
 
+def validate_analysis_objects_in_sequences() -> list[str]:
+    path = ROOT / "docs/RAD.md"
+    text = path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    errors: list[str] = []
+    catalogues = {
+        "##### Oggetti boundary dei casi d’uso": "boundary",
+        "##### Oggetti control dei casi d’uso": "control",
+    }
+    names_by_type: dict[str, set[str]] = {"boundary": set(), "control": set()}
+
+    for heading, object_type in catalogues.items():
+        heading_indices = [index for index, line in enumerate(lines) if line.strip() == heading]
+        if len(heading_indices) != 1:
+            errors.append(f"docs/RAD.md: catalogo {object_type} non trovato o duplicato")
+            continue
+        start = heading_indices[0] + 1
+        end = next(
+            (
+                index
+                for index in range(start, len(lines))
+                if re.match(r"^#{1,5}\s", lines[index])
+            ),
+            len(lines),
+        )
+        rows = [line for line in lines[start:end] if line.startswith("|")]
+        for line in rows[2:]:
+            cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+            if not cells:
+                continue
+            match = re.search(r"`([A-Za-z][A-Za-z0-9]*)`", cells[0])
+            if not match:
+                continue
+            name = match.group(1)
+            names_by_type[object_type].add(name)
+            if object_type == "control" and not name.endswith("Control"):
+                errors.append(f"docs/RAD.md: oggetto control senza suffisso Control: {name}")
+
+    sequence_diagrams = [
+        diagram
+        for diagram in MERMAID_BLOCK_PATTERN.findall(text)
+        if re.search(r"^\s*sequenceDiagram\s*$", diagram, re.MULTILINE)
+    ]
+    participants = {
+        match.group(1)
+        for diagram in sequence_diagrams
+        for match in re.finditer(
+            r"^\s*participant\s+[A-Za-z][A-Za-z0-9_]*\s+as\s+([A-Za-z][A-Za-z0-9]*)\s*$",
+            diagram,
+            re.MULTILINE,
+        )
+    }
+    for object_type, names in names_by_type.items():
+        missing = sorted(names - participants)
+        if missing:
+            errors.append(
+                f"docs/RAD.md: oggetti {object_type} assenti dai diagrammi di sequenza: "
+                + ", ".join(missing)
+            )
+    return errors
+
+
 def validate_report_submission_contract() -> list[str]:
     errors: list[str] = []
     rad_path = ROOT / "docs/RAD.md"
@@ -1448,6 +1510,7 @@ def main() -> int:
     errors.extend(validate_model_object_tables())
     errors.extend(validate_entity_class_diagram())
     errors.extend(validate_entity_use_case_mapping())
+    errors.extend(validate_analysis_objects_in_sequences())
     errors.extend(validate_report_submission_contract())
     errors.extend(validate_runbook_revision_history())
     errors.extend(validate_runbook_operational_coverage())

@@ -343,6 +343,41 @@ class MarkdownValidationTests(unittest.TestCase):
                 any("associata a casi d’uso inesistenti: UC-09" in error for error in errors)
             )
 
+    def test_boundary_and_control_catalogues_must_match_sequence_participants(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            docs.mkdir()
+            rad = docs / "RAD.md"
+            rad.write_text(
+                "##### Oggetti boundary dei casi d’uso\n"
+                "| Oggetto | Responsabilità |\n|---|---|\n"
+                "| `WebInterface` | Interfaccia. |\n"
+                "##### Oggetti control dei casi d’uso\n"
+                "| Oggetto | Responsabilità |\n|---|---|\n"
+                "| `PlanRouteControl` | Coordina. |\n"
+                "```mermaid\nsequenceDiagram\n"
+                "  participant UI as WebInterface\n"
+                "  participant UC as PlanRouteControl\n```\n",
+                encoding="utf-8",
+            )
+
+            with patch.object(validate_docs, "ROOT", root):
+                self.assertEqual(validate_docs.validate_analysis_objects_in_sequences(), [])
+
+                rad.write_text(
+                    rad.read_text(encoding="utf-8").replace(
+                        "participant UI as WebInterface", "participant UI as Browser"
+                    ),
+                    encoding="utf-8",
+                )
+                errors = validate_docs.validate_analysis_objects_in_sequences()
+
+            self.assertTrue(
+                any("boundary assenti dai diagrammi di sequenza: WebInterface" in error
+                    for error in errors)
+            )
+
     def test_typed_entity_attributes_require_class_relationships(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

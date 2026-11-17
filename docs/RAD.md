@@ -518,9 +518,8 @@ sequenceDiagram
   participant UC as CreateReportControl
   participant Repo as ReportRepository
   participant Attach as AttachmentRepository
+  participant Gateway as UploadGateway
   participant Upload as StorageScanAdapter
-  participant W as NotificationWorker
-  participant N as NotificationChannelAdapter
   U->>API: POST segnalazione con chiave
   API->>UC: input, policy, chiave e impronta
   UC->>Repo: Prenota scope, chiave e impronta prima degli effetti esterni
@@ -540,11 +539,14 @@ sequenceDiagram
     opt Foto allegata
       UC->>Attach: Registra intento correlato alla prenotazione e chiave opaca privata
       Attach-->>UC: UploadId e riferimento durevole
-      UC->>Upload: Scrive in area privata e richiede scansione
+      UC->>Gateway: Inoltra il file con il riferimento all'intento
+      Gateway->>Upload: Scrive in area privata e richiede scansione
       alt Scansione superata
-        Upload-->>UC: Oggetto privato validato
+        Upload-->>Gateway: Oggetto privato validato
+        Gateway-->>UC: Esito valido e riferimento privato
       else File rifiutato o scanner indisponibile
-        Upload-->>UC: Esito negativo o non disponibile
+        Upload-->>Gateway: Esito negativo o non disponibile
+        Gateway-->>UC: Upload rifiutato o non disponibile
         UC->>Attach: Registra esito e lavoro di pulizia secondo policy
         break Upload non accettabile secondo OPEN-15
           UC-->>API: Rifiuto senza persistenza del report
@@ -563,18 +565,6 @@ sequenceDiagram
       opt Intento upload presente senza report collegato
         UC->>Attach: Mantiene il lavoro privato per retry o pulizia
       end
-    end
-  end
-  opt Intenzione di notifica presente
-    W->>Repo: Legge intenzione pendente
-    Repo-->>W: Intenzione e riferimento
-    W->>N: Richiede l'invio
-    alt Provider conferma l'accettazione
-      N-->>W: Accettazione confermata
-      W->>Repo: Registra l'esito
-    else Errore o esito ambiguo
-      N-->>W: Esito non confermato
-      W->>Repo: Registra stato recuperabile
     end
   end
 ```
@@ -621,8 +611,6 @@ sequenceDiagram
   participant API as ModerationAPI
   participant UC as ModerateReportControl
   participant Repo as ReportRepository
-  participant W as NotificationWorker
-  participant N as NotificationChannelAdapter
   A->>UI: Seleziona decisione e motivazione
   UI->>API: Invia decisione
   API->>UC: Comando
@@ -650,16 +638,28 @@ sequenceDiagram
     UC-->>API: Rifiuto senza modifica
     API-->>UI: Errore
   end
-  opt Intenzione di notifica presente
-    W->>Repo: Legge intenzione pendente
-    Repo-->>W: Intenzione e riferimento
+```
+
+##### Consegna asincrona di una notifica
+
+UC-03 e UC-05 registrano l’intenzione autorizzata nella transazione applicativa. Il diagramma mostra l’elaborazione successiva senza promettere consegna esattamente una volta.
+
+```mermaid
+sequenceDiagram
+  accDescr: Il worker legge dalla outbox una notifica autorizzata, la invia al canale e registra l'esito confermato o recuperabile.
+  participant W as NotificationWorker
+  participant Repo as NotificationOutboxRepository
+  participant N as NotificationChannelAdapter
+  loop Finché restano notifiche pendenti
+    W->>Repo: Legge una notifica autorizzata
+    Repo-->>W: Intenzione e dati minimi per l'invio
     W->>N: Richiede l'invio
-    alt Provider conferma l'accettazione
+    alt Canale conferma la presa in carico
       N-->>W: Accettazione confermata
-      W->>Repo: Registra l'esito
+      W->>Repo: Registra l'esito confermato
     else Errore o esito ambiguo
       N-->>W: Esito non confermato
-      W->>Repo: Registra stato recuperabile
+      W->>Repo: Registra lo stato recuperabile
     end
   end
 ```
@@ -670,21 +670,27 @@ I diagrammi separano acquisizione e pubblicazione dalla lettura e pulizia cache.
 
 ```mermaid
 sequenceDiagram
-  accDescr: Il worker importa i dati in isolamento, valida la generazione candidata e registra pubblicazione ed effetto cache pendente nella stessa transazione. Un errore mantiene la generazione attiva precedente.
+  accDescr: Il worker delega la sincronizzazione, che acquisisce e valida i dati in isolamento e registra pubblicazione ed effetto cache pendente nella stessa transazione. Un errore mantiene la generazione attiva precedente.
   actor A as Amministratore
   participant W as Worker
-  participant P as TransitDataProvider
+  participant UC as SynchronizeSourceControl
+  participant P as DataSourceAdapter
+  participant D as Fonte dati autorizzata
   participant R as Repository
   A->>W: Avvia o consulta sincronizzazione
-  W->>P: Richiede aggiornamento
-  P-->>W: Dati e versione
-  W->>R: Scrive generazione candidata isolata
-  W->>W: Valida schema, chiavi e qualità
+  W->>UC: Avvia il caso d'uso
+  UC->>P: Richiede aggiornamento
+  P->>D: Acquisisce il flusso autorizzato
+  D-->>P: Dati e versione
+  P-->>UC: Flusso acquisito e versione
+  UC->>R: Scrive generazione candidata isolata
+  UC->>UC: Valida schema, chiavi e qualità
   alt Validazione superata
-    W->>R: Transazione: attiva generazione, registra esito e pulizia pendente
+    UC->>R: Transazione: attiva generazione, registra esito e pulizia pendente
   else Acquisizione o validazione fallita
-    W->>R: Registra errore e conserva la generazione attiva
+    UC->>R: Registra errore e conserva la generazione attiva
   end
+  UC-->>W: Esito della sincronizzazione
   W-->>A: Esito operativo
 ```
 
