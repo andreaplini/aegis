@@ -23,9 +23,15 @@ La documentazione e tutti i relativi template e materiali di supporto risiedono 
 
 Per bug e richieste, consultare le [issue aperte](https://github.com/kairosci/aegis/issues) e usare il [modello issue](docs/template/ISSUE.md) per descrivere contesto, riproduzione e risultato atteso. Per le vulnerabilità seguire la [politica di sicurezza](docs/SECURITY.md) e usare il report privato GitHub. Prima di condividere log o esempi, rimuovere credenziali, token, dati personali e codici di tracking.
 
+## Prerequisiti documentali
+
+Per eseguire i controlli sono necessari Python 3 e GNU Make. `make check-docs` usa solo la libreria standard di Python e non richiede Node.js o Pandoc.
+
+Per generare i DOCX servono anche Node.js `24.22.3` e Pandoc `3.14`, riportati in `config/tool-versions.env`. Installare queste versioni e renderle disponibili nel `PATH` prima di installare gli strumenti Mermaid. `make install-doc-tools` installa le dipendenze Node bloccate dal lockfile e Chromium headless. Non installa Node.js né Pandoc.
+
 ## Esportazione DOCX
 
-Installare la versione Node.js e la versione Pandoc indicate in `config/tool-versions.env`, quindi predisporre Mermaid CLI e Chromium headless:
+Con i prerequisiti installati, predisporre Mermaid CLI e Chromium headless:
 
 ```sh
 make install-doc-tools
