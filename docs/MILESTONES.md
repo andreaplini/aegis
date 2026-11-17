@@ -66,7 +66,7 @@ La roadmap documentale è applicata quando tutti gli sprint hanno raggiunto il c
 
 ## Baseline ingegneristica
 
-Alla revisione del 17 novembre 2026, `src/` contiene solo `.gitkeep` e `config/data/` è vuota. Non sono presenti descrittori di build applicativa, moduli software, ambienti container o test applicativi. La baseline Java/Jakarta EE resta una proposta non approvata in OPEN-08, quindi ENG-03 non è avviata. Le automazioni disponibili riguardano la documentazione: `make check-docs` esegue 46 test standard library e il validatore, `make audit-doc-tools` controlla le dipendenze Node e `make docs` renderizza i diagrammi, genera e verifica gli export RAD e SDD. I workflow GitHub Actions separano la verifica documentale dalla generazione DOCX. Questa baseline distingue le automazioni documentali dallo stato del prodotto.
+Alla revisione del 17 novembre 2026, `src/` contiene solo `.gitkeep` e `config/data/` è vuota. Non sono presenti descrittori di build applicativa, moduli software, ambienti container o test applicativi. La baseline Java/Jakarta EE resta una proposta non approvata in OPEN-08, quindi ENG-03 non è avviata. Le automazioni disponibili riguardano la documentazione: `make check-docs` esegue la suite di test Python basata sulla libreria standard e il validatore, `make audit-doc-tools` controlla le dipendenze Node e `make docs` renderizza i diagrammi, genera e verifica gli export RAD e SDD. I workflow GitHub Actions separano la verifica documentale dalla generazione DOCX. Questa baseline distingue le automazioni documentali dallo stato del prodotto.
 
 ## Milestone di ingegneria del prodotto
 
