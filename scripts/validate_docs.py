@@ -729,6 +729,9 @@ def validate_entity_use_case_mapping() -> list[str]:
     header = [cell.strip() for cell in rows[0].strip().strip("|").split("|")]
     if header != ["Oggetto", "Responsabilità", "Casi d’uso"]:
         return ["docs/RAD.md: intestazione tabella entity non conforme"]
+    entity_rows = rows[2:]
+    if not entity_rows:
+        return ["docs/RAD.md: catalogo entity principali vuoto"]
 
     defined_cases = {
         match.group(1)
@@ -736,13 +739,14 @@ def validate_entity_use_case_mapping() -> list[str]:
         if (match := USE_CASE_HEADING_PATTERN.match(line))
     }
     errors: list[str] = []
-    for line in rows[2:]:
+    for line in entity_rows:
         cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
         if len(cells) != 3:
             errors.append("docs/RAD.md: riga entity con numero di colonne non valido")
             continue
         identifier_match = re.search(r"`([A-Za-z][A-Za-z0-9]*)`", cells[0])
         if not identifier_match:
+            errors.append("docs/RAD.md: identificativo entity non conforme al formato CamelCase")
             continue
         identifier = identifier_match.group(1)
         mapped_cases = set(re.findall(r"UC-\d{2}", cells[2]))
@@ -783,12 +787,30 @@ def validate_analysis_objects_in_sequences() -> list[str]:
             len(lines),
         )
         rows = [line for line in lines[start:end] if line.startswith("|")]
-        for line in rows[2:]:
+        if not rows:
+            errors.append(f"docs/RAD.md: tabella {object_type} non trovata")
+            continue
+        expected_header = (
+            ["Oggetto boundary", "Responsabilità"]
+            if object_type == "boundary"
+            else ["Oggetto", "Responsabilità"]
+        )
+        header = [cell.strip() for cell in rows[0].strip().strip("|").split("|")]
+        if header != expected_header:
+            errors.append(f"docs/RAD.md: intestazione tabella {object_type} non conforme")
+            continue
+        object_rows = rows[2:]
+        if not object_rows:
+            errors.append(f"docs/RAD.md: catalogo {object_type} vuoto")
+            continue
+        for line in object_rows:
             cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
-            if not cells:
+            if len(cells) != 2:
+                errors.append(f"docs/RAD.md: riga tabella {object_type} non valida")
                 continue
             match = re.search(r"`([A-Za-z][A-Za-z0-9]*)`", cells[0])
             if not match:
+                errors.append(f"docs/RAD.md: identificativo {object_type} non valido")
                 continue
             name = match.group(1)
             names_by_type[object_type].add(name)

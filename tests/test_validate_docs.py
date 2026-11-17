@@ -343,6 +343,17 @@ class MarkdownValidationTests(unittest.TestCase):
                 any("associata a casi d’uso inesistenti: UC-09" in error for error in errors)
             )
 
+            rad.write_text(
+                "##### Oggetti entity principali\n\n"
+                "| Oggetto | Responsabilità | Casi d’uso |\n"
+                "|---|---|---|\n"
+                "###### UC-01: Pianificare un percorso\n",
+                encoding="utf-8",
+            )
+            with patch.object(validate_docs, "ROOT", root):
+                errors = validate_docs.validate_entity_use_case_mapping()
+            self.assertTrue(any("catalogo entity principali vuoto" in error for error in errors))
+
     def test_boundary_and_control_catalogues_must_match_sequence_participants(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -351,7 +362,7 @@ class MarkdownValidationTests(unittest.TestCase):
             rad = docs / "RAD.md"
             rad.write_text(
                 "##### Oggetti boundary dei casi d’uso\n"
-                "| Oggetto | Responsabilità |\n|---|---|\n"
+                "| Oggetto boundary | Responsabilità |\n|---|---|\n"
                 "| `WebInterface` | Interfaccia. |\n"
                 "##### Oggetti control dei casi d’uso\n"
                 "| Oggetto | Responsabilità |\n|---|---|\n"
@@ -377,6 +388,28 @@ class MarkdownValidationTests(unittest.TestCase):
                 any("boundary assenti dai diagrammi di sequenza: WebInterface" in error
                     for error in errors)
             )
+
+            valid = (
+                "##### Oggetti boundary dei casi d’uso\n"
+                "| Oggetto boundary | Responsabilità |\n|---|---|\n"
+                "| `WebInterface` | Interfaccia. |\n"
+                "##### Oggetti control dei casi d’uso\n"
+                "| Oggetto | Responsabilità |\n|---|---|\n"
+                "| `PlanRouteControl` | Coordina. |\n"
+                "```mermaid\nsequenceDiagram\n"
+                "  participant UI as WebInterface\n"
+                "  participant UC as PlanRouteControl\n``\n"
+            )
+            rad.write_text(valid.replace("PlanRouteControl", "PlanRoute"), encoding="utf-8")
+            with patch.object(validate_docs, "ROOT", root):
+                errors = validate_docs.validate_analysis_objects_in_sequences()
+            self.assertTrue(any("senza suffisso Control" in error for error in errors))
+
+            empty_control = valid.replace("| `PlanRouteControl` | Coordina. |\n", "")
+            rad.write_text(empty_control, encoding="utf-8")
+            with patch.object(validate_docs, "ROOT", root):
+                errors = validate_docs.validate_analysis_objects_in_sequences()
+            self.assertTrue(any("catalogo control vuoto" in error for error in errors))
 
     def test_typed_entity_attributes_require_class_relationships(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
