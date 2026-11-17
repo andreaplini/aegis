@@ -2,47 +2,35 @@
 
 ## Stato e ambito
 
-Il repository contiene la documentazione RAD/SDD e l’esportazione DOCX. L’applicazione non è ancora implementata e non dispone di build o test applicativi. Il repository è pubblico ma non dichiara una licenza. Finché OPEN-10 non è risolta, non inviare contributi esterni che richiedono diritti di riuso o ridistribuzione. Consultare la proposta [ADR-0008](adr/ADR-0008-repository-license-and-contributions.md). Seguire la [roadmap](MILESTONES.md) per distinguere attività completate, pianificate e decisioni aperte.
+Il repository contiene la documentazione RAD/SDD e gli strumenti per esportarla in DOCX. L’applicazione non è ancora implementata e non dispone di build o test applicativi. Gli script di validazione, i test documentali e i workflow CI sono stati rimossi. Il repository è pubblico ma non dichiara una licenza. Finché OPEN-10 non è risolta, non inviare contributi esterni che richiedono diritti di riuso o ridistribuzione. Consultare la proposta [ADR-0008](adr/ADR-0008-repository-license-and-contributions.md). Seguire la [roadmap](MILESTONES.md) per distinguere attività completate, pianificate e decisioni aperte.
 
 ## Flusso di lavoro
 
 1. Aprire o aggiornare un’attività descrivendo problema, attore, risultato atteso, criteri di accettazione e requisiti collegati. È possibile copiare il [modello di issue](template/ISSUE.md).
 2. I maintainer lavorano su un branch dedicato e aprono una pull request verso `main`. Chi segnala un problema può usare le issue abilitate. Non riscrivere la cronologia condivisa e non inserire segreti o dati personali nel repository o nelle issue.
 3. Aggiornare RAD per modifiche di requisito o comportamento. Aggiornare SDD per modifiche architetturali o operative. Registrare le decisioni architetturali in un ADR, mantenendo esplicito lo stato di approvazione.
-4. Collegare ogni requisito funzionale interessato a casi d’uso, moduli e verifiche. Specificare come vengono verificate accessibilità, privacy e sicurezza quando la modifica le influenza.
-5. Riportare nella pull request i controlli eseguiti e i risultati osservati. Non indicare test, prove con utenti, verifiche di ripristino o analisi non eseguite.
+4. Collegare ogni requisito funzionale interessato a casi d’uso e moduli. Specificare le verifiche previste per accessibilità, privacy e sicurezza quando la modifica le influenza.
+5. Riportare nella pull request la revisione svolta e i risultati effettivamente osservati. Non dichiarare prove con utenti, verifiche di ripristino o analisi non eseguite.
 
 Per modifiche documentali applicare la skill [aegis-antislop](../.agents/skills/aegis-antislop/SKILL.md) insieme alla skill [aegis-docs](../.agents/skills/aegis-docs/SKILL.md). Controllare che ogni affermazione sia sostenuta da una fonte o marcata come proposta o decisione aperta, che i termini restino coerenti e che il diagramma globale riporti tutti i casi d’uso e le relative associazioni.
 
-## Controlli disponibili
+## Esportazione DOCX
 
-I prerequisiti per i gate locali e le versioni richieste per l'esportazione sono descritti nei [prerequisiti documentali del README](../README.md#prerequisiti-documentali).
+Le versioni richieste per l'esportazione sono descritte nei [prerequisiti documentali del README](../README.md#prerequisiti-documentali).
 
-Per modifiche Markdown eseguire:
-
-```sh
-make check-docs
-```
-
-Il workflow `Verifica documentazione` esegue questo controllo per ogni push e pull request verso `main`, senza filtri sui percorsi. Il workflow `Genera documenti DOCX` esegue inoltre la generazione e validazione degli export quando cambiano i percorsi documentali configurati. La protezione remota di `main` non è ancora attiva, quindi il check non è attualmente un requisito di merge.
-
-Il comando esegue i test del validatore e controlla:
-
-- link locali, ancore, link HTTPS, struttura numerata, ID e dipendenze della roadmap, metadati e completezza degli ADR
-- requisiti FR e NFR, attori partecipanti, priorità, criteri di accettazione e corrispondenza con i casi d’uso
-- tracciabilità tra RAD e moduli SDD, copertura dei casi nel diagramma globale e associazione di ogni caso ai suoi attori
-- corrispondenza tra le entità principali e il diagramma delle classi, mappatura delle entità a casi d’uso esistenti e presenza dei boundary e control catalogati nei diagrammi di sequenza
-- contratto di prenotazione idempotente prima degli effetti esterni tra UC-03, RAD, modello relazionale, SDD, ADR-0005 ed ENG-06
-- glossari, unicità dei nomi negli oggetti RAD, registro revisioni e copertura operativa del runbook
-- descrizioni accessibili dei diagrammi in tutta la documentazione e stile canonico del nome del progetto
-
-Per eseguire in locale l’audit delle dipendenze, i controlli documentali e l’esportazione validata, installare le versioni Node.js e Pandoc indicate in `config/tool-versions.env`, installare i pacchetti Mermaid bloccati dal lockfile con `make install-doc-tools` ed eseguire:
+Per generare localmente gli export installare gli strumenti Mermaid e Chromium headless:
 
 ```sh
-make verify-docs
+make install-doc-tools
 ```
 
-Il comando esegue `make audit-doc-tools` e `make docs`. Gli export vengono salvati in `build/docs/` e non vanno aggiunti al repository. `make docs` verifica l’integrità del pacchetto, il contenuto richiesto, i metadati personali, nome e punteggiatura nel testo e nelle descrizioni alternative, le relazioni OOXML e le immagini dei diagrammi. Verifica anche la punteggiatura leggibile nel template Word e che `docs/template/assets/package/word/document.xml` corrisponda alla parte omonima del DOCX sorgente. Per modifiche applicative, eseguire i controlli della build e i test definiti quando ENG-03 introdurrà una build applicativa. Al momento tali comandi non esistono.
+Generare gli export con:
+
+```sh
+make docs
+```
+
+Gli export vengono salvati in `build/docs/` e non vanno aggiunti al repository. `make docs` genera i file senza eseguire controlli automatici. Esaminare manualmente gli export prima di condividerli. I controlli della build e i test applicativi non esistono finché ENG-03 non introduce una build.
 
 ## Criteri di revisione
 
@@ -68,7 +56,7 @@ Verifica di sola lettura del repository `kairosci/aegis` il 16 novembre 2026:
 | Protezione di `main` e ruleset | Non configurati |
 | Avvisi di vulnerabilità Dependabot | Abilitati per le dipendenze rilevate |
 | Dependabot security updates | Abilitati |
-| Aggiornamenti Dependabot | GitHub Actions e strumenti Node documentali, controllo settimanale |
+| Aggiornamenti Dependabot | Dipendenze Node documentali, controllo settimanale |
 | Secret scanning e push protection | Abilitati |
 | Rilevamento di pattern non provider | Disabilitato. Eleggibilità dell’account da verificare secondo ADR-0009. |
 | Verifica di validità dei segreti rilevati | Disabilitata. L’invio dei segreti agli issuer e l’eleggibilità sono da approvare secondo ADR-0009. |
@@ -76,7 +64,7 @@ Verifica di sola lettura del repository `kairosci/aegis` il 16 novembre 2026:
 | Collegamento al report privato nel flusso issue | Configurato in `.github/ISSUE_TEMPLATE/config.yml` |
 | Release | Nessuna release pubblicata |
 
-La configurazione Dependabot apre pull request settimanali per gli aggiornamenti di versione delle GitHub Actions e degli strumenti Node documentali. La CI esegue `make audit-doc-tools` sugli strumenti e blocca la build per vulnerabilità ad alta o critica gravità. Lo stesso controllo può essere eseguito in locale. Gli avvisi, gli aggiornamenti di sicurezza e la segnalazione privata delle vulnerabilità sono attivi. Il flusso “New issue” mostra il collegamento al report privato e la [politica di sicurezza](SECURITY.md) ne descrive l'uso. Il proprietario deve ancora decidere la licenza e i termini di contribuzione secondo la proposta [ADR-0008](adr/ADR-0008-repository-license-and-contributions.md), la protezione di `main`, le review e gli status check obbligatori e la policy di merge.
+Dependabot controlla settimanalmente gli aggiornamenti delle dipendenze Node documentali. Non sono configurati workflow CI o controlli automatici sul repository. Gli avvisi e la segnalazione privata delle vulnerabilità sono attivi. Il flusso “New issue” mostra il collegamento al report privato e la [politica di sicurezza](SECURITY.md) ne descrive l'uso. Il proprietario deve ancora decidere la licenza e i termini di contribuzione secondo la proposta [ADR-0008](adr/ADR-0008-repository-license-and-contributions.md), la protezione di `main`, le review e la policy di merge.
 
 La verifica delle impostazioni GitHub è stata eseguita in sola lettura il 16 novembre 2026. Gli endpoint sono relativi a `https://api.github.com`.
 

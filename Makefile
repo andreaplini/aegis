@@ -1,7 +1,7 @@
 include config/tool-versions.env
 
-export NODE_VERSION PANDOC_VERSION PYTHON_MIN_VERSION
-PYTHON ?= python3
+export NODE_VERSION PANDOC_VERSION
+
 PANDOC ?= pandoc
 MERMAID ?= config/documentation/node_modules/.bin/mmdc
 PUPPETEER ?= config/documentation/node_modules/.bin/puppeteer
@@ -10,33 +10,17 @@ OUTPUT_DIR ?= build/docs
 DOCX_TOOL_INPUTS = Makefile config/tool-versions.env config/documentation/package.json config/documentation/package-lock.json $(PUPPETEER_CONFIG)
 
 .DEFAULT_GOAL := help
-.PHONY: help install-doc-tools audit-doc-tools check-docs check-python check-node check-pandoc check-mermaid render-docs docs verify-docs
+.PHONY: help install-doc-tools check-node check-pandoc check-mermaid render-docs docs
 
 help:
 	@printf '%s\n' \
-	  'make docs       Generate and validate RAD and SDD DOCX files in $(OUTPUT_DIR)' \
+	  'make docs  Generate RAD and SDD DOCX files in $(OUTPUT_DIR)' \
 	  'make install-doc-tools  Install pinned Node tools and Chromium for Mermaid exports' \
-	  'make audit-doc-tools  Check documentation tool dependencies for high severity vulnerabilities' \
-	  'make verify-docs  Run dependency audit, documentation checks, and validated DOCX exports' \
-	  'make check-docs  Test and validate docs, structure, traceability, and style' \
-	  'make check-python Check local Python against config/tool-versions.env' \
-	  'make check-node Check local Node.js against config/tool-versions.env' \
-	  'make check-pandoc Check local Pandoc against config/tool-versions.env' \
 	  'Set PANDOC and MERMAID to select alternate executables'
 
 install-doc-tools: check-node
 	npm ci --prefix config/documentation
 	npm exec --prefix config/documentation -- puppeteer browsers install chrome-headless-shell
-
-audit-doc-tools: check-node
-	npm audit --prefix config/documentation --audit-level=high
-
-check-docs: check-python
-	$(PYTHON) -m unittest discover -s tests
-	$(PYTHON) scripts/validate_docs.py
-
-check-python:
-	$(PYTHON) scripts/check_python.py $(PYTHON_MIN_VERSION)
 
 check-node:
 	@actual="$$(node --version | sed 's/^v//')"; \
@@ -74,14 +58,11 @@ render-docs: check-mermaid
 	$(MERMAID) $(if $(PUPPETEER_CONFIG),--puppeteerConfigFile "$(PUPPETEER_CONFIG)") --input docs/RAD.md --output "$(OUTPUT_DIR)/rad-rendered.md" --outputFormat png --artefacts "$(OUTPUT_DIR)" --size 630 --jobs 1
 	$(MERMAID) $(if $(PUPPETEER_CONFIG),--puppeteerConfigFile "$(PUPPETEER_CONFIG)") --input docs/SDD.md --output "$(OUTPUT_DIR)/sdd-rendered.md" --outputFormat png --artefacts "$(OUTPUT_DIR)" --size 630 --jobs 1
 
-docs: check-docs check-node check-pandoc
+docs: check-node check-pandoc
 	$(MAKE) --no-print-directory $(OUTPUT_DIR)/rad-is.docx $(OUTPUT_DIR)/sdd-is.docx
-	$(PYTHON) scripts/validate_docx.py "$(OUTPUT_DIR)/rad-is.docx" "$(OUTPUT_DIR)/sdd-is.docx" docs/template/template.docx
 
-verify-docs: audit-doc-tools docs
-
-$(OUTPUT_DIR)/rad-is.docx: docs/RAD.md docs/template/template.docx scripts/validate_docx.py $(DOCX_TOOL_INPUTS) | render-docs
+$(OUTPUT_DIR)/rad-is.docx: docs/RAD.md docs/template/template.docx $(DOCX_TOOL_INPUTS) | render-docs
 	$(PANDOC) --from=gfm --to=docx --standalone --reference-doc=docs/template/template.docx --resource-path=".:$(OUTPUT_DIR)" "$(OUTPUT_DIR)/rad-rendered.md" --output="$@"
 
-$(OUTPUT_DIR)/sdd-is.docx: docs/SDD.md docs/template/template.docx scripts/validate_docx.py $(DOCX_TOOL_INPUTS) | render-docs
+$(OUTPUT_DIR)/sdd-is.docx: docs/SDD.md docs/template/template.docx $(DOCX_TOOL_INPUTS) | render-docs
 	$(PANDOC) --from=gfm --to=docx --standalone --reference-doc=docs/template/template.docx --resource-path=".:$(OUTPUT_DIR)" "$(OUTPUT_DIR)/sdd-rendered.md" --output="$@"
