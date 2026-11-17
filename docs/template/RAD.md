@@ -34,7 +34,7 @@ Descrivere la soluzione, gli utenti, le funzionalità principali, i componenti p
 
 ### 3.2 REQUISITI FUNZIONALI
 
-Ogni requisito descrive un’azione osservabile, indica chi la avvia o la esegue e dichiara la priorità. Usare identificativi stabili e collegare i requisiti ai casi d’uso. Derivare un criterio di accettazione osservabile dal flusso del caso d’uso e registrare esito e riferimento a ogni prova.
+Ogni requisito descrive un’azione osservabile, indica chi la avvia o la esegue e dichiara la priorità. Usare identificativi stabili e collegare i requisiti ai casi d’uso. Derivare un criterio di accettazione osservabile dal flusso del caso d’uso.
 
 | ID | Attore o sistema responsabile | Azione richiesta | Priorità | Caso d’uso collegato |
 |---|---|---|---|---|
@@ -48,29 +48,13 @@ Per ogni requisito descrivere un risultato osservabile coerente con il caso d’
 |---|---|
 | FR-XX | Risultato osservabile ricavato dal flusso del caso d’uso |
 
-#### REGISTRO DELLE VERIFICHE FR
-
-Registrare l’esito effettivamente osservato e un collegamento consultabile all’evidenza. Usare uno stato tra `Non eseguito`, `In corso`, `Superato`, `Non superato` e `Bloccato`. Per `Non eseguito` usare il riferimento `Da registrare`. Per gli altri stati collegare l’evidenza che documenta risultato o impedimento.
-
-| ID | Esito osservato | Riferimento evidenza |
-|---|---|---|
-| FR-XX | Non eseguito | Da registrare |
-
 ### 3.3 REQUISITI NON FUNZIONALI
 
-Descrivere qualità e vincoli misurabili. Ogni riga deve indicare un’azione richiesta, un criterio osservabile e il ruolo responsabile dell’accettazione. Se la persona non è stata designata, dichiararlo. Registrare l’esito osservato e il riferimento all’evidenza. Finché la verifica non è eseguita, indicare `Non eseguito` e `Da registrare`. Soglie e metodi non ancora concordati restano da definire.
+Descrivere qualità e vincoli misurabili. Ogni riga deve indicare un’azione richiesta, un criterio osservabile e il ruolo responsabile dell’accettazione. Se la persona non è stata designata, dichiararlo. Soglie e metodi non ancora concordati restano da definire.
 
 | ID | Qualità | Azione richiesta | Criterio di verifica | Responsabile dell’accettazione |
 |---|---|---|---|---|
 | NFR-XX | Da definire | Da descrivere in forma verificabile | Misura, metodo, ambiente e soglia da concordare | Ruolo responsabile, da designare |
-
-#### REGISTRO DELLE VERIFICHE NFR
-
-Registrare l’esito effettivamente osservato e un collegamento consultabile all’evidenza. Usare uno stato tra `Non eseguito`, `In corso`, `Superato`, `Non superato` e `Bloccato`. Per `Non eseguito` usare il riferimento `Da registrare`. Per gli altri stati collegare l’evidenza che documenta risultato o impedimento.
-
-| ID | Esito osservato | Riferimento evidenza |
-|---|---|---|
-| NFR-XX | Non eseguito | Da registrare |
 
 Considerare, quando pertinenti, usabilità e accessibilità, performance, scalabilità, sicurezza e privacy, affidabilità, compatibilità, manutenibilità e portabilità.
 

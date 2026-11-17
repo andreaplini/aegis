@@ -29,7 +29,7 @@ Il workflow `Verifica documentazione` esegue questo controllo per ogni push e pu
 Il comando esegue i test del validatore e controlla:
 
 - link locali, ancore, link HTTPS, struttura numerata, ID e dipendenze della roadmap, metadati e completezza degli ADR
-- requisiti FR e NFR, registri delle verifiche, attori partecipanti, priorità, criteri di accettazione e corrispondenza con i casi d’uso
+- requisiti FR e NFR, attori partecipanti, priorità, criteri di accettazione e corrispondenza con i casi d’uso
 - tracciabilità tra RAD e moduli SDD, copertura dei casi nel diagramma globale e associazione di ogni caso ai suoi attori
 - corrispondenza tra le entità principali e il diagramma delle classi, mappatura delle entità a casi d’uso esistenti e presenza dei boundary e control catalogati nei diagrammi di sequenza
 - contratto di prenotazione idempotente prima degli effetti esterni tra UC-03, RAD, modello relazionale, SDD, ADR-0005 ed ENG-06

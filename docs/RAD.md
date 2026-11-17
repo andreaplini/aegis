@@ -68,7 +68,7 @@ La consultazione pubblica offre ricerca per area, dettagli di accessibilità e p
 
 ### 3.2 REQUISITI FUNZIONALI
 
-Ogni requisito indica chi avvia o esegue l’azione, la priorità e i casi d’uso collegati. I criteri di accettazione derivano dai flussi UC. Il registro conserva gli esiti e le evidenze delle verifiche senza dichiarare prove non eseguite.
+Ogni requisito indica chi avvia o esegue l’azione, la priorità e i casi d’uso collegati. I criteri di accettazione derivano dai flussi UC.
 
 | ID | Responsabile dell’azione | Azione richiesta | Priorità | Caso d’uso |
 |---|---|---|---|---|
@@ -107,26 +107,6 @@ I criteri descrivono risultati osservabili ricavati dai flussi dei casi d’uso 
 | FR-12 | L’intenzione di notifica è registrata solo quando preferenze, autorizzazioni e consensi configurati in OPEN-04 e OPEN-05 la consentono. La consegna avviene in modo asincrono. Un errore del canale non annulla il caso d’uso già completato e resta osservabile e recuperabile secondo OPEN-08. Un esito ambiguo non è presentato come consegna confermata. Retry e gestione dei possibili duplicati seguono la policy da approvare in OPEN-08. |
 | FR-13 | La consultazione pubblica non richiede autenticazione. Identità, ruoli, invio e accesso al tracking seguono OPEN-04. Le operazioni riservate sono rifiutate lato server quando identità o ruolo non sono autorizzati. |
 
-#### REGISTRO DELLE VERIFICHE FR
-
-Registrare l’esito effettivamente osservato e un collegamento consultabile all’evidenza. Usare uno stato tra `Non eseguito`, `In corso`, `Superato`, `Non superato` e `Bloccato`. Per `Non eseguito` usare il riferimento `Da registrare`. Per gli altri stati collegare l’evidenza che documenta risultato o impedimento.
-
-| ID | Esito osservato | Riferimento evidenza |
-|---|---|---|
-| FR-01 | Non eseguito | Da registrare |
-| FR-02 | Non eseguito | Da registrare |
-| FR-03 | Non eseguito | Da registrare |
-| FR-04 | Non eseguito | Da registrare |
-| FR-05 | Non eseguito | Da registrare |
-| FR-06 | Non eseguito | Da registrare |
-| FR-07 | Non eseguito | Da registrare |
-| FR-08 | Non eseguito | Da registrare |
-| FR-09 | Non eseguito | Da registrare |
-| FR-10 | Non eseguito | Da registrare |
-| FR-11 | Non eseguito | Da registrare |
-| FR-12 | Non eseguito | Da registrare |
-| FR-13 | Non eseguito | Da registrare |
-
 ### 3.3 REQUISITI NON FUNZIONALI
 
 | ID | Qualità | Azione richiesta | Criterio di verifica | Responsabile dell’accettazione |
@@ -147,29 +127,6 @@ Registrare l’esito effettivamente osservato e un collegamento consultabile all
 | NFR-14 | Scalabilità | Dimensionare API, database, worker e indici spaziali in base alla crescita di utenti, luoghi e richieste. | Eseguire prove di carico con dataset e profilo concordati in OPEN-07. Confrontare i risultati con gli obiettivi approvati prima del pilota. | Responsabile operativo, da designare |
 | NFR-15 | Manutenibilità | Mantenere separati dominio, casi d’uso e adattatori e documentare le interfacce e le procedure operative. | Effettuare revisione architetturale e verificare build ripetibile, test e documentazione delle interfacce e procedure. | Responsabile tecnico, da designare |
 | NFR-16 | Portabilità | Distribuire API e worker in container e mantenere la configurazione specifica dell’ambiente esterna al codice. | Avviare la stessa versione degli artefatti negli ambienti approvati secondo OPEN-08 e verificare le funzioni essenziali con test smoke e configurazioni distinte. | Responsabile tecnico, da designare |
-
-#### REGISTRO DELLE VERIFICHE NFR
-
-Registrare l’esito effettivamente osservato e un collegamento consultabile all’evidenza. Usare uno stato tra `Non eseguito`, `In corso`, `Superato`, `Non superato` e `Bloccato`. Per `Non eseguito` usare il riferimento `Da registrare`. Per gli altri stati collegare l’evidenza che documenta risultato o impedimento.
-
-| ID | Esito osservato | Riferimento evidenza |
-|---|---|---|
-| NFR-01 | Non eseguito | Da registrare |
-| NFR-02 | Non eseguito | Da registrare |
-| NFR-03 | Non eseguito | Da registrare |
-| NFR-04 | Non eseguito | Da registrare |
-| NFR-05 | Non eseguito | Da registrare |
-| NFR-06 | Non eseguito | Da registrare |
-| NFR-07 | Non eseguito | Da registrare |
-| NFR-08 | Non eseguito | Da registrare |
-| NFR-09 | Non eseguito | Da registrare |
-| NFR-10 | Non eseguito | Da registrare |
-| NFR-11 | Non eseguito | Da registrare |
-| NFR-12 | Non eseguito | Da registrare |
-| NFR-13 | Non eseguito | Da registrare |
-| NFR-14 | Non eseguito | Da registrare |
-| NFR-15 | Non eseguito | Da registrare |
-| NFR-16 | Non eseguito | Da registrare |
 
 ### 3.4 VINCOLI
 
@@ -329,7 +286,7 @@ Il catalogo include le entità di dominio centrali e collega ciascuna ai casi d�
 
 | Oggetto | Responsabilità | Casi d’uso |
 |---|---|---|
-| `Place` | Rappresenta un luogo, una fermata o una stazione consultabile. | UC-01, UC-02, UC-06 |
+| `Place` | Rappresenta un luogo d’interesse consultabile, distinto dalle fermate e dalle stazioni del trasporto pubblico. | UC-01, UC-02, UC-06 |
 | `AccessibilityFeature` | Rappresenta una caratteristica di accessibilità associata a un luogo, con fonte e validità. | UC-01, UC-02, UC-06 |
 | `Report` | Rappresenta una segnalazione con posizione, categoria, stato e date. | UC-03, UC-04, UC-05 |
 | `ReportEvent` | Registra in modo append-only autore, data e decisione relativa a una segnalazione. | UC-03, UC-05 |
