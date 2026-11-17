@@ -10,7 +10,7 @@
 | Candidati | Da confermare in OPEN-13 |
 | Anno accademico | Da confermare in OPEN-13 |
 
-Bozza aggiornata il 16 novembre 2026. I requisiti sono da convalidare con persone con disabilità, enti di trasporto e responsabili delle fonti dati. Il prodotto non è ancora implementato. Decisioni e prove mancanti sono tracciate nella [roadmap](MILESTONES.md).
+Bozza aggiornata il 17 novembre 2026. I requisiti sono da convalidare con persone con disabilità, enti di trasporto e responsabili delle fonti dati. Il prodotto non è ancora implementato. Decisioni e prove mancanti sono tracciate nella [roadmap](MILESTONES.md).
 
 ## SOMMARIO
 
@@ -42,7 +42,7 @@ Bozza aggiornata il 16 novembre 2026. I requisiti sono da convalidare con person
 
 La web app aiuta le persone con disabilità a pianificare spostamenti urbani, consultare l’accessibilità di stazioni, fermate e mezzi e segnalare barriere o guasti. Il sistema mostra la fonte e la data di aggiornamento delle caratteristiche. Un dato assente o scaduto è sconosciuto e non viene interpretato come prova di accessibilità.
 
-Gli obiettivi sono trovare e confrontare percorsi, consultare le caratteristiche dei luoghi, inviare e tracciare segnalazioni e permettere ai moderatori di gestirle senza perdere la cronologia. Il successo sarà valutato con prove sul campo e sessioni con persone con disabilità. Area pilota e fonti sono da approvare in OPEN-01. Partecipanti e protocollo di usabilità seguono OPEN-06. Metriche operative e soglie seguono OPEN-07.
+Gli obiettivi sono trovare e confrontare percorsi, consultare le caratteristiche dei luoghi, inviare e tracciare segnalazioni e permettere agli amministratori autorizzati di gestirle senza perdere la cronologia. Il successo sarà valutato con prove sul campo e sessioni con persone con disabilità. Area pilota e fonti sono da approvare in OPEN-01. Partecipanti e protocollo di usabilità seguono OPEN-06. Metriche operative e soglie seguono OPEN-07.
 
 | Obiettivo | Criterio di verifica |
 |---|---|
@@ -75,12 +75,12 @@ Ogni requisito indica chi avvia o esegue l’azione, la priorità e i casi d’u
 | FR-01 | Sistema | Mostrare luoghi e informazioni di accessibilità per l’area richiesta. | Must | UC-02 |
 | FR-02 | Sistema | Mostrare caratteristiche quali ascensori, rampe, accessi e annunci con stato, fonte, aggiornamento e validità. | Must | UC-01, UC-02 |
 | FR-03 | Sistema | Classificare come sconosciuti i dati assenti o scaduti, senza inferire accessibilità. | Must | UC-01, UC-02 |
-| FR-04 | Viaggiatore e sistema | Acquisire origine, destinazione ed esigenze. Calcolare e restituire percorsi alternativi. | Must | UC-01 |
+| FR-04 | Ospite o utente registrato e sistema | Acquisire origine, destinazione ed esigenze. Calcolare e restituire percorsi alternativi. | Must | UC-01 |
 | FR-05 | Sistema | Distinguere nei percorsi barriere note, tratti compatibili e tratti non verificati. | Must | UC-01 |
-| FR-06 | Viaggiatore e sistema | Consentire la selezione di un luogo e mostrare dettagli di accessibilità e provenienza. | Must | UC-02 |
-| FR-07 | Segnalatore | Inserire luogo, categoria, descrizione e data. Allegare facoltativamente una foto. | Must | UC-03 |
+| FR-06 | Ospite o utente registrato e sistema | Consentire la selezione di un luogo e mostrare dettagli di accessibilità e provenienza. | Must | UC-02 |
+| FR-07 | Ospite o utente registrato | Inserire luogo, categoria, descrizione e data. Allegare facoltativamente una foto. | Must | UC-03 |
 | FR-08 | Sistema | Generare e restituire un codice di tracking per consultare lo stato della segnalazione. | Must | UC-03, UC-04 |
-| FR-09 | Moderatore e sistema | Consentire conferma, rifiuto, risoluzione o unione di duplicati. Registrare ogni decisione. | Must | UC-05 |
+| FR-09 | Amministratore e sistema | Consentire conferma, rifiuto, risoluzione o unione di duplicati. Registrare ogni decisione. | Must | UC-05 |
 | FR-10 | Sistema | Importare dati ufficiali e registrare versione, esito e timestamp della sincronizzazione. | Should | UC-06 |
 | FR-11 | Sistema | Invalidare la cache dell’area interessata quando riceve un aggiornamento urgente. | Should | UC-06 |
 | FR-12 | Sistema | Inviare notifiche secondo preferenze, autorizzazioni e consensi configurati. | Could | UC-03, UC-05 |
@@ -186,23 +186,22 @@ Registrare l’esito effettivamente osservato e un collegamento consultabile all
 
 #### 3.5.1 UTENTI DEL SISTEMA
 
-| Utente/ruolo | Obiettivi | Contesto |
+| Utente | Obiettivi | Contesto |
 |---|---|---|
-| Viaggiatore | Consultare luoghi e pianificare un viaggio secondo le proprie esigenze. | Web responsive, anche con tecnologie assistive. |
-| Segnalatore | Inviare una barriera o un guasto e seguirne lo stato. | Pubblico. Autenticazione e possibilità di invio anonimo da definire secondo OPEN-04. |
-| Moderatore | Valutare segnalazioni e gestire duplicati. | Area riservata, autenticazione e ruolo richiesti. |
-| Gestore fonte | Mantenere configurazione e qualità delle sincronizzazioni. | Ruolo operativo da concordare secondo OPEN-01 e OPEN-14. |
-| Amministratore tecnico | Gestire configurazione, sicurezza e operatività. | Accesso privilegiato e audit. |
+| Utente registrato | Consultare luoghi, pianificare percorsi, inviare segnalazioni e seguirne lo stato. | Usa l’applicazione autenticato. Permessi, invio e accesso al tracking seguono OPEN-04. |
+| Ospite | Consultare luoghi, pianificare percorsi e, se consentito, inviare o seguire una segnalazione. | Usa la consultazione pubblica senza account. Invio anonimo e accesso al tracking seguono OPEN-04. |
+| Amministratore | Moderare segnalazioni e gestire gli aggiornamenti delle fonti assegnate. | Utente autenticato con permessi espliciti per ciascuna funzione riservata secondo OPEN-01, OPEN-04 e OPEN-14. |
 
 #### 3.5.2 SCENARI
 
-| Nome | Attori partecipanti | Flusso degli eventi |
-|---|---|---|
-| Viaggio con esigenze selezionate | Viaggiatore, sistema, provider di routing | Il viaggiatore inserisce origine, destinazione ed esigenze. Il sistema richiede alternative al provider. Il sistema mostra tempi, cambi, barriere note e tratti non verificati. |
-| Verifica di una fermata | Viaggiatore, sistema | Il viaggiatore seleziona una fermata. Il sistema recupera le caratteristiche disponibili. Il sistema mostra stato, fonte e validità, indicando come sconosciuti i dati assenti o scaduti. |
-| Guasto temporaneo | Segnalatore, sistema, servizio di storage e scansione, canale di notifica | Il segnalatore inserisce luogo, categoria, descrizione e data. Facoltativamente allega una foto. Il sistema registra la segnalazione e restituisce il codice di tracking. Se consentito dalla policy, il sistema invia una notifica tramite il canale configurato. |
-| Moderazione di un duplicato | Moderatore, sistema, canale di notifica | Il moderatore esamina una segnalazione e la collega al duplicato esistente. Il sistema registra la decisione e conserva la cronologia precedente. Se consentito dalla policy, il sistema invia una notifica tramite il canale configurato. |
-| Aggiornamento di una fonte | Gestore fonte, sistema, fonte dati autorizzata | Il gestore avvia o controlla una sincronizzazione. Il sistema acquisisce i dati dalla fonte, applica i controlli di qualità, pubblica solo una generazione valida e registra l’esito. |
+| Scenario | Obiettivo | Attori partecipanti | Flusso sintetico |
+|---|---|---|---|
+| Pianificazione di un percorso | Consentire di confrontare percorsi secondo i vincoli indicati senza presentare dati incerti come verificati. | Ospite, utente registrato, sistema, provider di routing | La persona inserisce origine, destinazione e vincoli e riceve alternative con il relativo stato di verifica. |
+| Consultazione di un luogo | Mostrare caratteristiche e provenienza disponibili per il luogo selezionato. | Ospite, utente registrato, sistema | La persona seleziona un luogo e consulta caratteristiche, fonte e validità dei dati. |
+| Invio di una segnalazione | Consentire di comunicare una barriera o un guasto e ricevere un riferimento per seguirne lo stato. | Ospite, utente registrato, sistema, servizio di storage e scansione, canale di notifica | La persona invia i dati della segnalazione e un eventuale allegato, quindi riceve il codice di tracking. |
+| Tracking di una segnalazione | Consentire di consultare lo stato accessibile della segnalazione senza esporre dati riservati. | Ospite, utente registrato, sistema | La persona presenta il codice di tracking e riceve solo le informazioni consentite. |
+| Moderazione di una segnalazione | Consentire la valutazione autorizzata e tracciabile di una segnalazione. | Amministratore, sistema, canale di notifica | L’amministratore valuta la segnalazione e registra la decisione ammessa dalla policy. |
+| Aggiornamento di una fonte | Mantenere disponibili dati di fonte completi e validati. | Amministratore, sistema, fonte dati autorizzata | L’amministratore avvia o controlla la sincronizzazione e consulta l’esito dei controlli. |
 
 #### 3.5.3 MODELLI DEI CASI D’USO
 
@@ -211,21 +210,16 @@ Registrare l’esito effettivamente osservato e un collegamento consultabile all
 Il confine di sistema separa i casi d’uso di `aegis` dagli attori e dai servizi esterni.
 
 ```mermaid
-flowchart TB
-  accDescr: I sei casi d'uso aegis e le associazioni con persone, provider, fonti dati e servizi esterni di storage, scansione e notifica.
-  subgraph ACTORS[Attori e servizi esterni]
-    direction LR
-    V[Viaggiatore]
-    S[Segnalatore]
-    M[Moderatore]
-    G[Gestore fonte]
-    R[Provider di routing]
-    D[Fonte dati autorizzata]
-    O[Servizio di storage e scansione]
-    N[Canale di notifica]
+flowchart LR
+  accDescr: I sei casi d'uso di aegis collegano ospite, utente registrato e amministratore ai servizi esterni necessari.
+  subgraph USERS[Utenti]
+    direction TB
+    GUEST[Ospite]
+    REGISTERED[Utente registrato]
+    ADMIN[Amministratore]
   end
   subgraph SYSTEM[aegis]
-    direction LR
+    direction TB
     UC01((UC-01 Pianificare un viaggio))
     UC02((UC-02 Consultare un luogo))
     UC03((UC-03 Inviare una segnalazione))
@@ -233,16 +227,27 @@ flowchart TB
     UC05((UC-05 Moderare una segnalazione))
     UC06((UC-06 Aggiornare una fonte))
   end
-  V --- UC01
+  subgraph SERVICES[Servizi esterni]
+    direction TB
+    R[Provider di routing]
+    D[Fonte dati autorizzata]
+    O[Servizio di storage e scansione]
+    N[Canale di notifica]
+  end
+  GUEST --- UC01
+  REGISTERED --- UC01
   R --- UC01
-  V --- UC02
-  S --- UC03
+  GUEST --- UC02
+  REGISTERED --- UC02
+  GUEST --- UC03
+  REGISTERED --- UC03
   O --- UC03
   N --- UC03
-  S --- UC04
-  M --- UC05
+  GUEST --- UC04
+  REGISTERED --- UC04
+  ADMIN --- UC05
   N --- UC05
-  G --- UC06
+  ADMIN --- UC06
   D --- UC06
 ```
 
@@ -250,79 +255,70 @@ flowchart TB
 
 Ogni caso d’uso specifica attori, condizioni d’ingresso e d’uscita, requisiti qualitativi, flusso principale e alternative o errori pertinenti.
 
-| ID | Caso d’uso | Titolo | Attore principale | Descrizione |
-|---|---|---|---|---|
-| UC-01 | Pianificazione | Pianificare un viaggio | Viaggiatore | Inserisce origine, destinazione ed esigenze e consulta percorsi alternativi con stato di verifica. |
-| UC-02 | Consultazione | Consultare un luogo | Viaggiatore | Seleziona una stazione, fermata o luogo e consulta accessibilità, fonte e freschezza. |
-| UC-03 | Segnalazione | Inviare una segnalazione | Segnalatore | Comunica una barriera o un guasto, allega facoltativamente una foto, riceve un codice di tracking e un’eventuale notifica secondo consenso e policy. |
-| UC-04 | Tracking | Seguire una segnalazione | Segnalatore | Presenta il codice di tracking e consulta lo stato consentito della segnalazione. |
-| UC-05 | Moderazione | Moderare una segnalazione | Moderatore | Conferma, respinge, risolve o unisce un duplicato conservando lo storico e attivando le notifiche consentite. |
-| UC-06 | Sincronizzazione | Aggiornare una fonte | Gestore fonte | Avvia o controlla l’importazione di dati e consulta l’esito dei controlli. |
-
 ###### UC-01: Pianificare viaggio
 
 | Campo | Specifica |
 |---|---|
-| Attori partecipanti | Viaggiatore, sistema, provider di routing. |
+| Attori partecipanti | Ospite, utente registrato, sistema, provider di routing. |
 | Condizioni d’ingresso | Origine, destinazione ed esigenze specificate e valide. La consultazione non richiede autenticazione. |
 | Condizioni d’uscita | Restituiti zero o più percorsi con tempi, cambi e stato di verifica. Fonte e freschezza sono esposte quando disponibili. Dati assenti o scaduti non risultano accessibili. |
 | Requisiti qualitativi | Il sistema distingue barriere note, tratti compatibili e tratti non verificati e presenta alternative disponibili. |
-| Flusso degli eventi | Il viaggiatore inserisce origine, destinazione ed esigenze. Il sistema valida la richiesta e la inoltra al provider. Il provider restituisce le alternative. Il sistema aggiunge stato di verifica e provenienza disponibili e mostra risultati e incertezze. |
+| Flusso degli eventi | L’ospite o l’utente registrato inserisce origine, destinazione ed esigenze. Il sistema valida la richiesta e la inoltra al provider. Il provider restituisce le alternative. Il sistema aggiunge stato di verifica e provenienza disponibili e mostra risultati e incertezze. |
 | Flussi alternativi e di errore | Input non valido: il sistema segnala i campi da correggere e non invoca il provider. Nessun percorso disponibile: il sistema mostra l’esito vuoto senza dichiarare compatibilità. Provider non disponibile, timeout, risposta parziale o profilo non supportato: il sistema comunica il limite e non presenta risultati incompleti come verificati. Un fallback è ammesso solo secondo OPEN-03 e viene marcato non verificato. |
 
 ###### UC-02: Consultare luogo
 
 | Campo | Specifica |
 |---|---|
-| Attori partecipanti | Viaggiatore, sistema. |
+| Attori partecipanti | Ospite, utente registrato, sistema. |
 | Condizioni d’ingresso | Luogo identificabile tramite ID o selezione geografica. Parametri validi. |
 | Condizioni d’uscita | Dettaglio e caratteristiche note sono mostrati con fonte e validità. Dati assenti o scaduti sono indicati come sconosciuti. Nessuna modifica ai dati. |
 | Requisiti qualitativi | Le informazioni presentate sulla mappa sono disponibili anche in forma testuale e risultano utilizzabili da tastiera e tecnologie assistive. |
-| Flusso degli eventi | Il viaggiatore seleziona o cerca un luogo. Il sistema recupera dettaglio e caratteristiche. Il sistema valuta la freschezza secondo la validità della fonte. Il sistema mostra caratteristiche, fonte, aggiornamento e stati sconosciuti. |
+| Flusso degli eventi | L’ospite o l’utente registrato seleziona o cerca un luogo. Il sistema recupera dettaglio e caratteristiche, valuta la freschezza secondo la validità della fonte e mostra caratteristiche, fonte, aggiornamento e stati sconosciuti. |
 | Flussi alternativi e di errore | Identificativo non valido o luogo non trovato: il sistema non mostra un dettaglio inesistente. Caratteristiche assenti, scadute o contraddittorie: il sistema le presenta come sconosciute e non inferisce accessibilità. Repository non disponibile: il sistema comunica l’errore senza presentare dati scaduti come aggiornati. |
 
 ###### UC-03: Inviare segnalazione
 
 | Campo | Specifica |
 |---|---|
-| Attori partecipanti | Segnalatore, sistema, servizio di storage e scansione, canale di notifica. |
+| Attori partecipanti | Ospite, utente registrato, sistema, servizio di storage e scansione, canale di notifica. |
 | Condizioni d’ingresso | Campi obbligatori validi. Autorizzazione, rate limit, consenso e requisiti dell’eventuale upload conformi alla policy definita. |
 | Condizioni d’uscita | Segnalazione ed evento iniziale persistiti. Codice di tracking restituito. In caso di errore non rimane una segnalazione parziale. Se una notifica prevista fallisce, il fallimento non annulla la segnalazione e resta osservabile e recuperabile secondo la policy da definire in OPEN-08. |
 | Requisiti qualitativi | Il modulo è accessibile. I dati identificativi sono minimizzati e separati dalla segnalazione. La foto non è pubblicata prima dei controlli previsti. |
-| Flusso degli eventi | Il segnalatore prepara luogo, categoria, descrizione e data e invia la richiesta con una chiave di idempotenza. Facoltativamente allega una foto e il relativo digest. Il sistema valida i campi e l’autorizzazione, quindi prenota chiave e impronta in `ReportSubmission` prima di qualsiasi effetto esterno. Un vincolo univoco coordina richieste concorrenti. Il sistema controlla l’eventuale upload in area privata. Registra segnalazione, evento iniziale, completamento della prenotazione e intenzione autorizzata di notifica nella stessa transazione e restituisce il codice di tracking. Dopo il commit pianifica l’eventuale notifica secondo consenso e policy. Se il canale fallisce, registra l’esito per il recupero previsto in OPEN-08. |
+| Flusso degli eventi | L’ospite o l’utente registrato prepara luogo, categoria, descrizione e data e invia la richiesta con una chiave di idempotenza. Facoltativamente allega una foto e il relativo digest. Il sistema valida i campi e l’autorizzazione, quindi prenota chiave e impronta in `ReportSubmission` prima di qualsiasi effetto esterno. Un vincolo univoco coordina richieste concorrenti. Il sistema controlla l’eventuale upload in area privata. Registra segnalazione, evento iniziale, completamento della prenotazione e intenzione autorizzata di notifica nella stessa transazione e restituisce il codice di tracking. Dopo il commit pianifica l’eventuale notifica secondo consenso e policy. Se il canale fallisce, registra l’esito per il recupero previsto in OPEN-08. |
 | Flussi alternativi e di errore | Input non valido, autorizzazione negata o limite superato: il sistema rifiuta la richiesta senza persistenza parziale secondo OPEN-04 e OPEN-15. Prima di scrivere un allegato o invocare altri sistemi esterni, il sistema prenota la chiave e l’impronta in un registro durevole con vincolo di unicità nello scope approvato. File non valido, scansione fallita o scanner indisponibile: il file resta privato e viene rifiutato, messo in quarantena o eliminato secondo OPEN-15 e OPEN-05. Scrittura interrotta in object storage o errore database dopo la scansione: report ed evento non restano parziali e l’upload non diventa pubblico. L’intento durevole consente retry o pulizia idempotente secondo OPEN-08 e OPEN-15. Commit riuscito ma risposta persa: un retry con la stessa chiave e lo stesso payload recupera l’operazione esistente senza ripetere gli effetti. La stessa chiave con payload diverso è rifiutata. Un’operazione ancora in corso non viene avviata in parallelo. Ambito della chiave, durata, risposta ripetibile e autorizzazione seguono OPEN-04, OPEN-05 e OPEN-08. Notifica fallita o con esito ambiguo: la segnalazione resta registrata, l’esito non è presentato come consegna confermata e il recupero segue OPEN-08. |
 
 ###### UC-04: Seguire segnalazione
 
 | Campo | Specifica |
 |---|---|
-| Attori partecipanti | Segnalatore, sistema. |
+| Attori partecipanti | Ospite, utente registrato, sistema. |
 | Condizioni d’ingresso | Codice di tracking valido fornito dal richiedente. Modalità di accesso da definire secondo OPEN-04. |
 | Condizioni d’uscita | È mostrato solo lo stato consentito dalla policy di accesso approvata. Identità e dettagli riservati non sono esposti. Nessuna modifica al report. |
 | Requisiti qualitativi | La risposta non consente l’enumerazione delle segnalazioni e comunica lo stato in forma accessibile. |
-| Flusso degli eventi | Il segnalatore inserisce il codice. Il sistema lo verifica e recupera lo stato consentito. Il sistema mostra lo stato senza esporre dati riservati. |
+| Flusso degli eventi | L’ospite o l’utente registrato inserisce il codice. Il sistema lo verifica, recupera lo stato consentito e lo mostra senza esporre dati riservati. |
 | Flussi alternativi e di errore | Codice non valido, scaduto o non riconosciuto: il sistema non restituisce dati della segnalazione e la risposta non rivela se il report esiste, secondo la policy OPEN-04. Archivio non disponibile: il sistema comunica un errore temporaneo e non restituisce dati non verificati. |
 
 ###### UC-05: Moderare segnalazione
 
 | Campo | Specifica |
 |---|---|
-| Attori partecipanti | Moderatore, sistema, canale di notifica. |
-| Condizioni d’ingresso | Moderatore autenticato e autorizzato secondo OPEN-04. Report esistente. La matrice di transizione di OPEN-12 è approvata e consente l’azione richiesta. La proposta [ADR-0011](adr/ADR-0011-report-moderation-state-machine.md) elenca le dimensioni da decidere. Motivazione presente quando richiesta dalla matrice. |
+| Attori partecipanti | Amministratore, sistema, canale di notifica. |
+| Condizioni d’ingresso | Amministratore autenticato e autorizzato alla moderazione secondo OPEN-04. Report esistente. La matrice di transizione di OPEN-12 è approvata e consente l’azione richiesta. La proposta [ADR-0011](adr/ADR-0011-report-moderation-state-machine.md) elenca le dimensioni da decidere. Motivazione presente quando richiesta dalla matrice. |
 | Condizioni d’uscita | Stato ed evento append-only aggiornati nella stessa transazione, con attore e timestamp. Una transizione non valida non modifica i dati. Se una notifica prevista fallisce, il fallimento non annulla la transizione registrata e resta osservabile e recuperabile secondo la policy da definire in OPEN-08. |
 | Requisiti qualitativi | Ogni decisione è tracciabile. Gli eventi precedenti restano consultabili e non sono sovrascritti. |
-| Flusso degli eventi | Il moderatore apre il report. Il sistema mostra i dati e la cronologia autorizzati. Il moderatore sceglie conferma, rifiuto, risoluzione o unione e inserisce la motivazione richiesta. Il sistema valida la transizione e registra stato ed evento nella stessa transazione. Dopo il completamento del caso, pianifica l’eventuale notifica secondo consenso e policy. Se il canale fallisce, registra l’esito per il recupero previsto in OPEN-08. |
+| Flusso degli eventi | L’amministratore apre il report. Il sistema mostra i dati e la cronologia autorizzati. L’amministratore sceglie conferma, rifiuto, risoluzione o unione e inserisce la motivazione richiesta. Il sistema valida la transizione e registra stato ed evento nella stessa transazione. Dopo il completamento del caso, pianifica l’eventuale notifica secondo consenso e policy. Se il canale fallisce, registra l’esito per il recupero previsto in OPEN-08. |
 | Flussi alternativi e di errore | Attore non autorizzato, report inesistente o transizione non ammessa: il sistema rifiuta il comando senza modificare stato o cronologia. Errore durante la persistenza: transizione ed evento sono annullati insieme. Notifica fallita o con esito ambiguo: la moderazione resta registrata e il recupero segue OPEN-08 senza dichiarare la consegna. |
 
 ###### UC-06: Aggiornare una fonte
 
 | Campo | Specifica |
 |---|---|
-| Attori partecipanti | Gestore fonte, sistema e fonte dati autorizzata. |
-| Condizioni d’ingresso | Fonte configurata e abilitata. Gestore autenticato e autorizzato quando l’avvio è manuale. Esecuzione schedulata ammessa dalla configurazione. |
+| Attori partecipanti | Amministratore, sistema e fonte dati autorizzata. |
+| Condizioni d’ingresso | Fonte configurata e abilitata. Amministratore autenticato e autorizzato quando l’avvio è manuale. Esecuzione schedulata ammessa dalla configurazione. |
 | Condizioni d’uscita | Versione, timestamp, controlli ed esito della sincronizzazione registrati. Solo un insieme completo e validato diventa visibile. Un aggiornamento urgente invalida la cache dell’area interessata dopo la pubblicazione. Un errore mantiene disponibili i dati validi precedenti e non pubblica dati parziali. |
 | Requisiti qualitativi | Retry idempotenti. Provenienza e freschezza conservate. Dati assenti, incoerenti o scaduti non sono presentati come accessibili. |
-| Flusso degli eventi | Il gestore avvia o consulta il processo, oppure scatta la pianificazione. Il sistema invoca l’adattatore. L’adattatore acquisisce i dati in un insieme candidato non visibile agli utenti. Il sistema valida contratto, chiavi e qualità, quindi registra versione, timestamp, controlli ed esito. Se i controlli passano, pubblica l’insieme candidato con un passaggio atomico e invalida la cache interessata dopo la pubblicazione. Se l’acquisizione o la validazione falliscono, mantiene attivi i dati precedenti e registra l’esito senza pubblicare dati parziali. |
+| Flusso degli eventi | L’amministratore avvia o consulta il processo, oppure scatta la pianificazione. Il sistema invoca l’adattatore. L’adattatore acquisisce i dati in un insieme candidato non visibile agli utenti. Il sistema valida contratto, chiavi e qualità, quindi registra versione, timestamp, controlli ed esito. Se i controlli passano, pubblica l’insieme candidato con un passaggio atomico e invalida la cache interessata dopo la pubblicazione. Se l’acquisizione o la validazione falliscono, mantiene attivi i dati precedenti e registra l’esito senza pubblicare dati parziali. |
 | Flussi alternativi e di errore | Avvio manuale non autorizzato: il sistema rifiuta il comando. Fonte non disponibile, contratto non valido, duplicato o aggiornamento fuori ordine: la generazione candidata non viene pubblicata, la generazione attiva resta disponibile e l’esito è registrato secondo OPEN-14. Errore di pulizia cache dopo il commit: il lavoro resta pendente e recuperabile secondo OPEN-08. |
 
 #### 3.5.4 MODELLO DEGLI OGGETTI
@@ -488,13 +484,13 @@ Il diagramma descrive la richiesta di alternative, l’integrazione del provider
 
 ```mermaid
 sequenceDiagram
-  accDescr: Il viaggiatore invia la richiesta e riceve percorsi con l'incertezza evidenziata.
-  actor V as Viaggiatore
+  accDescr: L'ospite o l'utente registrato invia la richiesta e riceve percorsi con l'incertezza evidenziata.
+  actor U as Ospite o utente registrato
   participant UI as Interfaccia web
   participant API as API percorsi
   participant UC as PlanRoute
   participant RP as RoutingProvider
-  V->>UI: Inserisce origine, destinazione ed esigenze
+  U->>UI: Inserisce origine, destinazione ed esigenze
   UI->>API: Richiesta di percorso
   API->>UC: Richiesta validata
   UC->>RP: Calcola alternative
@@ -502,12 +498,12 @@ sequenceDiagram
     RP-->>UC: Alternative e tratti
     UC-->>API: Percorsi con stato di verifica
     API-->>UI: Risultati
-    UI-->>V: Percorsi e incertezze
+    UI-->>U: Percorsi e incertezze
   else Timeout, risposta parziale o profilo non supportato
     RP-->>UC: Errore o risposta non utilizzabile
     UC-->>API: Esito non disponibile secondo OPEN-03
     API-->>UI: Errore senza risultati dichiarati verificati
-    UI-->>V: Limite del servizio
+    UI-->>U: Limite del servizio
   end
 ```
 
@@ -518,12 +514,12 @@ Il diagramma descrive il recupero dei dati di accessibilità e la valutazione de
 ```mermaid
 sequenceDiagram
   accDescr: Il sistema recupera luogo e caratteristiche, poi restituisce stato, fonte e validità.
-  actor V as Viaggiatore
+  actor U as Ospite o utente registrato
   participant UI as Interfaccia web
   participant API as API luoghi
   participant UC as GetPlaceAccessibility
   participant Repo as PlaceRepository
-  V->>UI: Seleziona un luogo
+  U->>UI: Seleziona un luogo
   UI->>API: Richiede il dettaglio
   API->>UC: Identificativo validato
   UC->>Repo: Recupera luogo e caratteristiche
@@ -531,12 +527,12 @@ sequenceDiagram
     Repo-->>UC: Dati e provenienza
     UC-->>API: Dettaglio con freschezza valutata
     API-->>UI: Risposta
-    UI-->>V: Caratteristiche, fonte e stato
+    UI-->>U: Caratteristiche, fonte e stato
   else Luogo non trovato o repository non disponibile
     Repo-->>UC: Assenza o errore
     UC-->>API: Esito senza dati di accessibilità
     API-->>UI: Luogo assente o errore temporaneo
-    UI-->>V: Esito senza dati non verificati
+    UI-->>U: Esito senza dati non verificati
   end
 ```
 
@@ -547,7 +543,7 @@ Il diagramma mostra la prenotazione univoca della richiesta prima degli effetti 
 ```mermaid
 sequenceDiagram
   accDescr: L'API salva segnalazione, evento e intenzione di notifica autorizzata in modo atomico. Un worker invia la notifica dopo il commit e registra gli esiti.
-  actor S as Segnalatore
+  actor U as Ospite o utente registrato
   participant API as Reports API
   participant UC as CreateReport
   participant Repo as ReportRepository
@@ -555,21 +551,21 @@ sequenceDiagram
   participant Upload as Storage e scanner
   participant W as NotificationWorker
   participant N as NotificationPort
-  S->>API: POST segnalazione con chiave
+  U->>API: POST segnalazione con chiave
   API->>UC: input, policy, chiave e impronta
   UC->>Repo: Prenota scope, chiave e impronta prima degli effetti esterni
   alt Retry completato con lo stesso payload
     Repo-->>UC: Report associato alla prenotazione
     UC-->>API: Esito ripetibile secondo OPEN-04 e OPEN-05
-    API-->>S: Esito originario consentito
+    API-->>U: Esito originario consentito
   else Chiave associata a payload diverso
     Repo-->>UC: Conflitto
     UC-->>API: Rifiuto senza nuovi effetti
-    API-->>S: Chiave già utilizzata
+    API-->>U: Chiave già utilizzata
   else Operazione in corso
     Repo-->>UC: Stato pendente
     UC-->>API: Stato senza avviare effetti concorrenti
-    API-->>S: Operazione in corso secondo OPEN-08
+    API-->>U: Operazione in corso secondo OPEN-08
   else Prenotazione acquisita o ripresa esclusiva recuperabile
     opt Foto allegata
       UC->>Attach: Registra intento correlato alla prenotazione e chiave opaca privata
@@ -582,7 +578,7 @@ sequenceDiagram
         UC->>Attach: Registra esito e lavoro di pulizia secondo policy
         break Upload non accettabile secondo OPEN-15
           UC-->>API: Rifiuto senza persistenza del report
-          API-->>S: Upload non accettato
+          API-->>U: Upload non accettato
         end
       end
     end
@@ -590,10 +586,10 @@ sequenceDiagram
       UC->>Repo: Transazione: completa prenotazione + Report + ReportEvent + allegato + outbox autorizzata
       Repo-->>UC: commit completato
       UC-->>API: tracking code e stato
-      API-->>S: conferma invio
+      API-->>U: Conferma invio
     else Validazione o transazione database fallite
       UC-->>API: Rifiuto senza persistenza parziale del report
-      API-->>S: Errore comprensibile
+      API-->>U: Errore comprensibile
       opt Intento upload presente senza report collegato
         UC->>Attach: Mantiene il lavoro privato per retry o pulizia
       end
@@ -622,12 +618,12 @@ Il diagramma descrive la consultazione dello stato tramite codice senza esporre 
 ```mermaid
 sequenceDiagram
   accDescr: Il codice di tracking consente la consultazione dello stato autorizzato.
-  actor S as Segnalatore
+  actor U as Ospite o utente registrato
   participant UI as Interfaccia web
   participant API as API tracking
   participant UC as TrackReport
   participant Repo as ReportRepository
-  S->>UI: Inserisce il codice di tracking
+  U->>UI: Inserisce il codice di tracking
   UI->>API: Richiede lo stato
   API->>UC: Codice ricevuto
   alt Codice valido e accesso consentito
@@ -635,11 +631,11 @@ sequenceDiagram
     Repo-->>UC: Stato e dati autorizzati
     UC-->>API: Stato minimizzato
     API-->>UI: Risposta
-    UI-->>S: Stato consentito
+    UI-->>U: Stato consentito
   else Codice non valido o archivio non disponibile
     UC-->>API: Nessun dato del report
     API-->>UI: Esito non rivelatore o errore temporaneo
-    UI-->>S: Stato non disponibile
+    UI-->>U: Stato non disponibile
   end
 ```
 
@@ -650,14 +646,14 @@ Il diagramma descrive la verifica della transizione e la registrazione atomica d
 ```mermaid
 sequenceDiagram
   accDescr: La moderazione registra transizione, evento e intenzione di notifica autorizzata in modo atomico. Un worker invia la notifica dopo il commit e registra gli esiti.
-  actor M as Moderatore
+  actor A as Amministratore
   participant UI as Pannello moderazione
   participant API as API moderazione
   participant UC as ModerateReport
   participant Repo as ReportRepository
   participant W as NotificationWorker
   participant N as NotificationPort
-  M->>UI: Seleziona decisione e motivazione
+  A->>UI: Seleziona decisione e motivazione
   UI->>API: Invia decisione
   API->>UC: Comando
   UC->>UC: Verifica identità e ruolo
@@ -705,11 +701,11 @@ I diagrammi separano acquisizione e pubblicazione dalla lettura e pulizia cache.
 ```mermaid
 sequenceDiagram
   accDescr: Il worker importa i dati in isolamento, valida la generazione candidata e registra pubblicazione ed effetto cache pendente nella stessa transazione. Un errore mantiene la generazione attiva precedente.
-  actor G as Gestore fonte
+  actor A as Amministratore
   participant W as Worker
   participant P as TransitDataProvider
   participant R as Repository
-  G->>W: Avvia o consulta sincronizzazione
+  A->>W: Avvia o consulta sincronizzazione
   W->>P: Richiede aggiornamento
   P-->>W: Dati e versione
   W->>R: Scrive generazione candidata isolata
@@ -719,7 +715,7 @@ sequenceDiagram
   else Acquisizione o validazione fallita
     W->>R: Registra errore e conserva la generazione attiva
   end
-  W-->>G: Esito operativo
+  W-->>A: Esito operativo
 ```
 
 ```mermaid
@@ -856,6 +852,9 @@ Il profilo visivo non è disponibile perché i punteggi non sono stati raccolti.
 |---|---|
 | RAD | Documento di Analisi dei Requisiti. |
 | SDD | Documento di Progettazione del Software. |
+| Ospite | Persona che usa le funzioni pubbliche senza account. Invio anonimo e accesso al tracking seguono OPEN-04. |
+| Utente registrato | Persona autenticata. Permessi e dati accessibili seguono OPEN-04 e OPEN-05. |
+| Amministratore | Utente autenticato con permessi espliciti per moderazione o gestione delle fonti. |
 | FR | Requisito funzionale. |
 | NFR | Requisito non funzionale. |
 | API | Interfaccia di programmazione applicativa. |

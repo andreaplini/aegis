@@ -71,7 +71,7 @@ Non approvata. Responsabile prodotto, responsabile tecnico e responsabile privac
 |---|---|---|---|
 | Matrice ruoli e permessi OPEN-04 | Ogni operazione protetta ha attori autorizzati, permesso e campi accessibili approvati | Responsabile prodotto e responsabile privacy, da designare | In attesa |
 | Prova di accesso negato | Richieste anonime e identità prive del permesso non modificano dati né ottengono risposte riservate | Responsabile tecnico, da designare | Non eseguito |
-| Prova delle transizioni di moderazione | Solo moderatori autorizzati applicano le transizioni approvate in OPEN-12 e l’evento identifica l’attore | Responsabile tecnico, da designare | Non eseguito |
+| Prova delle transizioni di moderazione | Solo amministratori con permesso di moderazione applicano le transizioni approvate in OPEN-12 e l’evento identifica l’attore | Responsabile tecnico, da designare | Non eseguito |
 | Prova di tracking | La credenziale accede solo ai campi approvati della segnalazione associata e non è esposta in log o risposte non autorizzate | Responsabile tecnico e responsabile sicurezza, da designare | Non eseguito |
 | Prova delle identità operative | Avvio manuale e sincronizzazione pianificata usano identità e permessi distinti | Responsabile operativo, da designare | Non eseguito |
 | Revisione del ciclo di vita dei dati | Credenziali, identità, eventi e log rispettano le regole approvate in OPEN-05 | Responsabile privacy e responsabile operativo, da designare | In attesa |

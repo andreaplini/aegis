@@ -10,7 +10,7 @@
 | Candidati | Da confermare in OPEN-13 |
 | Anno accademico | Da confermare in OPEN-13 |
 
-Bozza aggiornata il 16 novembre 2026. L’architettura è iniziale e descrive il sistema proposto. Il prodotto non è ancora implementato. Le descrizioni dei componenti e dei flussi indicano comportamenti attesi e non attestano funzionalità realizzate o verificate. Runtime Jakarta EE, fonti dati, area pilota e servizi gestiti sono da convalidare secondo la [roadmap](MILESTONES.md).
+Bozza aggiornata il 17 novembre 2026. L’architettura è iniziale e descrive il sistema proposto. Il prodotto non è ancora implementato. Le descrizioni dei componenti e dei flussi indicano comportamenti attesi e non attestano funzionalità realizzate o verificate. Runtime Jakarta EE, fonti dati, area pilota e servizi gestiti sono da convalidare secondo la [roadmap](MILESTONES.md).
 
 ## SOMMARIO
 
@@ -211,11 +211,11 @@ La matrice seguente descrive il trattamento progettato. Non definisce basi giuri
 
 | Categoria | Dati previsti e uso | Accesso progettato |
 |---|---|---|
-| Identità e ruoli | Riferimento al provider d’identità e ruoli applicativi per autenticare e autorizzare le funzioni riservate. Il provider non è selezionato. | Identity e operazioni amministrative autorizzate. |
-| Richieste di percorso e geolocalizzazione | Origine e destinazione testuali o coordinate, preferenze e vincoli di accessibilità per calcolare un percorso. Sono elaborati durante la richiesta e non persistiti nel dominio dopo la risposta. Il provider selezionato può ricevere i soli campi necessari secondo il contratto OPEN-03. Log, telemetria, accesso, conservazione e trattamento del provider restano da approvare in OPEN-05 e OPEN-08. | Viaggiatore e servizi applicativi. Il provider riceve solo i campi necessari previsti dal contratto approvato. |
-| Segnalazione | Luogo, categoria, descrizione, data e stato per moderare e comunicare informazioni sulle barriere. Testo e posizione possono identificare una persona. | Moderatori autorizzati e viste pubbliche limitate ai campi approvati. |
-| Eventi di moderazione | Riferimento all’autore, data, decisione e segnalazione per mantenere la cronologia append-only. | Moderatori e ruoli operativi autorizzati. |
-| Credenziale di tracking | Codice restituito al segnalatore per consultare lo stato consentito. Memorizzazione e scadenza non sono definite. | Possessore autorizzato secondo OPEN-04. Il codice non va registrato nei log. |
+| Identità e ruoli | Riferimento al provider d’identità e permessi associati agli account per autorizzare le funzioni riservate. Il provider non è selezionato. L’ospite usa le funzioni pubbliche senza account. | Utente registrato e amministratore autenticati secondo OPEN-04. |
+| Richieste di percorso e geolocalizzazione | Origine e destinazione testuali o coordinate, preferenze e vincoli di accessibilità per calcolare un percorso. Sono elaborati durante la richiesta e non persistiti nel dominio dopo la risposta. Il provider selezionato può ricevere i soli campi necessari secondo il contratto OPEN-03. Log, telemetria, accesso, conservazione e trattamento del provider restano da approvare in OPEN-05 e OPEN-08. | Ospite, utente registrato e servizi applicativi. Il provider riceve solo i campi necessari previsti dal contratto approvato. |
+| Segnalazione | Luogo, categoria, descrizione, data e stato per moderare e comunicare informazioni sulle barriere. Testo e posizione possono identificare una persona. | Amministratori autorizzati e viste pubbliche limitate ai campi approvati. |
+| Eventi di moderazione | Riferimento all’autore, data, decisione e segnalazione per mantenere la cronologia append-only. | Amministratori autorizzati e ruoli operativi autorizzati. |
+| Credenziale di tracking | Codice restituito a chi invia una segnalazione per consultare lo stato consentito. Memorizzazione e scadenza non sono definite. | Possessore autorizzato secondo OPEN-04. Il codice non va registrato nei log. |
 | Immagine allegata | File, metadati necessari, intento durevole e stato della scansione per documentare una barriera e supportare la moderazione. | Oggetto privato prima dell’associazione autorizzata al report. Pubblicazione secondo policy approvata. |
 | Log operativi | Eventi tecnici e identificativi necessari per diagnosi, sicurezza e misurazione operativa. | Personale operativo autorizzato. |
 
@@ -356,7 +356,7 @@ Se la persona nega il permesso di geolocalizzazione, il sistema non blocca ricer
 
 ### 4.1 AUTENTICAZIONE UTENTE
 
-Il sottosistema Identity gestisce autenticazione e autorizzazione delle funzioni protette. La moderazione richiede un moderatore autenticato e autorizzato. Anche l’avvio manuale di una sincronizzazione richiede un gestore autorizzato. Le policy per autenticazione dell’invio e accesso al tracking restano da definire secondo OPEN-04. Il flusso proposto di tracking restituisce al possessore del codice solo lo stato consentito, senza rendere già approvata la policy di accesso. Provider e protocollo di autenticazione sono da selezionare. La consultazione pubblica non richiede una sessione autenticata. I dati identificativi restano separati dai contenuti pubblici delle segnalazioni.
+Il sottosistema Identity gestisce autenticazione e autorizzazione delle funzioni protette. L’amministratore deve essere autenticato e avere il permesso di moderazione o gestione della fonte richiesto dall’operazione. Le policy per autenticazione dell’invio e accesso al tracking restano da definire secondo OPEN-04. Il flusso proposto di tracking restituisce al possessore del codice solo lo stato consentito, senza rendere già approvata la policy di accesso. Provider e protocollo di autenticazione sono da selezionare. L’ospite accede alla consultazione pubblica senza sessione autenticata. I dati identificativi restano separati dai contenuti pubblici delle segnalazioni.
 
 ### 4.2 GESTIONE DEI LUOGHI
 
@@ -386,6 +386,7 @@ I termini di cache e generazione descrivono invarianti del comportamento progett
 
 | Termine | Definizione |
 |---|---|
+| Amministratore | Utente autenticato con permessi espliciti per moderare segnalazioni o gestire fonti. |
 | Adattatore | Componente che collega una porta applicativa a un sistema esterno o a un dettaglio tecnico. |
 | Cache | Memoria temporanea di risultati di lettura. Un dato in cache è selezionabile solo se la chiave corrisponde alle generazioni richieste. |
 | Chiave cache versionata | Chiave composta dal vettore delle generazioni, dall’area e dai parametri normalizzati della query. |
@@ -402,6 +403,7 @@ I termini di cache e generazione descrivono invarianti del comportamento progett
 | Jakarta Faces | API Jakarta EE per viste server-side basate su componenti. |
 | Jakarta REST | API Jakarta EE per l’esposizione di risorse HTTP. |
 | NotificationPort | Porta applicativa per l’invio di notifiche tramite un adattatore sostituibile. |
+| Ospite | Persona che usa le funzioni pubbliche senza account. |
 | Outbox di notifica | Archivio durevole delle intenzioni di invio persistite nella stessa transazione dell’operazione che le ha generate. |
 | Porta | Interfaccia applicativa che descrive una dipendenza richiesta da un caso d’uso. |
 | PostGIS | Estensione PostgreSQL per dati e interrogazioni geospaziali. |
@@ -421,6 +423,7 @@ I termini di cache e generazione descrivono invarianti del comportamento progett
 | SRID | Identificatore del riferimento spaziale di una geometria. |
 | Tracking code | Codice non enumerabile usato per consultare lo stato consentito di una segnalazione. |
 | TransitDataProvider | Porta verso una fonte di dati di trasporto. |
+| Utente registrato | Persona autenticata che usa le funzioni consentite dal proprio account. |
 | Value object | Oggetto immutabile definito dal valore e dalle proprie invarianti. |
 | Vettore delle generazioni | Insieme dei riferimenti alle generazioni attive delle fonti coinvolte in una query. Identifica la versione dei dati usata per costruire la chiave cache. |
 | Worker | Processo asincrono che esegue sincronizzazioni o attività lente fuori dalle richieste interattive. |

@@ -14,7 +14,7 @@
 
 ## Contesto e problema
 
-RAD richiede che un moderatore possa confermare, rifiutare, risolvere o unire una segnalazione duplicata. FR-09 richiede che una transizione ammessa aggiorni stato ed evento nella stessa transazione. UC-05 richiede una motivazione quando prevista dalla policy. SDD descrive eventi append-only, autorizzazione lato server e notifiche registrate atomicamente quando consentite.
+RAD richiede che un amministratore con permesso di moderazione possa confermare, rifiutare, risolvere o unire una segnalazione duplicata. FR-09 richiede che una transizione ammessa aggiorni stato ed evento nella stessa transazione. UC-05 richiede una motivazione quando prevista dalla policy. SDD descrive eventi append-only, autorizzazione lato server e notifiche registrate atomicamente quando consentite.
 
 Il repository non definisce ancora gli stati iniziali e finali, le transizioni ammesse, il significato di ciascuna azione, i ruoli, le motivazioni obbligatorie o gli effetti di un'unione. Queste scelte sono assegnate a OPEN-12. Le azioni nominate in RAD non bastano a dedurre gli stati: per esempio, confermare una segnalazione può indicarne la validità senza implicarne la risoluzione.
 

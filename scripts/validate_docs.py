@@ -41,6 +41,7 @@ ADR_FILENAME_PATTERN = re.compile(r"ADR-(\d{4})(?:-[a-z0-9-]+)?\.md$")
 ADR_STATUSES = {"Proposto", "Accettato", "Rifiutato", "Sostituito"}
 VERIFICATION_STATUSES = {"Non eseguito", "In corso", "Superato", "Non superato", "Bloccato"}
 ADR_VERIFICATION_STATUSES = VERIFICATION_STATUSES | {"In attesa"}
+SYSTEM_USER_NAMES = {"Utente registrato", "Ospite", "Amministratore"}
 
 
 def markdown_files() -> list[Path]:
@@ -218,7 +219,7 @@ def validate_traceability() -> list[str]:
         linked_cases = set(re.findall(r"UC-\d{2}", cells[4]))
         responsible_actors = {
             actor.strip().casefold()
-            for actor in re.split(r"\s+e\s+", cells[1])
+            for actor in re.split(r",|\s+e\s+|\s+o\s+", cells[1])
             if actor.strip()
         }
         for case_id in linked_cases:
@@ -1181,6 +1182,76 @@ def validate_use_case_specs() -> list[str]:
     return errors
 
 
+def validate_system_users() -> list[str]:
+    path = ROOT / "docs/RAD.md"
+    lines = path.read_text(encoding="utf-8").splitlines()
+    heading = "#### 3.5.1 UTENTI DEL SISTEMA"
+    next_heading = "#### 3.5.2 SCENARI"
+    if heading not in lines or next_heading not in lines:
+        return ["docs/RAD.md: sezione utenti del sistema o scenari non trovata"]
+
+    start = lines.index(heading) + 1
+    end = lines.index(next_heading)
+    rows = [line for line in lines[start:end] if line.startswith("|") and not line.startswith("|---")]
+    if not rows:
+        return ["docs/RAD.md: tabella utenti del sistema vuota"]
+
+    header = [cell.strip() for cell in rows[0].strip().strip("|").split("|")]
+    if header != ["Utente", "Obiettivi", "Contesto"]:
+        return ["docs/RAD.md: intestazione della tabella utenti non valida"]
+
+    names = [line.strip().strip("|").split("|")[0].strip() for line in rows[1:]]
+    actual = set(names)
+    missing = sorted(SYSTEM_USER_NAMES - actual)
+    extra = sorted(actual - SYSTEM_USER_NAMES)
+    duplicates = sorted(name for name in actual if names.count(name) > 1)
+    errors = []
+    if missing:
+        errors.append("docs/RAD.md: utenti del sistema mancanti: " + ", ".join(missing))
+    if extra:
+        errors.append(
+            "docs/RAD.md: gli utenti devono essere solo registrato, ospite e amministratore: "
+            + ", ".join(extra)
+        )
+    if duplicates:
+        errors.append("docs/RAD.md: utenti del sistema duplicati: " + ", ".join(duplicates))
+    return errors
+
+
+def validate_scenarios() -> list[str]:
+    path = ROOT / "docs/RAD.md"
+    lines = path.read_text(encoding="utf-8").splitlines()
+    heading = "#### 3.5.2 SCENARI"
+    next_heading = "#### 3.5.3 MODELLI DEI CASI D’USO"
+    if heading not in lines or next_heading not in lines:
+        return ["docs/RAD.md: sezione scenari o casi d’uso non trovata"]
+
+    start = lines.index(heading) + 1
+    end = lines.index(next_heading)
+    table_lines = [line for line in lines[start:end] if line.startswith("|")]
+    if len(table_lines) < 3:
+        return ["docs/RAD.md: tabella degli scenari incompleta"]
+
+    header = [cell.strip() for cell in table_lines[0].strip().strip("|").split("|")]
+    expected_header = ["Scenario", "Obiettivo", "Attori partecipanti", "Flusso sintetico"]
+    if header != expected_header:
+        return ["docs/RAD.md: la tabella degli scenari deve includere l’obiettivo"]
+
+    errors: list[str] = []
+    scenario_rows = [
+        line
+        for line in table_lines[1:]
+        if not re.fullmatch(r"\|[-|: ]+\|", line)
+    ]
+    if not scenario_rows:
+        return ["docs/RAD.md: nessuno scenario definito"]
+    for index, line in enumerate(scenario_rows, start=1):
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) != len(expected_header) or any(not cell for cell in cells):
+            errors.append(f"docs/RAD.md: scenario {index} incompleto")
+    return errors
+
+
 def validate_use_case_diagram() -> list[str]:
     path = ROOT / "docs/RAD.md"
     lines = path.read_text(encoding="utf-8").splitlines()
@@ -1315,6 +1386,8 @@ def main() -> int:
     errors.extend(validate_adr_roadmap_traceability())
     errors.extend(validate_functional_requirements())
     errors.extend(validate_use_case_specs())
+    errors.extend(validate_system_users())
+    errors.extend(validate_scenarios())
     errors.extend(validate_use_case_diagram())
     errors.extend(validate_project_style())
     errors.extend(validate_mermaid_descriptions())
@@ -1335,7 +1408,7 @@ def main() -> int:
         return 1
 
     print(
-        "Documentazione valida: link, ancore, struttura, milestone, requisiti, casi d’uso, "
+        "Documentazione valida: link, ancore, struttura, milestone, requisiti, utenti, scenari e casi d’uso, "
         "diagramma dei casi, glossari, runbook, stati ed evidenze ADR, idempotenza, tracciabilità, "
         "descrizioni accessibili e stile del nome "
         f"verificati in {len(files)} file Markdown."

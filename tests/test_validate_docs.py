@@ -750,6 +750,17 @@ class MarkdownValidationTests(unittest.TestCase):
                 self.assertEqual(validate_docs.validate_traceability(), [])
                 sdd = docs / "SDD.md"
                 rad = docs / "RAD.md"
+                alternative_actors = VALID_RAD.replace(
+                    "| FR-01 | Sistema |", "| FR-01 | Viaggiatore o Sistema |"
+                )
+                rad.write_text(alternative_actors, encoding="utf-8")
+                self.assertEqual(validate_docs.validate_traceability(), [])
+                invalid_alternative = alternative_actors.replace(
+                    "Viaggiatore o Sistema", "Viaggiatore o Moderatore"
+                )
+                rad.write_text(invalid_alternative, encoding="utf-8")
+                errors = validate_docs.validate_traceability()
+                self.assertTrue(any("responsabili non presenti in UC-01" in error for error in errors))
                 rad.write_text(
                     VALID_RAD.replace("| FR-01 | Sistema |", "| FR-01 | Gestore fonte |"),
                     encoding="utf-8",
@@ -800,6 +811,49 @@ class MarkdownValidationTests(unittest.TestCase):
                 rad.write_text(VALID_RAD.replace("| Flussi alternativi e di errore | Luogo assente: nessun dato viene mostrato |\n", ""), encoding="utf-8")
                 errors = validate_docs.validate_use_case_specs()
                 self.assertTrue(any("flussi alternativi e di errore" in error for error in errors))
+
+    def test_system_user_table_contains_only_the_three_requested_users(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            docs = Path(directory) / "docs"
+            docs.mkdir()
+            rad = docs / "RAD.md"
+            valid = (
+                "#### 3.5.1 UTENTI DEL SISTEMA\n\n"
+                "| Utente | Obiettivi | Contesto |\n"
+                "|---|---|---|\n"
+                "| Utente registrato | Obiettivo. | Contesto. |\n"
+                "| Ospite | Obiettivo. | Contesto. |\n"
+                "| Amministratore | Obiettivo. | Contesto. |\n\n"
+                "#### 3.5.2 SCENARI\n"
+            )
+            rad.write_text(valid, encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", Path(directory)):
+                self.assertEqual(validate_docs.validate_system_users(), [])
+                rad.write_text(valid.replace("| Ospite |", "| Operatore |"), encoding="utf-8")
+                errors = validate_docs.validate_system_users()
+                self.assertTrue(any("utenti del sistema mancanti" in error for error in errors))
+                self.assertTrue(any("gli utenti devono essere solo" in error for error in errors))
+
+    def test_scenario_table_requires_an_objective_for_each_scenario(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            docs = Path(directory) / "docs"
+            docs.mkdir()
+            rad = docs / "RAD.md"
+            valid = (
+                "#### 3.5.2 SCENARI\n\n"
+                "| Scenario | Obiettivo | Attori partecipanti | Flusso sintetico |\n"
+                "|---|---|---|---|\n"
+                "| Pianificazione | Confrontare i percorsi. | Ospite | Richiede alternative. |\n\n"
+                "#### 3.5.3 MODELLI DEI CASI D’USO\n"
+            )
+            rad.write_text(valid, encoding="utf-8")
+
+            with patch.object(validate_docs, "ROOT", Path(directory)):
+                self.assertEqual(validate_docs.validate_scenarios(), [])
+                rad.write_text(valid.replace("Confrontare i percorsi.", ""), encoding="utf-8")
+                errors = validate_docs.validate_scenarios()
+                self.assertTrue(any("scenario 1 incompleto" in error for error in errors))
 
     def test_use_case_diagram_covers_defined_cases_and_actor_associations(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
